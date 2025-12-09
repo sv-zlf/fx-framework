@@ -34,6 +34,13 @@ public class SystemDictItemController {
         return HttpResult.success(itemService.getPageList(dictQuery));
     }
 
+    @Operation(summary = "获取字典项列表")
+    @GetMapping("/getDictItemList")
+    public HttpResult getDictItemList(@RequestParam("dictTypeCode") String dictTypeCode) {
+        List<SystemDictItem> itemList = itemService.getItemList(dictTypeCode);
+        return HttpResult.success(itemList);
+    }
+
     @Operation(summary = "新增")
     @PostMapping(value = "/insert")
     public HttpResult insertDictItem(@RequestBody SystemDictItem dictItem) {
