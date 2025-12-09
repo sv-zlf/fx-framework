@@ -5,8 +5,11 @@
         <template #left>
           <a-space wrap>
             <a-input v-model="form.name" placeholder="请输入菜单名称" allow-clear />
-            <a-select v-model="form.disable" placeholder="请选择状态" allow-clear style="width: 120px">
-              <a-option v-for="item in openState" :key="item.value" :value="item.value">{{ item.name }}</a-option>
+            <a-select v-model="form.status" placeholder="请选择状态" allow-clear style="width: 120px">
+              <a-option v-for="item in openState" :key="item.id" :value="item.dictItemCode">{{ item.dictItemName }}</a-option>
+            </a-select>
+            <a-select v-model="form.status" placeholder="请选择隐藏状态" allow-clear style="width: 150px">
+              <a-option v-for="item in openState" :key="item.id" :value="item.dictItemCode">{{ item.dictItemName }}</a-option>
             </a-select>
             <a-button type="primary" @click="onSearch">
               <template #icon><icon-search /></template>
@@ -46,12 +49,12 @@
         :pagination="false"
         size="large"
         :scroll="{ x: '150%', y: '100%' }"
-        hide-expand-button-on-empty="true"
+        :hide-expand-button-on-empty="true"
       >
         <template #columns>
           <a-table-column title="菜单名称" :width="120" ellipsis tooltip>
             <template #cell="{ record }">
-              {{ $t(`menu.${record.menuName}`) }}
+              {{ $t(`menu.${record.title}`) }}
             </template>
           </a-table-column>
           <a-table-column title="菜单类型" align="center" :width="100">
@@ -70,7 +73,7 @@
           <a-table-column title="路由名称" data-index="menuName" :width="120" ellipsis tooltip></a-table-column>
           <a-table-column title="组件路径" :width="200" ellipsis tooltip>
             <template #cell="{ record }">
-              {{ record.redirect ? record.redirect : record.component }}
+              {{ record.component }}
             </template>
           </a-table-column>
           <a-table-column title="权限标识" :width="200" ellipsis tooltip>
@@ -91,6 +94,14 @@
               </a-space>
             </template>
           </a-table-column>
+          <a-table-column title="是否隐藏" align="center" :width="100">
+            <template #cell="{ record }">
+              <a-space>
+                <a-tag bordered size="small" color="arcoblue" v-if="record.isHide">是</a-tag>
+                <a-tag bordered size="small" color="red" v-else>否</a-tag>
+              </a-space>
+            </template>
+          </a-table-column>
           <a-table-column title="是否外链" align="center" :width="100">
             <template #cell="{ record }">
               <a-space>
@@ -107,17 +118,17 @@
               </a-space>
             </template>
           </a-table-column>
-          <a-table-column title="操作" align="center" :width="150" :fixed="tableFixed">
+          <a-table-column title="操作" align="center" :width="100" :fixed="tableFixed">
             <template #cell="{ record }">
               <a-space>
                 <a-button size="mini" type="primary" @click="onUpdate(record)">
                   <template #icon><icon-edit /></template>
                   <span>修改</span>
                 </a-button>
-                <a-button size="mini" type="primary" status="success" v-if="record.type != 3" @click="onCurrentAdd(record)">
-                  <template #icon><icon-plus /></template>
-                  <span>新增</span>
-                </a-button>
+<!--                <a-button size="mini" type="primary" status="success" v-if="record.type != 3" @click="onCurrentAdd(record)">-->
+<!--                  <template #icon><icon-plus /></template>-->
+<!--                  <span>新增</span>-->
+<!--                </a-button>-->
                 <a-popconfirm type="warning" content="确定删除该项吗?">
                   <a-button size="mini" type="primary" status="danger">
                     <template #icon><icon-delete /></template>
@@ -191,7 +202,7 @@
             <template #extra>
               <div>
                 菜单名称由路径自动生成
-                <a-typography-text code v-if="addFrom.name"> {{ addFrom.name }} </a-typography-text>
+                <a-typography-text code v-if="addFrom.menuName"> {{ addFrom.menuName }} </a-typography-text>
               </div>
             </template>
           </a-form-item>
@@ -204,20 +215,11 @@
             />
           </a-form-item>
 
-          <a-form-item v-if="[1, 2].includes(addFrom.type)" field="redirect" label="路由重定向" validate-trigger="blur">
-            <a-input
-              v-model="addFrom.redirect"
-              placeholder="请输入路由重定向"
-              allow-clear
-              @input="(e: string) => onTrim(e, 'redirect')"
-            />
-          </a-form-item>
           <a-form-item
-            v-if="addFrom.type == 2"
+            v-if="addFrom.type == 2 && !addFrom.isExternal"
             field="component"
             label="组件路径"
             validate-trigger="blur"
-            :disabled="addFrom.isLink"
           >
             <a-input
               v-model="addFrom.component"
@@ -229,10 +231,29 @@
               <template #append>.vue</template>
             </a-input>
           </a-form-item>
+          <a-form-item
+            v-else-if ="addFrom.type == 2 && addFrom.isExternal"
+            field="component"
+            label="组件路径"
+            validate-trigger="blur"
+          >
+            <a-input
+              v-model="addFrom.component"
+              placeholder="请输入组件路径(外链地址)"
+              allow-clear
+              @input="(e: string) => onTrim(e, 'component')"
+            >
+            </a-input>
+            <template #extra>
+              <div>
+                外链地址
+              </div>
+            </template>
+          </a-form-item>
           <a-row :gutter="24">
             <a-col :span="8" v-if="[1, 2].includes(addFrom.type)">
               <a-form-item field="hide" label="显示状态" validate-trigger="blur">
-                <a-switch type="round" v-model="addFrom.hide" :checked-value="false" :unchecked-value="true">
+                <a-switch type="round" v-model="addFrom.isHide" :checked-value="false" :unchecked-value="true">
                   <template #checked> 显示 </template>
                   <template #unchecked> 隐藏 </template>
                 </a-switch>
@@ -240,17 +261,9 @@
             </a-col>
             <a-col :span="8" v-if="[1, 2].includes(addFrom.type)">
               <a-form-item field="disable" label="启用状态" validate-trigger="blur">
-                <a-switch type="round" v-model="addFrom.disable" :checked-value="false" :unchecked-value="true">
+                <a-switch type="round" v-model="addFrom.status" :checked-value="1" :unchecked-value="0">
                   <template #checked> 启用 </template>
                   <template #unchecked> 禁用 </template>
-                </a-switch>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8" v-if="addFrom.type == 2">
-              <a-form-item field="keepAlive" label="是否缓存" validate-trigger="blur">
-                <a-switch type="round" v-model="addFrom.keepAlive">
-                  <template #checked> 是 </template>
-                  <template #unchecked> 否 </template>
                 </a-switch>
               </a-form-item>
             </a-col>
@@ -258,7 +271,7 @@
           <a-row :gutter="24" v-if="addFrom.type == 2">
             <a-col :span="8">
               <a-form-item field="affix" label="固定Tabs" validate-trigger="blur">
-                <a-switch type="round" v-model="addFrom.affix">
+                <a-switch type="round" v-model="addFrom.affix"  :checked-value="1" :unchecked-value="0">
                   <template #checked> 是 </template>
                   <template #unchecked> 否 </template>
                 </a-switch>
@@ -266,15 +279,15 @@
             </a-col>
             <a-col :span="8">
               <a-form-item field="isLink" label="是否外链" validate-trigger="blur">
-                <a-switch type="round" v-model="addFrom.isLink" @change="onIsLink">
+                <a-switch type="round" v-model="addFrom.isExternal" @change="onIsLink">
                   <template #checked> 是 </template>
                   <template #unchecked> 否 </template>
                 </a-switch>
               </a-form-item>
             </a-col>
             <a-col :span="8">
-              <a-form-item field="iframe" label="内嵌窗口" validate-trigger="blur" :disabled="!addFrom.isLink">
-                <a-switch type="round" v-model="addFrom.iframe" @change="onIframe">
+              <a-form-item field="iframe" label="内嵌窗口" validate-trigger="blur" :disabled="!addFrom.isExternal">
+                <a-switch type="round" v-model="addFrom.iframe" >
                   <template #checked> 是 </template>
                   <template #unchecked> 否 </template>
                 </a-switch>
@@ -312,12 +325,12 @@
 <script setup lang="ts">
 import MenuItemIcon from "@/layout/components/Menu/menu-item-icon.vue";
 import useGlobalProperties from "@/hooks/useGlobalProperties";
-import { getPageList } from "@/api/system/menu/index";
+import {addMenu, getMenuTreeAll, updateMenu} from "@/api/system/menu/index";
 import { deepClone, getPascalCase } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 
 const proxy = useGlobalProperties();
-const openState = ref(dictFilter("status"));
+const openState = ref(dictFilter("STATUS"));
 const { dialogWidth, formLayout, tableFixed } = useLayoutModel();
 const form = ref({
   name: "",
@@ -350,20 +363,17 @@ const addFrom = ref<any>({
   parentId: "",
   svgIcon: "",
   icon: "",
-  name: "",
+  menuName: "",
   title: "",
   isFull: false,
   permission: "",
   path: "",
-  redirect: "",
   component: "",
-  hide: false,
-  disable: false,
-  keepAlive: true,
-  affix: false,
-  isLink: false,
-  link: "",
-  iframe: false,
+  isHide: false,
+  status: 1,
+  affix: 0,
+  isExternal: false,
+  iframe: 0,
   sort: 1
 });
 const formType = ref(0); // 0新增 1修改
@@ -378,7 +388,16 @@ const handleOk = async () => {
   let state = await formRef.value.validate();
   if (state) return (open.value = true); // 校验不通过
   console.log("addFrom.value", addFrom.value);
-  arcoMessage("success", "模拟提交成功");
+  console.log(formType.value)
+  if (formType.value == 1) {
+    await updateMenu(addFrom.value);
+    arcoMessage("success", "新增菜单数据成功");
+  }
+  else if (formType.value == 0) {
+    await addMenu(addFrom.value);
+    arcoMessage("success", "新增菜单数据成功");
+  }
+
   getMenuList();
 };
 // 关闭对话框动画结束后触发
@@ -389,20 +408,17 @@ const afterClose = () => {
     parentId: "",
     svgIcon: "",
     icon: "",
-    name: "",
+    menuName: "",
     title: "",
     isFull: false,
     permission: "",
     path: "",
-    redirect: "",
     component: "",
-    hide: false,
-    disable: false,
-    keepAlive: true,
-    affix: false,
-    isLink: false,
-    link: "",
-    iframe: false,
+    isHide: false,
+    status: 1,
+    affix: 0,
+    isExternal: false,
+    iframe: 0,
     sort: 1
   };
 };
@@ -413,25 +429,26 @@ const onUpdate = (row: Menu.MenuOptions) => {
   if (data.parentId == "0") data.parentId = "";
   let form = {
     ...data,
-    ...data.meta
   };
-  if (form.meta) delete form.meta;
+  formType.value = 1;
+  // if (form.meta) delete form.meta;
   typeChange(form.type);
+  console.log("form", form)
   addFrom.value = form;
   title.value = "修改菜单";
   open.value = true;
 };
 // 列表新增
-const onCurrentAdd = (record: any) => {
-  let {
-    id,
-    meta: { type }
-  } = record;
-  addFrom.value.parentId = id;
-  addFrom.value.type = type == 2 ? 3 : type;
-  title.value = "新增菜单";
-  open.value = true;
-};
+// const onCurrentAdd = (record: any) => {
+//   let {
+//     id,
+//     meta: { type }
+//   } = record;
+//   addFrom.value.parentId = id;
+//   addFrom.value.type = type == 2 ? 3 : type;
+//   title.value = "新增菜单";
+//   open.value = true;
+// };
 
 // 菜单类型
 const typeChange = (val: number) => {
@@ -447,7 +464,7 @@ const onTrim = (val: string, key: string) => {
 // 菜单名称
 const pathChange = (str: string) => {
   addFrom.value.path = str.trim();
-  addFrom.value.name = getPascalCase(str.trim().replace(/[./:?=&"-]/g, "_"));
+  addFrom.value.menuName = getPascalCase(str.trim().replace(/[./:?=&"-]/g, "_"));
 };
 
 // 是否外链
@@ -456,7 +473,6 @@ const onIsLink = (is: boolean) => {
   if (!is) {
     // 关联iframe和link
     addFrom.value.iframe = false;
-    addFrom.value.link = "";
     addFrom.value.component = "";
   } else {
     // 外链
@@ -465,16 +481,16 @@ const onIsLink = (is: boolean) => {
 };
 
 // 是否内嵌外链窗口
-const onIframe = (is: boolean) => {
-  // 非内嵌
-  if (!is) {
-    // 关联iframe和link
-    addFrom.value.component = "link/external/external";
-  } else {
-    // 内嵌
-    addFrom.value.component = "link/internal/internal";
-  }
-};
+// const onIframe = (is: boolean) => {
+//   // 非内嵌
+//   if (!is) {
+//     // 关联iframe和link
+//     addFrom.value.component = "link/external/external";
+//   } else {
+//     // 内嵌
+//     addFrom.value.component = "link/internal/internal";
+//   }
+// };
 
 const onSearch = () => getMenuList();
 const loading = ref(false);
@@ -489,13 +505,11 @@ const getMenuList = async () => {
       size: 10,
       ...form.value
     };
-    let res  = await getPageList(params);
+    let res  = await getMenuTreeAll(params);
     // 语言翻译
-    // translation(res.data.records);
+    translation(res.data);
     // 列表数据
-
     tableTree.value = res.data;
-    console.log( tableTree)
     // 过滤type:3的节点，该节点是按钮权限，不显示在菜单中-用于下拉选择
     menuTree.value = filterTree(res.data);
   } finally {
@@ -513,8 +527,8 @@ const onExpand = () => {
 const translation = (tree: any) => {
   tree.forEach((item: any) => {
     if (item.children) translation(item.children);
-    if (item.meta.title) {
-      item.i18n = proxy.$t(`menu.${item.meta.title}`);
+    if (item.title) {
+      item.i18n = proxy.$t(`menu.${item.title}`);
     }
   });
 };

@@ -7,16 +7,20 @@ import { Message } from "@arco-design/web-vue";
  * @return 返回字典的list
  */
 export const dictFilter = (code: string) => {
+
+
   try {
     const system = useSystemStore();
     let { dict } = storeToRefs(system);
-    if (!dict.value) return [];
-    let curr = dict.value.find((item: any) => item.code === code);
-    if (curr?.list?.length > 0) {
-      return curr.list;
-    } else {
-      return [];
+    const isFetching = system.isFetchingDict[code] ?? false;
+    // 缓存不存在时，自动触发接口请求
+    if (!dict.value[code] && !isFetching) {
+      system.setDictData(code);
     }
+    // 返回响应式结果：缓存更新/接口返回后自动同步
+    return computed(() => {
+      return dict.value[code] || [];
+    });
   } catch {
     return [];
   }

@@ -22,6 +22,8 @@ declare namespace Menu {
     icon?: string;
     sort?: number;
     type?: number;
+    svgIcon?: string;
+    hide: boolean;
   }
   // interface MetaType {
   //   title: string;

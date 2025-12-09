@@ -81,3 +81,9 @@ ALTER TABLE system_menu
         COMMENT 'SVG图标名称（关联前端SVG文件）'  -- 字段注释，便于维护
         NULL DEFAULT NULL  -- 允许为空，默认值为NULL
         AFTER `icon`;  -- 字段位置：添加在 `icon` 字段之后（可调整）
+
+ALTER TABLE system_menu
+-- 菜单标题（可用于显示别名、多语言标题等，非空时优先显示）
+    ADD COLUMN title VARCHAR(100) COMMENT '菜单标题（用于显示别名/多语言）' AFTER menu_name,
+-- 是否隐藏（true=隐藏，false=显示，默认不隐藏）
+    ADD COLUMN is_hide TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否隐藏菜单：0-显示（默认），1-隐藏';

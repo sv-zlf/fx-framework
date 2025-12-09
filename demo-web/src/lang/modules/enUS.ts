@@ -90,7 +90,7 @@ export default {
     ["userinfo"]: "userinfo",
     ["user-settings"]: "user-settings",
     ["system"]: "system",
-    ["account"]: "account",
+    ["user"]: "user",
     ["role"]: "role",
     ["menu"]: "menu",
     ["division"]: "division",

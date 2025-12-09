@@ -1,12 +1,6 @@
 import axios from "@/api";
 
-// 获取菜单数据
-export const getRoutersAPI = () => {
-  return axios({
-    url: "/system/menu/getMenuTree",
-    method: "get"
-  });
-};
+
 
 // 获取字典数据
 export const getDictAPI = () => {

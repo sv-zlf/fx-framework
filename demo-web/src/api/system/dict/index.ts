@@ -13,10 +13,21 @@ export const getPageList = (data: any) => {
   });
 };
 
-// 获取列表数据
-export const getCustomTableListAPI = () => {
+
+
+/**
+ * 字典雷列表
+ */
+
+// 按照字典类型获取列表
+export const getListByCode = (code: string) => {
   return axios({
-    url: "/mock/custom-table/list",
-    method: "get"
-  });
-};
+    url: "/system/dict/item/getDictItemList",
+    method: "get",
+    params: {
+      dictTypeCode : code
+    }
+  })
+}
+
+

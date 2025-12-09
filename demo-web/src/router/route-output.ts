@@ -72,14 +72,11 @@ export const normalizeRouteTree = (rawTree: any[]): any[] => {
 
   // 第二步：对标准结构做最终容错（确保字段无异常）
   return standardTree.map(node => {
-    // 1. 过滤禁用的路由（meta.disable 为 true 时，不参与路由和菜单渲染）
+    // 过滤禁用的路由（meta.disable 为 true 时，不参与路由和菜单渲染）
     if (node.meta.disable) return null;
 
-    // 2. 处理 children（过滤禁用的子节点）
+    // 处理 children（过滤禁用的子节点）
     node.children = node.children.filter((child: any) => !child.meta.disable);
-
-    // 3. 国际化处理（如果需要支持多语言，这里替换 title 为 i18n 变量）
-    // 示例：node.meta.title = i18n.global.t(`menu.${node.name}`);（需配合 i18n 配置）
 
     return node;
   }).filter(Boolean); // 过滤掉 null 节点
@@ -95,7 +92,7 @@ const routeMapConfig = {
   component: 'component', // 后端组件路径字段名（比如有的后端叫 component）
   name: 'menuName',
   // meta 内的字段（统一封装到 meta 对象）
-  'meta.title': 'menuName', // 菜单名称（国际化需额外处理）
+  'meta.title': 'title', // 菜单名称（国际化需额外处理）
   'meta.status': 'status', // 菜单名称（国际化需额外处理）
   'meta.isFull': 'isFull',
   'meta.affix': 'affix', // 是否固定 tabsView
@@ -104,7 +101,8 @@ const routeMapConfig = {
   'meta.svgIcon': 'svgIcon', // 菜单图标
   'meta.icon': 'icon', // 菜单图标
   'meta.sort': 'sort' ,// 菜单排序
-  'meta.type':'type'
+  'meta.type':'type',
+  'meta.hide': 'isHide'
 };
 /**
  * 单个路由节点：后端结构 → 前端标准结构
@@ -129,9 +127,9 @@ export const mapToStandardRoute = (rawNode: any): any => {
       icon: '',
       svgIcon: '',
       sort: 999 ,// 默认排序（数字越小越靠前）
-      type:'0'
+      type:'0',
+      hide: 0
     },
-    isFull: false,
     children: []
   };
 
@@ -201,6 +199,10 @@ const getRawValue = (rawNode: any, rawKey: string): any => {
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob("@/views/**/*.vue");
 export const moduleMatch = (item: any) => {
+  // 菜单无需匹配
+  if (item.meta.type === 1) {
+    return;
+  }
   // 容错：若 component 为空，直接设为 404 组件
   if (!item.component) {
     item.component = () => import('@/views/error/404.vue');
@@ -210,13 +212,13 @@ export const moduleMatch = (item: any) => {
   let matched = false;
   // 遍历 modules 匹配组件（保持你的原有逻辑，优化匹配判断）
   for (const key in modules) {
-    // 关键：适配不同环境下的 key 格式（比如 Vite 是 "/src/views/xxx.vue"，Webpack 可能是 "@/views/xxx.vue"）
+    // 关键：适配不同环境下的 key 格式（
     const dir = key
       .replace(/^\/src\/views\//, '') // 移除前缀（根据实际 key 格式调整）
       .replace(/^@\/views\//, '') // 兼容 Webpack 的 @ 别名
       .replace('.vue', ''); // 移除后缀
 
-    // 匹配成功：赋值为懒加载组件（modules[key] 本身就是 () => Promise<Component>，无需多包一层 () =>）
+    // 匹配成功：赋值为懒加载组件
     if (item.component === dir) {
       item.component = modules[key]; // 修复：直接赋值 modules[key]，而非 () => modules[key]()
       matched = true;

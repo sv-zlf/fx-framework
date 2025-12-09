@@ -90,7 +90,7 @@ export default {
     ["userinfo"]: "用户信息",
     ["user-settings"]: "用户设置",
     ["system"]: "系统管理",
-    ["account"]: "账号管理",
+    ["user"]: "用户管理",
     ["role"]: "角色管理",
     ["menu"]: "菜单管理",
     ["division"]: "部门管理",

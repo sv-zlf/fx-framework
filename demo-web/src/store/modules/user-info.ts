@@ -39,6 +39,7 @@ const userInfoStore = () => {
   }
   // 退出登录
   async function logOut() {
+
     // 清除账号数据
     account.value = {
       user: {},

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import router from "@/router/index";
 import { staticRoutes } from "@/router/route";
-import { getRoutersAPI } from "@/api/modules/system/index";
+import { getRoutersAPI } from "@/api/system/menu";
 import { moduleReplacement, linearArray, normalizeRouteTree } from "@/router/route-output";
 import { getUrlWithParams } from "@/utils/index";
 
@@ -126,16 +126,16 @@ export const routeConfigStore = () => {
    * 6、缓存一维路由
    */
   async function initSetRouter() {
-    // 1、获取过滤角色权限后的树，后端做排序处理
+    // 获取过滤角色权限后的树，后端做排序处理
     let { data } = await getRoutersAPI();
+    // 转换成前端meta格式
     const standardTree = normalizeRouteTree(data);
-    console.log('映射后的标准路由树：', JSON.stringify(standardTree, null, 2));
-    // 2、获取路由树转换的一维路由
+    console.log("路由树", standardTree)
+    // 获取路由树转换的一维路由
     let flatRoute = linearArray(standardTree);
-    // 3、将模块设置为真实模块
+    // 将模块设置为真实模块
     let realTree = await moduleReplacement(flatRoute);
-    console.log(realTree);
-    // 4、动态添加路由
+    // 动态添加路由
     realTree.forEach((route: any) => {
       if (route.meta.isFull) {
         router.addRoute(route);
@@ -143,9 +143,9 @@ export const routeConfigStore = () => {
         router.addRoute("layout", route);
       }
     });
-    // 5、存储路由树，用于生成菜单
+    // 存储路由树，用于生成菜单
     routeTree.value = standardTree;
-    // 6、缓存一维路由
+    // 缓存一维路由
     routeList.value = flatRoute;
   }
 
