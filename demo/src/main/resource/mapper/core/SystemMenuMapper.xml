@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fxly.demo.api.core.mapper.SystemMenuMapper">
+
+    <select id="getPageList" resultType="com.fxly.demo.api.core.entity.SystemMenu">
+        SELECT *
+        FROM system_menu
+        where status = 1
+        <if test="menuQuery.menuName != null and menuQuery.menuName != ''">
+            and menu_name like concat('%',#{menuQuery.menuName},'%')
+        </if>
+    </select>
+
+    <select id="getMenuList" resultType="com.fxly.demo.api.core.entity.SystemMenu">
+        SELECT distinct m.*
+        FROM system_role_menu rm
+        LEFT JOIN system_menu m on m.id = rm.menu_id
+        <where>
+            <if test="menuQuery.currentLoginUserRoleIds != null and menuQuery.currentLoginUserRoleIds.size() > 0">
+                and role_id in
+                <foreach collection="menuQuery.currentLoginUserRoleIds" item="roleId" open="(" close=")" separator=",">
+                    #{roleId}
+                </foreach>
+            </if>
+            <if test="menuQuery.pid != null and menuQuery.pid != ''">
+                and parent_id = #{menuQuery.pid}
+            </if>
+            <if test="menuQuery.menuName != null and menuQuery.menuName != ''">
+                and menu_name = #{menuQuery.menuName}
+            </if>
+            <if test="menuQuery.isUsed">
+                and status = 1
+            </if>
+        </where>
+        ORDER BY parent_id, sort
+    </select>
+
+</mapper>

@@ -1,0 +1,70 @@
+# 服务器配置
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8  # 强制编码（Spring Boot 3.x默认UTF-8，可省略）
+      enabled: true
+
+# 数据源配置
+spring:
+  jackson:
+    time-zone: Asia/Shanghai # 序列化/反序列化时用东八区
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.1.101:33061/demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root  # 你的数据库用户名
+    password: 123456  # 你的数据库密码
+    hikari:  # Spring Boot 3.x默认数据源HikariCP，无需额外引入
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  # Redis配置
+  data:
+    redis:
+      password:
+      database: 0
+      host: 192.168.1.101
+      port: 16379
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true # MyBatis 在使用 resultMap 来映射查询结果中的列，如果查询结果中包含空值的列，则 MyBatis 在映射的时候，不会映射这个字段
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+
+# JWT自定义配置
+jwt:
+  secret: your-secret-key-1234567890abcdefghijklmnopqrstuvwxyz  # 密钥（生产环境需加密存储）
+  expire-time: 3600000  # 令牌过期时间（1小时，单位：毫秒）
+  refresh-time: 7200000 # 刷新令牌时间（2小时，可选）
+  header: Authorization  # 请求头中令牌的key
+  prefix: Bearer         # 令牌前缀（空格分隔）
+
+# Spring Security配置（关闭默认表单登录）
+security:
+  basic:
+    enabled: false
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+#  group-configs:
+#    - group: 'default'
+#      paths-to-match: '/**'
+#      packages-to-scan: com.fxly.demo.api.core.controller
+
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
