@@ -27,6 +27,9 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     @Schema(description = "父菜单ID")
     private Long parentId;
 
+    @Schema(description = "菜单标题")
+    private String title;
+
     @Schema(description = "菜单名称")
     private String menuName;
 
@@ -54,11 +57,11 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     @Schema(description = "状态")
     private Integer status;
 
-    @Schema(description = "是否叶子节点（true=最后一级，无下级子菜单）")
-    private Boolean isLeaf = true;
-
     @Schema(description = "是否外链（true=外部链接，false=内部路由）")
-    private Boolean isExternal = false;
+    private Boolean isExternal;
+
+    @Schema(description = "是否隐藏")
+    private Boolean isHide;
 
     @Schema(description = "是否全屏")
     private Boolean isFull;
@@ -67,7 +70,7 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     private Integer iframe;
 
     @Schema(description = "是否固定")
-    private Integer affix = 0;
+    private Integer affix;
 
     @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)

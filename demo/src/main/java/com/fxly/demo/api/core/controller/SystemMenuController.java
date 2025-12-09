@@ -93,9 +93,6 @@ public class SystemMenuController {
             if(Objects.isNull(parentMenu)) {
                 return HttpResult.setResult(400, "无效的父级编号");
             }
-            else if(parentMenu.getIsLeaf()) {
-                return HttpResult.setResult(400, "违规操作，最后一级菜单不能作为父级菜单使用");
-            }
         }
         //
         boolean b =  menuService.updateById(menu);
