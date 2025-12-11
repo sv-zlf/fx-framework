@@ -480,18 +480,6 @@ const onIsLink = (is: boolean) => {
   }
 };
 
-// 是否内嵌外链窗口
-// const onIframe = (is: boolean) => {
-//   // 非内嵌
-//   if (!is) {
-//     // 关联iframe和link
-//     addFrom.value.component = "link/external/external";
-//   } else {
-//     // 内嵌
-//     addFrom.value.component = "link/internal/internal";
-//   }
-// };
-
 const onSearch = () => getMenuList();
 const loading = ref(false);
 const tableRef = ref();

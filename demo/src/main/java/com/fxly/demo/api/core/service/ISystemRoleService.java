@@ -2,6 +2,7 @@ package com.fxly.demo.api.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fxly.demo.api.core.dto.RoleQueryDTO;
 import com.fxly.demo.api.core.entity.SystemRole;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface ISystemRoleService extends IService<SystemRole> {
 
-    Page<SystemRole> getPageList(String roleName,Integer pageIndex,Integer pageSize);
+    Page<SystemRole> getPageList(RoleQueryDTO query);
 
     List<SystemRole> getRoleList(String roleName);
 

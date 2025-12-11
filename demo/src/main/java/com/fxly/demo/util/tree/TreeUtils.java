@@ -40,8 +40,9 @@ public class TreeUtils {
                 if (parent != null) {
                     parent.getChildren().add(data);
                 } else {
-                    // 如果找不到父节点，则抛出异常
-                    throw new GlobalException("找不到父节点：" + data);
+                    // 如果找不到父节点，自身作为主节点
+                    treeList.add(data);
+//                    throw new GlobalException("找不到父节点：" + data);
                 }
             }
         });

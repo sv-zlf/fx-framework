@@ -3,7 +3,7 @@ package com.fxly.demo.api.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fxly.demo.api.core.dto.SystemMenuQueryDTO;
+import com.fxly.demo.api.core.dto.MenuQueryDTO;
 import com.fxly.demo.api.core.entity.SystemMenu;
 import com.fxly.demo.api.core.entity.SystemRoleMenu;
 import com.fxly.demo.api.core.mapper.SystemMenuMapper;
@@ -31,20 +31,20 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     private ISystemRoleMenuService roleMenuService;
 
     @Override
-    public Page<SystemMenu> getPageList(SystemMenuQueryDTO menuQuery) {
+    public Page<SystemMenu> getPageList(MenuQueryDTO menuQuery) {
         Page<SystemMenu> page = new Page<>(menuQuery.getPageIndex(), menuQuery.getPageSize());
         baseMapper.getPageList(page, menuQuery);
         return page;
     }
 
     @Override
-    public List<SystemMenu> getMenuList(SystemMenuQueryDTO menuQuery) {
+    public List<SystemMenu> getMenuList(MenuQueryDTO menuQuery) {
         menuQuery.setCurrentLoginUserRoleIds(SecurityUtils.getRoleIds());
         return baseMapper.getMenuList(menuQuery);
     }
 
     @Override
-    public List<SystemMenu> getMenuTree(SystemMenuQueryDTO menuQuery) {
+    public List<SystemMenu> getMenuTree(MenuQueryDTO menuQuery) {
         List<SystemMenu> menuList = baseMapper.getMenuList(menuQuery);
         return TreeUtils.buildTree(menuList);
     }

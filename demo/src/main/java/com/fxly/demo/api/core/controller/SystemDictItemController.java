@@ -1,19 +1,14 @@
 package com.fxly.demo.api.core.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.fxly.demo.api.core.dto.SystemDictQueryDTO;
+import com.fxly.demo.api.core.dto.DictQueryDTO;
 import com.fxly.demo.api.core.entity.SystemDictItem;
-import com.fxly.demo.api.core.entity.SystemDictType;
 import com.fxly.demo.api.core.service.ISystemDictItemService;
-import com.fxly.demo.api.core.service.ISystemDictTypeService;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +25,7 @@ public class SystemDictItemController {
 
     @Operation(summary = "获取字典类型列表")
     @PostMapping("/getPageList")
-    public HttpResult getDictItemPageList(@RequestBody SystemDictQueryDTO dictQuery) {
+    public HttpResult getDictItemPageList(@RequestBody DictQueryDTO dictQuery) {
         return HttpResult.success(itemService.getPageList(dictQuery));
     }
 

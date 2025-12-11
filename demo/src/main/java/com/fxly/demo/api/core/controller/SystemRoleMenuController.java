@@ -23,7 +23,7 @@ import java.util.Set;
 
 @Tag(name = "角色菜单配置管理")
 @RestController
-@RequestMapping("/systemRoleMenu")
+@RequestMapping("/system/roleMenu")
 @Slf4j
 public class SystemRoleMenuController {
 

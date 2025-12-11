@@ -2,7 +2,6 @@ package com.fxly.demo.api.core.dto;
 
 import com.fxly.demo.system.global.PageHelper;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 
@@ -13,7 +12,7 @@ import java.util.Set;
  */
 
 @Data
-public class SystemMenuQueryDTO extends PageHelper {
+public class MenuQueryDTO extends PageHelper {
     Set<Long> currentLoginUserRoleIds;
     private Long pid;
     private String menuName;

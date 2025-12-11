@@ -2,7 +2,7 @@ package com.fxly.demo.api.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fxly.demo.api.core.dto.SystemDictQueryDTO;
+import com.fxly.demo.api.core.dto.DictQueryDTO;
 import com.fxly.demo.api.core.entity.SystemDictItem;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface ISystemDictItemService extends IService<SystemDictItem> {
 
-    Page<SystemDictItem> getPageList(SystemDictQueryDTO dictQuery);
+    Page<SystemDictItem> getPageList(DictQueryDTO dictQuery);
 
     List<SystemDictItem> getItemList(String dictTypeCode);
 }

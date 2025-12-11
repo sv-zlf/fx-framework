@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fxly.demo.api.core.dto.SystemDictQueryDTO;
+import com.fxly.demo.api.core.dto.DictQueryDTO;
 import com.fxly.demo.api.core.entity.SystemDictItem;
 import com.fxly.demo.api.core.mapper.SystemDictItemMapper;
 import com.fxly.demo.api.core.service.ISystemDictItemService;
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class SystemDictItemServiceImpl extends ServiceImpl<SystemDictItemMapper, SystemDictItem> implements ISystemDictItemService {
     @Override
-    public Page<SystemDictItem> getPageList(SystemDictQueryDTO dictQuery) {
+    public Page<SystemDictItem> getPageList(DictQueryDTO dictQuery) {
         Page<SystemDictItem> page = new Page<>(dictQuery.getPageIndex(), dictQuery.getPageSize());
         LambdaQueryWrapper<SystemDictItem> queryWrapper = new LambdaQueryWrapper<SystemDictItem>()
                 .eq(ObjectUtil.isNotEmpty(dictQuery.getDictTypeCode()),SystemDictItem::getDictTypeCode, dictQuery.getDictTypeCode())

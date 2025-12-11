@@ -2,7 +2,7 @@ package com.fxly.demo.api.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fxly.demo.api.core.dto.SystemMenuQueryDTO;
+import com.fxly.demo.api.core.dto.MenuQueryDTO;
 import com.fxly.demo.api.core.entity.SystemMenu;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +15,11 @@ import java.util.List;
  */
 public interface ISystemMenuService extends IService<SystemMenu> {
 
-    Page<SystemMenu> getPageList(SystemMenuQueryDTO menuQuery);
+    Page<SystemMenu> getPageList(MenuQueryDTO menuQuery);
 
-    List<SystemMenu> getMenuList(SystemMenuQueryDTO menuQuery);
+    List<SystemMenu> getMenuList(MenuQueryDTO menuQuery);
 
-    List<SystemMenu> getMenuTree(SystemMenuQueryDTO menuQuery);
+    List<SystemMenu> getMenuTree(MenuQueryDTO menuQuery);
 
     @Transactional(rollbackFor = Exception.class)
     boolean insert(SystemMenu menu);

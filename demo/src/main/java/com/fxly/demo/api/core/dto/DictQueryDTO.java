@@ -11,7 +11,7 @@ import lombok.Data;
  */
 
 @Data
-public class SystemDictQueryDTO extends PageHelper {
+public class DictQueryDTO extends PageHelper {
 
     @Schema(description = "字典项编码")
     private String dictItemCode;

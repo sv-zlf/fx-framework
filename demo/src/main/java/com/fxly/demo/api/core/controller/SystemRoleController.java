@@ -4,6 +4,7 @@ package com.fxly.demo.api.core.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.fxly.demo.api.core.dto.RoleQueryDTO;
 import com.fxly.demo.api.core.entity.SystemRole;
 import com.fxly.demo.api.core.entity.SystemRoleMenu;
 import com.fxly.demo.api.core.entity.SystemUserRole;
@@ -38,11 +39,9 @@ public class SystemRoleController {
     private ISystemRoleMenuService roleMenuService;
 
     @Operation(summary = "获取分页列表")
-    @GetMapping("/getPageList")
-    public HttpResult getRolePageList(@RequestParam(value = "roleName", required = false) String roleName,
-                                  @RequestParam("pageIndex") Integer pageIndex,
-                                  @RequestParam("pageSize") Integer pageSize) {
-        return HttpResult.success(roleService.getPageList(roleName,pageIndex, pageSize));
+    @PostMapping("/getPageList")
+    public HttpResult getRolePageList(@RequestBody RoleQueryDTO query) {
+        return HttpResult.success(roleService.getPageList(query));
     }
 
     @Operation(summary = "获取列表")
@@ -99,7 +98,7 @@ public class SystemRoleController {
         boolean b = roleService.removeById(roleId);
         if(b) {
             // 最后，移除该角色绑定的菜单
-            b = roleMenuService.remove(
+            roleMenuService.remove(
                     new LambdaQueryWrapper<SystemRoleMenu>()
                             .eq(SystemRoleMenu::getRoleId, roleId)
             );

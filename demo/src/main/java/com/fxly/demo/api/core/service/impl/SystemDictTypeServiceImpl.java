@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fxly.demo.api.core.dto.SystemDictQueryDTO;
+import com.fxly.demo.api.core.dto.DictQueryDTO;
 import com.fxly.demo.api.core.entity.SystemDictType;
 import com.fxly.demo.api.core.mapper.SystemDictTypeMapper;
 import com.fxly.demo.api.core.service.ISystemDictTypeService;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SystemDictTypeServiceImpl extends ServiceImpl<SystemDictTypeMapper,SystemDictType> implements ISystemDictTypeService {
     @Override
-    public Page<SystemDictType> getPageList(SystemDictQueryDTO dictQuery) {
+    public Page<SystemDictType> getPageList(DictQueryDTO dictQuery) {
         Page<SystemDictType> page = new Page<>(dictQuery.getPageIndex(), dictQuery.getPageSize());
         // 查询条件
         LambdaQueryWrapper<SystemDictType> queryWrapper = new LambdaQueryWrapper();
