@@ -158,7 +158,8 @@
               :field-names="{
                 key: 'id',
                 title: 'i18n',
-                children: 'children'
+                children: 'children',
+                icon: ''
               }"
               allow-clear
               placeholder="请选择上级菜单"
