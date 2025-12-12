@@ -425,14 +425,9 @@ const onUpdate = (row: Menu.MenuOptions) => {
   let data = deepClone(row);
   delete data.children;
   if (data.parentId == "0") data.parentId = "";
-  let form = {
-    ...data,
-  };
   formType.value = 1;
-  // if (form.meta) delete form.meta;
-  typeChange(form.type);
-  console.log("form", form)
-  form.value = form;
+  typeChange(data.type);
+  form.value = data;
   title.value = "修改菜单";
   open.value = true;
 };
