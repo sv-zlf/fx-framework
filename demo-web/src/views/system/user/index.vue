@@ -286,9 +286,7 @@ const getAccount = async () => {
   };
   let res = await getPageList(params);
   accountList.value = res.data.records;
-  pagination.value.current = res.data.current;
   pagination.value.total = res.data.total;
-  pagination.value.pageSize = res.data.size;
   loading.value = false;
 };
 

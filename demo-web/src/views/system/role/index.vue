@@ -21,7 +21,7 @@
         </template>
         <template #right>
           <a-space wrap>
-            <a-button type="primary" @click="onAdd">
+            <a-button type="primary" status="success" @click="onAdd">
               <template #icon><icon-plus /></template>
               <span>新增</span>
             </a-button>
@@ -242,17 +242,35 @@ const handleOk = async () => {
 
 // 获取列表
 const loading = ref(false);
+//  分页
 const pagination = ref({
+  total: null,
+  current:1,
   pageSize: 10,
-  showPageSize: true
+  showPageSize:true,
+  showTotal: true,
+  onChange: (current: number) => {
+    pagination.value.current = current;
+    getRole();
+  },
+  onPageSizeChange: (pageSize: number) => {
+    pagination.value.current = 1;
+    pagination.value.pageSize = pageSize;
+    getRole();
+  }
 });
 const roleList = ref([]);
 const getRole = async () => {
   try {
     loading.value = true;
-    let res = await getPageList(searchForm.value);
-    res.data.records.forEach((item: any) => item.admin && (item.disabled = true));
+    const params = {
+      ...searchForm.value,
+      pageIndex: pagination.value.current,
+      pageSize: pagination.value.pageSize,
+    };
+    let res = await getPageList(params);
     roleList.value = res.data.records;
+    pagination.value.total = res.data.total;
   } finally {
     loading.value = false;
   }
