@@ -24,7 +24,7 @@ export const getMenuTreeAll = (data: any) => {
 // 添加菜单
 export const addMenu = (data: any) => {
   return axios({
-    url: "/system/menu/insertMenu",
+    url: "/system/menu/insert",
     method: "post",
     data
   })
@@ -33,8 +33,19 @@ export const addMenu = (data: any) => {
 // 修改菜单
 export const updateMenu = (data: any) => {
   return axios({
-    url: "/system/menu/updateMenu",
+    url: "/system/menu/update",
     method: "post",
     data
+  })
+}
+
+// 删除菜单
+export const deleteMenu = (menuId: any) => {
+  return axios({
+    url: "/system/menu/delete",
+    method: "post",
+    params: {
+      menuId
+    }
   })
 }
