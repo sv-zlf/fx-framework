@@ -9,6 +9,17 @@ export const getPageList = (data: any) => {
   });
 };
 
+// 获取列表
+export const getRoleList = (roleName: string) => {
+  return axios({
+    url: "/system/role/getRoleList",
+    method: "get",
+    params: {
+      roleName
+    }
+  });
+}
+
 // 新增角色
 export const addRole = (data: any) => {
   return axios({
