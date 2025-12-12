@@ -9,6 +9,7 @@ import com.fxly.demo.api.core.entity.SystemRoleMenu;
 import com.fxly.demo.api.core.mapper.SystemMenuMapper;
 import com.fxly.demo.api.core.service.ISystemMenuService;
 import com.fxly.demo.api.core.service.ISystemRoleMenuService;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.security.SecurityUtils;
 import com.fxly.demo.util.tree.TreeUtils;
 import jakarta.annotation.Resource;
@@ -31,13 +32,6 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     private ISystemRoleMenuService roleMenuService;
 
     @Override
-    public Page<SystemMenu> getPageList(MenuQueryDTO menuQuery) {
-        Page<SystemMenu> page = new Page<>(menuQuery.getPageIndex(), menuQuery.getPageSize());
-        baseMapper.getPageList(page, menuQuery);
-        return page;
-    }
-
-    @Override
     public List<SystemMenu> getMenuList(MenuQueryDTO menuQuery) {
         menuQuery.setCurrentLoginUserRoleIds(SecurityUtils.getRoleIds());
         return baseMapper.getMenuList(menuQuery);
@@ -52,6 +46,16 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     @Override
     public boolean insert(SystemMenu menu) {
         menu.setStatus(1); // 状态默认为启用
+        // 检查父级菜单
+        if (menu.getParentId()!=null){
+            SystemMenu parentMenu = getById(menu.getParentId());
+            // 类型为目录或者菜单只能挂载在目录下
+            if (menu.getType()==1 || menu.getType()==2){
+                if (parentMenu.getType()!=1){
+                    throw new GlobalException(500, "目录或菜单只能作为目录的子菜单");
+                }
+            }
+        }
         // 保存菜单
         boolean b = save(menu);
         if(b) {

@@ -2,15 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fxly.demo.api.core.mapper.SystemMenuMapper">
 
-    <select id="getPageList" resultType="com.fxly.demo.api.core.entity.SystemMenu">
-        SELECT *
-        FROM system_menu
-        where status = 1
-        <if test="menuQuery.menuName != null and menuQuery.menuName != ''">
-            and menu_name like concat('%',#{menuQuery.menuName},'%')
-        </if>
-    </select>
-
     <select id="getMenuList" resultType="com.fxly.demo.api.core.entity.SystemMenu">
         SELECT distinct m.*
         FROM system_role_menu rm
@@ -22,14 +13,14 @@
                     #{roleId}
                 </foreach>
             </if>
-            <if test="menuQuery.pid != null and menuQuery.pid != ''">
-                and parent_id = #{menuQuery.pid}
-            </if>
             <if test="menuQuery.menuName != null and menuQuery.menuName != ''">
-                and menu_name = #{menuQuery.menuName}
+                and m.menu_name like CONCAT('%', #{menuQuery.menuName}, '%')
             </if>
-            <if test="menuQuery.isUsed">
-                and status = 1
+            <if test="menuQuery.hide != null">
+                and m.is_hide = #{menuQuery.hide}
+            </if>
+            <if test="menuQuery.status != null">
+                and m.status = #{menuQuery.status}
             </if>
         </where>
         ORDER BY parent_id, sort

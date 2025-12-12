@@ -13,9 +13,13 @@ import java.util.Set;
 
 @Data
 public class MenuQueryDTO extends PageHelper {
+
+    // 当前登录用户角色编号
     Set<Long> currentLoginUserRoleIds;
-    private Long pid;
+    // 菜单名称
     private String menuName;
-    private Integer level;
-    private Boolean isUsed;
+    // 状态
+    private Integer status;
+    // 是否隐藏
+    private Integer hide;
 }

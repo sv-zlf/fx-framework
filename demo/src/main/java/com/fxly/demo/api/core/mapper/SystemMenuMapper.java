@@ -15,8 +15,6 @@ import java.util.List;
  */
 public interface SystemMenuMapper extends BaseMapper<SystemMenu> {
 
-    IPage<SystemMenu> getPageList(IPage<SystemMenu> page, @Param("menuQuery") MenuQueryDTO menuQuery);
-
     List<SystemMenu> getMenuList(@Param("menuQuery") MenuQueryDTO menuQuery);
 
 }

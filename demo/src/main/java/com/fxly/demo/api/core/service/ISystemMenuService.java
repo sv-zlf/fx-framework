@@ -15,8 +15,6 @@ import java.util.List;
  */
 public interface ISystemMenuService extends IService<SystemMenu> {
 
-    Page<SystemMenu> getPageList(MenuQueryDTO menuQuery);
-
     List<SystemMenu> getMenuList(MenuQueryDTO menuQuery);
 
     List<SystemMenu> getMenuTree(MenuQueryDTO menuQuery);

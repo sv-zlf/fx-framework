@@ -32,12 +32,6 @@ public class SystemMenuController {
     @Resource
     private ISystemMenuService menuService;
 
-    @Operation(summary = "获取分页列表")
-    @PostMapping("/getPageList")
-    public HttpResult getMenuPageList(@RequestBody MenuQueryDTO menuQuery) {
-        return HttpResult.success(menuService.getPageList(menuQuery));
-    }
-
     @Operation(summary = "获取菜单列表")
     @PostMapping("/getMenuList")
     public HttpResult getMenuList(@RequestBody MenuQueryDTO menuQuery) {
@@ -54,7 +48,7 @@ public class SystemMenuController {
         }
         MenuQueryDTO menuQuery = new MenuQueryDTO();
         menuQuery.setCurrentLoginUserRoleIds(SecurityUtils.getRoleIds());
-        menuQuery.setIsUsed(true); // 获取已启用的数据
+        menuQuery.setStatus(1); // 获取已启用的数据
         //
         List<SystemMenu> menuTree = menuService.getMenuTree(menuQuery);
         return HttpResult.success(menuTree);
@@ -62,22 +56,22 @@ public class SystemMenuController {
 
     @Operation(summary = "获取全部树形结构数据")
     @PostMapping("/getMenuTreeAll")
-    public HttpResult getMenuTreeAll(@RequestBody MenuQueryDTO menuQuery, HttpServletRequest request) {
+    public HttpResult getMenuTreeAll(@RequestBody MenuQueryDTO menuQuery) {
         List<SystemMenu> menuTree = menuService.getMenuTree(menuQuery);
         return HttpResult.success(menuTree);
     }
 
     @Operation(summary = "新增菜单")
-    @PostMapping(value = "/insertMenu")
-    public HttpResult insert(@RequestBody SystemMenu menu) {
+    @PostMapping(value = "/insert")
+    public HttpResult insertMenu(@RequestBody SystemMenu menu) {
         boolean b = menuService.insert(menu);
         return b ? HttpResult.setResult(HttpResultEnum.INSERT_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.INSERT_ERROR);
     }
 
     @Operation(summary = "修改")
-    @PostMapping("/updateMenu")
-    public HttpResult update(@RequestBody SystemMenu menu) {
+    @PostMapping("/update")
+    public HttpResult updateMenu(@RequestBody SystemMenu menu) {
         //
         if(ObjectUtil.isEmpty(menu) || ObjectUtil.isEmpty(menu.getId())) {
             return HttpResult.setResult(400, "菜单编号不能为空");
@@ -110,8 +104,8 @@ public class SystemMenuController {
     }
 
     @Operation(summary = "删除")
-    @PostMapping("/deleteMenu")
-    public HttpResult delete(@RequestParam("menuId") Long menuId) {
+    @PostMapping("/delete")
+    public HttpResult deleteMenu(@RequestParam("menuId") Long menuId) {
         //
         SystemMenu dbMenu = menuService.getById(menuId);
         if(Objects.isNull(dbMenu)) {
