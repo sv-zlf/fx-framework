@@ -1,6 +1,7 @@
 package com.fxly.demo.api.core.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -42,16 +43,21 @@ public class SystemUser implements Serializable {
     private Integer status;
 
     @Schema(description = "创建时间")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale="zh", timezone="GMT+8")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale="zh", timezone="GMT+8")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "用户关联的角色列表")
     @TableField(exist = false)
     private List<SystemRole> roleList;
+
+    @TableField(exist = false)
+    private List<Long> roles;
 
     @Schema(description = "用户拥有的权限标识列表")
     @TableField(exist = false)

@@ -17,7 +17,7 @@ public interface SystemUserRoleMapper extends BaseMapper<SystemUserRole> {
 
     List<SystemRole> getRoleListByUserId(@Param("userId") Long userId);
 
-    boolean grantRole(@Param("userId") Long userId, @Param("roleIds") Set<Long> roleIds);
+    boolean grantRole(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
 
     boolean deleteBatch(@Param("userId") Long userId, @Param("roleIdList") List<Long> roleIdList);
 }

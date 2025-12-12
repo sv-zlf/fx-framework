@@ -32,17 +32,17 @@ public class SystemUserRoleServiceImpl extends ServiceImpl<SystemUserRoleMapper,
         return baseMapper.getRoleListByUserId(userId);
     }
     @Override
-    public boolean grantRole(Long userId, Set<Long> roleIds) {
+    public boolean grantRole(Long userId, List<Long> roleIds) {
         // 首先，删除已分配的角色
         List<SystemRole> roleList = baseMapper.getRoleListByUserId(userId);
         if(roleList != null && !roleList.isEmpty()) {
             List<Long> roleIdList = roleList.stream()
-                    .filter(role -> {
-                        if (role == null) {
-                            return false;
-                        }
-                        return !ObjectUtil.equal(role.getRoleCode(), SystemConstants.Common.DEFAULT_ROLE_CODE);
-                    })
+//                    .filter(role -> {
+//                        if (role == null) {
+//                            return false;
+//                        }
+//                        return !ObjectUtil.equal(role.getRoleCode(), SystemConstants.Common.DEFAULT_ROLE_CODE);
+//                    })
                     .map(SystemRole::getId) // 然后，提取所有的普通角色编号
                     .collect(Collectors.toList());
             if(!roleIdList.isEmpty()){

@@ -30,7 +30,7 @@ public class SystemUserRoleController {
 
     @Operation(summary = "分配角色")
     @PostMapping("/grantRole.do")
-    public HttpResult grantRole(@RequestParam("userId") Long userId, @RequestParam("roleIds") Set<Long> roleIds) {
+    public HttpResult grantRole(@RequestParam("userId") Long userId, @RequestParam("roleIds") List<Long> roleIds) {
         //
         boolean b = userRoleService.grantRole(userId, roleIds);
         return b ? HttpResult.success()

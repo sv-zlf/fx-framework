@@ -1,5 +1,6 @@
 package com.fxly.demo.api.core.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,18 +51,23 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public Page<SystemUser> getPageList(UserQueryDTO userQueryDto) {
+        // 分页
         Page<SystemUser> page = new Page<>(userQueryDto.getPageIndex(),userQueryDto.getPageSize());
+        // 查询条件
+        String name = userQueryDto.getName();
         LambdaQueryWrapper<SystemUser> queryWrapper = new LambdaQueryWrapper<>();
-        if (ObjectUtil.isNotEmpty(userQueryDto.getUsername())){
-            queryWrapper.like(SystemUser::getUserName, userQueryDto.getUsername());
-        }
-        if (ObjectUtil.isNotEmpty(userQueryDto.getRealname())){
-            queryWrapper.like(SystemUser::getNickName, userQueryDto.getRealname());
-        }
+        queryWrapper.nested(ObjectUtil.isNotEmpty(name), q ->
+                        q.like(SystemUser::getUserName, name).or().like(SystemUser::getNickName, name))
+                .like(ObjectUtil.isNotEmpty(userQueryDto.getPhone()),SystemUser::getPhone, userQueryDto.getPhone())
+                .eq(ObjectUtil.isNotEmpty(userQueryDto.getStatus()),SystemUser::getStatus, userQueryDto.getStatus());
+
         IPage<SystemUser> pageList = baseMapper.selectPage(page, queryWrapper);
         // 获取用户关联的角色列表
         for (SystemUser user : pageList.getRecords()){
-            user.setRoleList(systemUserRoleService.getRoleListByUserId(user.getId()));
+            List<SystemRole> roleList = systemUserRoleService.getRoleListByUserId(user.getId());
+            user.setRoleList(roleList);
+            List<Long> roleIds = roleList.stream().map(SystemRole::getId).toList();
+            user.setRoles( roleIds);
         }
         return page;
     }
@@ -73,6 +79,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (ObjectUtil.isNotEmpty(systemUser)){
             List<SystemRole> roles = systemUserRoleService.getRoleListByUserId(systemUser.getId());
             systemUser.setRoleList(roles);
+            List<Long> roleIds = roles.stream().map(SystemRole::getId).toList();
+            systemUser.setRoles( roleIds);
         }
         return systemUser;
     }

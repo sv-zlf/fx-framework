@@ -18,7 +18,7 @@ public interface ISystemUserRoleService extends IService<SystemUserRole> {
     List<SystemRole> getRoleListByUserId(Long userId);
 
     @Transactional
-    boolean grantRole(Long userId, Set<Long> roleIds);
+    boolean grantRole(Long userId, List<Long> roleIds);
 
     boolean batchGrant(Set<Long> userIds, Set<Long> roleIds);
 

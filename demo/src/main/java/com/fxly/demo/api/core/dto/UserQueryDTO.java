@@ -12,9 +12,10 @@ import lombok.Data;
 public class UserQueryDTO extends PageHelper {
 
     // 用户名
-    private String username;
+    private String name;
 
-    // 真实姓名
-    private String realname;
+    private String phone;
+
+    private Integer status;
 
 }

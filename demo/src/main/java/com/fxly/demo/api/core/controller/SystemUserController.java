@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fxly.demo.api.core.dto.UserQueryDTO;
 import com.fxly.demo.api.core.entity.SystemUser;
+import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.api.core.service.ISystemUserService;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,9 @@ public class SystemUserController {
     @Lazy
     private PasswordEncoder passwordEncoder;
 
+    @Resource
+    private ISystemUserRoleService userRoleService;
+
     @Operation(summary = "获取分页列表")
     @PostMapping("/getPageList")
     public HttpResult getUserPageList(@RequestBody UserQueryDTO userQueryDto) {
@@ -47,23 +52,25 @@ public class SystemUserController {
     }
 
     @Operation(summary = "修改用户信息")
-    @PostMapping("/update")
-    public HttpResult updateUser(@RequestBody SystemUser user) {
-        // 参数校验
-        if(Objects.isNull(user) || ObjectUtil.isEmpty(user.getId())) {
-            return HttpResult.error(400, "用户编号不能为空");
+    @PostMapping("/saveOrUpdate")
+    public HttpResult saveOrUpdateUser(@RequestBody SystemUser user) {
+
+        if (ObjectUtil.isEmpty(user.getId())){
+            HttpResult setResult = userValid(user);
+            if (setResult != null) {
+                return setResult;
+            }
+            // 设置默认密码
+            user.setPassword(passwordEncoder.encode("123456"));
         }
-//        else {
-//            HttpResult setResult = userValid(user);
-//            if (setResult != null) {
-//                return setResult;
-//            }
-//        }
-        // 修改密码
-        if (StringUtils.isNotBlank(user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        boolean b = userService.saveOrUpdate(user);
+
+        // 角色权限
+        if (b){
+            if (user.getRoles() != null){
+                userRoleService.grantRole(user.getId(), user.getRoles());
+            }
         }
-        boolean b = userService.updateById(user);
 
         return b ? HttpResult.setResult(HttpResultEnum.UPDATE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.UPDATE_ERROR);
@@ -73,6 +80,14 @@ public class SystemUserController {
     @PostMapping("/delete")
     public HttpResult deleteUser(@RequestParam("userId") Long userId) {
         boolean b = userService.removeById(userId);
+        return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
+                : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
+    }
+
+    @Operation(summary = "批量删除用户")
+    @PostMapping("/deleteBatch")
+    public HttpResult batchDeleteUser(@RequestParam("userIds")  List<Long> userIds) {
+        boolean b = userService.removeByIds(userIds);
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
     }
