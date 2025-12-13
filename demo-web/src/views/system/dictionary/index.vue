@@ -4,10 +4,10 @@
       <s-layout-tools>
         <template #left>
           <a-space wrap>
-            <a-input v-model="form.dictTypeName" placeholder="请输入字典名称" allow-clear />
-            <a-input v-model="form.dictTypeCode" placeholder="请输入字典编码" allow-clear />
-            <a-select placeholder="启用状态" v-model="form.status" style="width: 120px" allow-clear>
-              <a-option v-for="item in openState" :key="item.value" :value="item.value">{{ item.dictTypeName }}</a-option>
+            <a-input v-model="searchForm.dictTypeName" placeholder="请输入字典名称" allow-clear />
+            <a-input v-model="searchForm.dictTypeCode" placeholder="请输入字典编码" allow-clear />
+            <a-select placeholder="启用状态" v-model="searchForm.status" style="width: 120px" allow-clear>
+              <a-option v-for="item in openState" :key="item.id" :value="item.dictItemCode">{{ item.dictItemName }}</a-option>
             </a-select>
             <a-button type="primary" @click="search">
               <template #icon><icon-search /></template>
@@ -21,14 +21,14 @@
         </template>
         <template #right>
           <a-space wrap>
-            <a-button type="primary" @click="onAdd">
+            <a-button type="primary" status="success" @click="onAdd">
               <template #icon><icon-plus /></template>
               <span>新增</span>
             </a-button>
-            <a-button type="primary" status="danger">
-              <template #icon><icon-delete /></template>
-              <span>删除</span>
-            </a-button>
+<!--            <a-button type="primary" status="danger">-->
+<!--              <template #icon><icon-delete /></template>-->
+<!--              <span>删除</span>-->
+<!--            </a-button>-->
           </a-space>
         </template>
       </s-layout-tools>
@@ -70,7 +70,7 @@
                   <template #icon><icon-edit /></template>
                   <span>修改</span>
                 </a-button>
-                <a-popconfirm type="warning" content="确定删除该字典吗?">
+                <a-popconfirm type="warning" content="确定删除该字典吗?" @ok="onDelete(record.id)">
                   <a-button type="primary" status="danger" size="mini">
                     <template #icon><icon-delete /></template>
                     <span>删除</span>
@@ -86,18 +86,18 @@
     <a-modal :width="dialogWidth('30%')" v-model:visible="open" @close="afterClose" @ok="handleOk" @cancel="afterClose">
       <template #title> {{ title }} </template>
       <div>
-        <a-form ref="formRef" auto-label-width :layout="formLayout" :rules="rules" :model="addFrom">
+        <a-form ref="formRef" auto-label-width :layout="formLayout" :rules="rules" :model="form">
           <a-form-item field="dictTypeName" label="字典名称" validate-trigger="blur">
-            <a-input v-model="addFrom.dictTypeName" placeholder="请输入字典名称" allow-clear />
+            <a-input v-model="form.dictTypeName" placeholder="请输入字典名称" allow-clear />
           </a-form-item>
           <a-form-item field="dictTypeCode" label="字典编码" validate-trigger="blur">
-            <a-input v-model="addFrom.dictTypeCode" placeholder="请输入字典编码" allow-clear />
+            <a-input v-model="form.dictTypeCode" placeholder="请输入字典编码" allow-clear />
           </a-form-item>
           <a-form-item field="remark" label="备注" validate-trigger="blur">
-            <a-textarea v-model="addFrom.remark" placeholder="请输入字典备注" allow-clear />
+            <a-textarea v-model="form.remark" placeholder="请输入字典备注" allow-clear />
           </a-form-item>
           <a-form-item field=" " label="状态" validate-trigger="blur">
-            <a-switch type="round" :checked-value="1" :unchecked-value="0" v-model="addFrom.status">
+            <a-switch type="round" :checked-value="1" :unchecked-value="0" v-model="form.status">
               <template #checked> 启用 </template>
               <template #unchecked> 禁用 </template>
             </a-switch>
@@ -111,24 +111,24 @@
       <div>
         <a-row>
           <a-space wrap>
-            <a-button type="primary" @click="onAddDetail">
+            <a-button type="primary" status="success" @click="onAddDetail">
               <template #icon><icon-plus /></template>
               <span>新增</span>
             </a-button>
-            <a-button type="primary" status="danger">
-              <template #icon><icon-delete /></template>
-              <span>删除</span>
-            </a-button>
+<!--            <a-button type="primary" status="danger" @click="onDeleteDetailBatch">-->
+<!--              <template #icon><icon-delete /></template>-->
+<!--              <span>删除</span>-->
+<!--            </a-button>-->
           </a-space>
         </a-row>
 
         <a-table
           row-key="id"
-          :data="dictDetail.list"
+          :data="dictItemList"
           :bordered="{ cell: true }"
           :loading="detailLoading"
           :scroll="{ x: '100%', y: '100%' }"
-          :pagination="pagination"
+          :pagination="dictItemPage"
           :row-selection="{ type: 'checkbox', showCheckedAll: true }"
           :selected-keys="selectedKeysDetail"
           @select="selectDetail"
@@ -138,8 +138,8 @@
             <a-table-column title="序号" :width="64">
               <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
             </a-table-column>
-            <a-table-column title="字典名" data-index="dictTypeName" :width="200" ellipsis tooltip></a-table-column>
-            <a-table-column title="字典值" data-index="value" :width="200" ellipsis tooltip></a-table-column>
+            <a-table-column title="字典名" data-index="dictItemName" :width="200" ellipsis tooltip></a-table-column>
+            <a-table-column title="字典值" data-index="dictItemCode" :width="200" ellipsis tooltip></a-table-column>
             <a-table-column title="状态" :width="100" align="center" ellipsis tooltip>
               <template #cell="{ record }">
                 <a-tag bordered size="small" color="arcoblue" v-if="record.status === 1">启用</a-tag>
@@ -153,7 +153,7 @@
                     <template #icon><icon-edit /></template>
                     <span>修改</span>
                   </a-button>
-                  <a-popconfirm type="warning" content="确定删除该字典吗?">
+                  <a-popconfirm type="warning" content="确定删除该字典吗?" @ok="onDeleteDetail(record.id)">
                     <a-button type="primary" status="danger" size="mini">
                       <template #icon><icon-delete /></template>
                       <span>删除</span>
@@ -177,11 +177,11 @@
       <template #title> {{ detailTitle }} </template>
       <div>
         <a-form ref="detailFormRef" auto-label-width :layout="formLayout" :rules="detaulRules" :model="deatilForm">
-          <a-form-item field="dictTypeName" label="字典名称" validate-trigger="blur">
-            <a-input v-model="deatilForm.dictTypeName" placeholder="请输入字典名称" allow-clear />
+          <a-form-item field="dictItemName" label="字典名称" validate-trigger="blur">
+            <a-input v-model="deatilForm.dictItemName" placeholder="请输入字典名称" allow-clear />
           </a-form-item>
-          <a-form-item field="value" label="字典值" validate-trigger="blur">
-            <a-input v-model="deatilForm.value" placeholder="请输入字典值" allow-clear />
+          <a-form-item field="dictItemCode" label="字典值" validate-trigger="blur">
+            <a-input v-model="deatilForm.dictItemCode" placeholder="请输入字典值" allow-clear />
           </a-form-item>
           <a-form-item field="remark" label="状态" validate-trigger="blur">
             <a-switch type="round" :checked-value="1" :unchecked-value="0" v-model="deatilForm.status">
@@ -196,13 +196,21 @@
 </template>
 
 <script setup lang="ts">
-import { getPageList } from "@/api/system/dict/index";
+import {
+  addDictItem,
+  addDictType, deleteDictItem, deleteDictType,
+  getDictItemPageList,
+  getListByCode,
+  getPageList,
+  updateDictItem,
+  updateDictType
+} from "@/api/system/dict/index";
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 
 const { dialogWidth, formLayout, tableFixed } = useLayoutModel();
-const openState = ref(dictFilter("status"));
-const form = ref({
+const openState = ref(dictFilter("STATUS"));
+const searchForm = ref({
   dictTypeName: "",
   dictTypeCode: "",
   status: null
@@ -211,7 +219,7 @@ const search = () => {
   getDict();
 };
 const reset = () => {
-  form.value = {
+  searchForm.value = {
     dictTypeName: "",
     dictTypeCode: "",
     status: null
@@ -241,44 +249,53 @@ const rules = {
     }
   ]
 };
-const addFrom = ref({
+const form = ref({
   dictTypeName: "",
   dictTypeCode: "",
   remark: "",
   status: 1
 });
 const formRef = ref();
+const formType = ref(0); // 0新增 1修改
+
+// 新增字典
 const onAdd = () => {
   open.value = true;
   title.value = "新增字典";
+  formType.value = 0;
 };
+
+// 更新字典
+const onUpdate = (record: any) => {
+  title.value = "修改字典";
+  form.value = deepClone(record);
+  open.value = true;
+  formType.value = 1;
+};
+
+// 删除字典
+const onDelete = async (id: any) => {
+  await deleteDictType(id);
+  arcoMessage("success", "删除成功");
+  getDict();
+}
+
+// 提交
 const handleOk = async () => {
   let state = await formRef.value.validate();
   if (state) return (open.value = true); // 校验不通过
-  arcoMessage("success", "模拟提交成功");
+  if (formType.value === 0){
+    await addDictType(form.value);
+    arcoMessage("success", "新增成功");
+  }
+  else if (formType.value === 1){
+    await updateDictType(form.value);
+    arcoMessage("success", "更新成功");
+  }
   getDict();
 };
-// 关闭对话框动画结束后触发
-const afterClose = () => {
-  formRef.value.resetFields();
-  addFrom.value = {
-    dictTypeName: "",
-    dictTypeCode: "",
-    remark: "",
-    status: 1
-  };
-};
-const onUpdate = (record: any) => {
-  title.value = "修改字典";
-  addFrom.value = deepClone(record);
-  open.value = true;
-};
 
-const loading = ref(false);
-const pagination = ref({
-  pageSize: 10,
-  showPageSize: true
-});
+
 const selectedKeys = ref([]);
 const select = (list: []) => {
   selectedKeys.value = list;
@@ -286,48 +303,88 @@ const select = (list: []) => {
 const selectAll = (state: boolean) => {
   selectedKeys.value = state ? (dictList.value.map((el: any) => el.id) as []) : [];
 };
+// 关闭对话框动画结束后触发
+const afterClose = () => {
+  formRef.value.resetFields();
+  form.value = {
+    dictTypeName: "",
+    dictTypeCode: "",
+    remark: "",
+    status: 1
+  };
+};
+
+
+const loading = ref(false);
+//  分页
+const pagination = ref({
+  total: null,
+  current:1,
+  pageSize: 10,
+  showPageSize:true,
+  showTotal: true,
+  onChange: (current: number) => {
+    pagination.value.current = current;
+    getDict();
+  },
+  onPageSizeChange: (pageSize: number) => {
+    pagination.value.current = 1;
+    pagination.value.pageSize = pageSize;
+    getDict();
+  }
+});
 const dictList = ref();
 const getDict = async () => {
   loading.value = true;
-  let params = {
-    page: 1,
-    size: 10,
-    ...form.value
+  const params = {
+    ...searchForm.value,
+    pageIndex: pagination.value.current,
+    pageSize: pagination.value.pageSize
   };
   let res = await getPageList(params);
-  console.log( res)
   dictList.value = res.data.records || [];
+  pagination.value.total = res.data.total;
   loading.value = false;
 };
 
-// 字典详情
+// ========================= 字典详情 ====================
+
+//  字典详情分页
+const dictItemPage = ref({
+  total: null,
+  current:1,
+  pageSize: 10,
+  showPageSize:true,
+  showTotal: true,
+  onChange: (current: number) => {
+    dictItemPage.value.current = current;
+    getDictItem();
+  },
+  onPageSizeChange: (pageSize: number) => {
+    dictItemPage.value.current = 1;
+    dictItemPage.value.pageSize = pageSize;
+    getDictItem();
+  }
+});
+const detailFormType = ref(0);
+const dictTypeCode = ref("");
 const detailLoading = ref(false);
 const detailOpen = ref(false);
-const dictDetail = ref({
-  list: []
-});
-const onDictData = (record: any) => {
-  detailLoading.value = true;
-  dictDetail.value = record;
-  detailOpen.value = true;
-  detailLoading.value = false;
-};
-const detailOk = () => {
-  detailOpen.value = false;
-};
+const dictItemList = ref([]);
 const deatilForm = ref({
-  dictTypeName: "",
-  value: "",
-  status: 1
+  dictItemName: "",
+  dictItemCode: "",
+  status: 1,
+  dictTypeCode:""
 });
 const detaulRules = ref({
-  dictTypeName: [
+  dictItemName: [
     {
       required: true,
       message: "请输入字典名称"
     }
   ],
-  value: [
+  dictItemCode: [
     {
       required: true,
       message: "请输入字典值"
@@ -340,32 +397,81 @@ const detaulRules = ref({
     }
   ]
 });
+
+// 获取字典详情
+const getDictItem = async () => {
+  detailLoading.value = true;
+  const params = {
+    dictTypeCode: dictTypeCode.value,
+    pageIndex: dictItemPage.value.current,
+    pageSize: dictItemPage.value.pageSize
+  };
+  let res = await getDictItemPageList(params);
+  dictItemList.value = res.data.records || [];
+  dictItemPage.value.total = res.data.total;
+  detailLoading.value = false;
+};
+
+const onDictData = async (record: any) => {
+  dictTypeCode.value = record.dictTypeCode;
+  deatilForm.value.dictTypeCode = record.dictTypeCode;
+  await getDictItem();
+  detailOpen.value = true;
+};
+
+const detailOk = () => {
+  detailOpen.value = false;
+};
 const detailFormRef = ref();
 const detailTitle = ref("");
 const detailCaseOpen = ref(false);
+
+// 新增字典数据
 const onAddDetail = () => {
   detailTitle.value = "新增字典数据";
   detailCaseOpen.value = true;
+  detailFormType.value = 0;
 };
-const handleOkDetail = async () => {
-  let state = await detailFormRef.value.validate();
-  if (state) return (detailCaseOpen.value = true); // 校验不通过
-  arcoMessage("success", "模拟提交成功");
-};
+
+// 修改字典数据
 const onDetailUpdate = (record: any) => {
   detailTitle.value = "修改字典数据";
   let detail = deepClone(record);
   detail.value = String(detail.value);
   deatilForm.value = detail;
+  detailFormType.value = 1;
   detailCaseOpen.value = true;
 };
+
+// 删除字典数据
+const onDeleteDetail = async (id: any) => {
+  await deleteDictItem(id);
+  arcoMessage("success", "删除成功");
+  getDictItem();
+}
+// 提交字典数据
+const handleOkDetail = async () => {
+  let state = await detailFormRef.value.validate();
+  if (state) return (detailCaseOpen.value = true); // 校验不通过
+  if (detailFormType.value === 0){
+    await addDictItem(deatilForm.value);
+    arcoMessage("success", "新增成功");
+  }
+  else if (detailFormType.value === 1){
+    await updateDictItem(deatilForm.value);
+    arcoMessage("success", "更新成功");
+  }
+  getDictItem();
+};
+
 // 关闭对话框动画结束后触发
 const afterCloseDetail = () => {
   detailFormRef.value.resetFields();
   deatilForm.value = {
-    dictTypeName: "",
-    value: "",
-    status: 1
+    dictItemName: "",
+    dictItemCode: "",
+    status: 1,
+    dictTypeCode:""
   };
 };
 const selectedKeysDetail = ref([]);
@@ -373,7 +479,7 @@ const selectDetail = (list: []) => {
   selectedKeysDetail.value = list;
 };
 const selectAllDetail = (state: boolean) => {
-  selectedKeysDetail.value = state ? (dictDetail.value.list.map((el: any) => el.id) as []) : [];
+  selectedKeysDetail.value = state ? (dictItemList.value.map((el: any) => el.id) as []) : [];
 };
 
 getDict();
