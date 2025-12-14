@@ -36,7 +36,6 @@ export const getUserInfo = (params?: any) => {
 };
 
 
-
 // 获取列表数据
 export const getPageList = (data: any) => {
   return axios({
@@ -45,6 +44,24 @@ export const getPageList = (data: any) => {
     data
   });
 };
+
+// 安全设置
+export const safeSetting = (data:any) => {
+  return axios({
+    url: "/system/user/safeSetting",
+    method: "post",
+    data
+  })
+}
+
+// 基本信息设置
+export const basicSetting = (data:any) => {
+  return axios({
+    url: "/system/user/basicSetting",
+    method: "post",
+    data
+  })
+}
 
 //保存或者更新
 export const saveOrUpdate = (data: any) => {

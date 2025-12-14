@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import useGlobalProperties from "@/hooks/useGlobalProperties";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
+import {safeSetting} from "@/api/system/user";
 
 const emit = defineEmits(["refresh"]);
 const proxy = useGlobalProperties();
@@ -47,17 +48,18 @@ const rules = {
       message: "登录密码不能为空"
     }
   ],
-  phone: [
-    {
-      required: true,
-      message: "手机号不能为空"
-    }
-  ]
+  // phone: [
+  //   {
+  //     required: true,
+  //     message: "手机号不能为空"
+  //   }
+  // ]
 };
 
-const onSubmit = ({ errors }: ArcoDesign.ArcoSubmit) => {
+const onSubmit = async ({ errors }: ArcoDesign.ArcoSubmit) => {
   if (errors) return;
-  proxy.$message.success("模拟修改成功");
+  await safeSetting(form.value)
+  proxy.$message.success("修改成功");
   emit("refresh");
 };
 

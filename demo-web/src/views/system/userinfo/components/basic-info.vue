@@ -9,16 +9,16 @@
           <a-form-item field="nickName" label="用户昵称">
             <a-input v-model="form.nickName" placeholder="请输入用户昵称" allow-clear />
           </a-form-item>
-          <a-form-item field="sex" label="性别" validate-trigger="blur">
-            <a-radio-group v-model="form.sex" :options="sexOption">
-              <template #label="{ data }">
-                <div>{{ data.name }}</div>
-              </template>
-            </a-radio-group>
-          </a-form-item>
-          <a-form-item field="description" label="描述">
-            <a-textarea placeholder="请输入描述" v-model="form.description" allow-clear />
-          </a-form-item>
+<!--          <a-form-item field="sex" label="性别" validate-trigger="blur">-->
+<!--            <a-radio-group v-model="form.sex" :options="sexOption">-->
+<!--              <template #label="{ data }">-->
+<!--                <div>{{ data.name }}</div>-->
+<!--              </template>-->
+<!--            </a-radio-group>-->
+<!--          </a-form-item>-->
+<!--          <a-form-item field="description" label="描述">-->
+<!--            <a-textarea placeholder="请输入描述" v-model="form.description" allow-clear />-->
+<!--          </a-form-item>-->
           <a-form-item>
             <a-space>
               <a-button type="primary" html-type="submit">提交</a-button>
@@ -33,19 +33,17 @@
 <script setup lang="ts">
 import useGlobalProperties from "@/hooks/useGlobalProperties";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
+import {basicSetting} from "@/api/system/user";
 
 const emit = defineEmits(["refresh"]);
 const proxy = useGlobalProperties();
 const data = defineModel() as any;
-const sexOption = ref(dictFilter("gender"));
 const { isMobile } = useDevicesSize();
 const layoutMode = computed(() => (isMobile.value ? "vertical" : "horizontal"));
 const form = ref({
   id: "",
   userName: "",
   nickName: "",
-  sex: null,
-  description: ""
 });
 const rules = {
   userName: [
@@ -56,9 +54,10 @@ const rules = {
   ]
 };
 
-const onSubmit = ({ errors }: ArcoDesign.ArcoSubmit) => {
+const onSubmit = async ({ errors }: ArcoDesign.ArcoSubmit) => {
   if (errors) return;
-  proxy.$message.success("模拟修改成功");
+  await basicSetting(form.value)
+  proxy.$message.success("修改成功");
   emit("refresh");
 };
 
@@ -68,8 +67,6 @@ watch(
     form.value.id = data.value.id;
     form.value.userName = data.value.userName;
     form.value.nickName = data.value.nickName;
-    form.value.sex = data.value.sex;
-    form.value.description = data.value.description;
   }
 );
 </script>

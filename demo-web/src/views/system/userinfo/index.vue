@@ -3,16 +3,16 @@
     <a-spin :loading="loading" class="container" tip="loading...">
       <a-card :bordered="false">
         <a-row align="center">
-          <a-col :span="isMobile ? 24 : 2">
-            <div :class="{ center: isMobile }">
-              <a-avatar :size="100" @click="toast" trigger-type="mask">
-                <img alt="avatar" :src="userInfo.avatar" />
-                <template #trigger-icon>
-                  <IconEdit />
-                </template>
-              </a-avatar>
-            </div>
-          </a-col>
+<!--          <a-col :span="isMobile ? 24 : 2">-->
+<!--            <div :class="{ center: isMobile }">-->
+<!--              <a-avatar :size="100" @click="toast" trigger-type="mask">-->
+<!--                <img alt="avatar" :src="userInfo.avatar" />-->
+<!--                <template #trigger-icon>-->
+<!--                  <IconEdit />-->
+<!--                </template>-->
+<!--              </a-avatar>-->
+<!--            </div>-->
+<!--          </a-col>-->
           <a-col :span="isMobile ? 24 : 22">
             <a-space direction="vertical" size="large">
               <a-descriptions :data="detail" :column="descriptionsColumn(1, 4)" title="用户资料" :align="{ label: 'right' }">
@@ -90,16 +90,11 @@ const detail = ref<Detail[]>([
     label: "用户昵称：",
     value: "-"
   },
-  {
-    key: "sex",
-    label: "性别：",
-    value: "-"
-  },
-  {
-    key: "roles",
-    label: "角色：",
-    value: "-"
-  },
+  // {
+  //   key: "roles",
+  //   label: "角色：",
+  //   value: "-"
+  // },
   {
     key: "status",
     label: "状态：",
@@ -115,26 +110,21 @@ const detail = ref<Detail[]>([
     label: "手机号：",
     value: "-"
   },
-  {
-    key: "deptName",
-    label: "部门：",
-    value: "-"
-  },
+  // {
+  //   key: "deptName",
+  //   label: "部门：",
+  //   value: "-"
+  // },
   {
     key: "createTime",
     label: "注册时间：",
     value: "-"
   },
-  {
-    key: "description",
-    label: "描述：",
-    value: "-"
-  }
 ]);
 
-const toast = () => {
-  proxy.$message.info("修改头像");
-};
+// const toast = () => {
+//   proxy.$message.info("修改头像");
+// };
 
 const refresh = () => {
   getUser();
@@ -145,10 +135,8 @@ const userInfo = ref<any>({});
 const getUser = async () => {
   try {
     loading.value = true;
-
-    let data = await getUserInfo();
-    console.log(data);
-    // userInfo.value = data.data.user;
+    let { data } = await getUserInfo();
+    userInfo.value = data;
     detail.value.forEach((item: Detail) => {
       if (userInfo.value.hasOwnProperty(item.key)) {
         item.value = userInfo.value[item.key];
@@ -159,7 +147,7 @@ const getUser = async () => {
   }
 };
 
-getUserInfo();
+getUser();
 routerStore.setTabsTitle(`用户${route.query.userName ? " - " + route.query.userName : "信息"}`);
 </script>
 
