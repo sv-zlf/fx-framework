@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import persistedstateConfig from "@/store/config/index";
-import { getUserInfoAPI } from "@/api/modules/user/index";
+import { getUserInfo } from "@/api/system/user/index";
 
 interface Account {
   user: any; // 用户信息
@@ -27,7 +27,7 @@ const userInfoStore = () => {
   // 设置账号信息
   async function setAccount() {
     // 存储用户信息
-    let data = await getUserInfoAPI();
+    let data = await getUserInfo();
     account.value.user = data.data;
     account.value.roles = data.data.roleList;
     account.value.permissions = data.data.permissionList;

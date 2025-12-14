@@ -1,5 +1,42 @@
 import axios from "@/api";
 
+// 登录
+export const login = (params: any) => {
+  return axios({
+    url: "/system/login",
+    method: "post",
+    params
+  });
+};
+
+// 注册
+export const register = (data: any) => {
+  return axios({
+    url: "/system/register",
+    method: "post",
+    data
+  });
+}
+
+// 注销
+export const logout = () => {
+  return axios({
+    url: "/system/logout",
+    method: "post"
+  });
+}
+
+// 获取用户信息
+export const getUserInfo = (params?: any) => {
+  return axios({
+    url: "/system/currentUser",
+    method: "get",
+    params
+  });
+};
+
+
+
 // 获取列表数据
 export const getPageList = (data: any) => {
   return axios({

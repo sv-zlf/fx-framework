@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserInfoStore } from "@/store/modules/user-info";
-import { login } from "@/api/modules/user/index";
+import { login } from "@/api/system/user/index";
 import { useRouteConfigStore } from "@/store/modules/route-config";
 import { useSystemStore } from "@/store/modules/system";
 let userStores = useUserInfoStore();
@@ -95,7 +95,6 @@ const onLogin = async () => {
   // 登录
   let res = await login(form.value);
   // 存储token
-  console.log(res)
   await userStores.setToken(res.data.token);
   // 加载用户信息
   await userStores.setAccount();

@@ -57,7 +57,7 @@ import SecuritySettings from "@/views/system/userinfo/components/security-settin
 import useGlobalProperties from "@/hooks/useGlobalProperties";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import { getUserInfoAPI } from "@/api/modules/user/index";
+import { getUserInfo } from "@/api/system/user/index";
 import { useRouteConfigStore } from "@/store/modules/route-config";
 
 const route = useRoute();
@@ -137,19 +137,18 @@ const toast = () => {
 };
 
 const refresh = () => {
-  getUserInfo();
+  getUser();
 };
 
 const loading = ref<boolean>(false);
 const userInfo = ref<any>({});
-const getUserInfo = async () => {
+const getUser = async () => {
   try {
     loading.value = true;
-    let params = {
-      id: route.query.id ? route.query.id : ""
-    };
-    let data = await getUserInfoAPI(params);
-    userInfo.value = data.data.user;
+
+    let data = await getUserInfo();
+    console.log(data);
+    // userInfo.value = data.data.user;
     detail.value.forEach((item: Detail) => {
       if (userInfo.value.hasOwnProperty(item.key)) {
         item.value = userInfo.value[item.key];
