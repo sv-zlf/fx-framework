@@ -55,6 +55,8 @@ const transition = computed(() => {
 
 // 面包屑跳转
 const onBreadcrumb = (route: any) => {
+  // 目录类型不支持跳转
+  if (route.meta.type === 1) return;
   let path = route.redirect || route.path;
   router.replace((path as string) || HOME_PATH);
 };
