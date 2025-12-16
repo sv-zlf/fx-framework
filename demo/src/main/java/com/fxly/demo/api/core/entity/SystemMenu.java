@@ -61,6 +61,9 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     @Schema(description = "是否外链（true=外部链接，false=内部路由）")
     private Boolean isExternal;
 
+    @Schema(description = "外链")
+    private String link;
+
     @Schema(description = "是否隐藏")
     private Boolean isHide;
 

@@ -217,10 +217,11 @@
           </a-form-item>
 
           <a-form-item
-            v-if="form.type == 2 && !form.isExternal"
+            v-if="form.type == 2"
             field="component"
             label="组件路径"
             validate-trigger="blur"
+            :disabled ="form.isExternal"
           >
             <a-input
               v-model="form.component"
@@ -231,25 +232,24 @@
               <template #prepend>@/views/</template>
               <template #append>.vue</template>
             </a-input>
-          </a-form-item>
-          <a-form-item
-            v-else-if ="form.type == 2 && form.isExternal"
-            field="component"
-            label="组件路径"
-            validate-trigger="blur"
-          >
-            <a-input
-              v-model="form.component"
-              placeholder="请输入组件路径(外链地址)"
-              allow-clear
-              @input="(e: string) => onTrim(e, 'component')"
-            >
-            </a-input>
-            <template #extra>
+            <template #extra v-if="form.isExternal">
               <div>
-                外链地址
+                外链组件默认不可变更
               </div>
             </template>
+          </a-form-item>
+          <a-form-item
+          v-if="form.type == 2 && form.isExternal "
+          field="link"
+          label="外链地址"
+          validate-trigger="blur"
+          >
+          <a-input
+            v-model="form.link"
+            placeholder="请输入外链地址"
+            allow-clear
+          >
+          </a-input>
           </a-form-item>
           <a-row :gutter="24">
             <a-col :span="8" v-if="[1, 2].includes(form.type)">
@@ -280,15 +280,15 @@
             </a-col>
             <a-col :span="8">
               <a-form-item field="isLink" label="是否外链" validate-trigger="blur">
-                <a-switch type="round" v-model="form.isExternal" @change="onIsLink">
+                <a-switch type="round" v-model="form.isExternal" @change="onIsLink" >
                   <template #checked> 是 </template>
                   <template #unchecked> 否 </template>
                 </a-switch>
               </a-form-item>
             </a-col>
             <a-col :span="8">
-              <a-form-item field="iframe" label="内嵌窗口" validate-trigger="blur" :disabled="!form.isExternal">
-                <a-switch type="round" v-model="form.iframe" >
+              <a-form-item field="iframe" label="内嵌窗口" validate-trigger="blur" :disabled="!form.isExternal" >
+                <a-switch type="round" v-model="form.iframe" :checked-value="1" :unchecked-value="0" @change="onIframe">
                   <template #checked> 是 </template>
                   <template #unchecked> 否 </template>
                 </a-switch>
@@ -374,6 +374,7 @@ const form = ref<any>({
   status: 1,
   affix: 0,
   isExternal: false,
+  link:'',
   iframe: 0,
   sort: 1
 });
@@ -416,6 +417,7 @@ const afterClose = () => {
     status: 1,
     affix: 0,
     isExternal: false,
+    link:'',
     iframe: 0,
     sort: 1
   };
@@ -461,14 +463,24 @@ const onIsLink = (is: boolean) => {
   // 非外链
   if (!is) {
     // 关联iframe和link
-    form.value.iframe = false;
+    form.value.iframe = 0;
     form.value.component = "";
   } else {
     // 外链
-    form.value.component = "link/external/external";
+    form.value.component = "link/internal/index";
   }
 };
 
+// 是否内嵌窗口
+const onIframe = (is: boolean) => {
+  // 非内嵌窗口
+  if (!is) {
+    form.value.component = "link/internal/index";
+  } else {
+    // 内嵌窗口
+    form.value.component = "link/external/index";
+  }
+};
 const onSearch = () => getMenuList();
 const loading = ref(false);
 const tableRef = ref();

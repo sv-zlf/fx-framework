@@ -87,3 +87,6 @@ ALTER TABLE system_menu
     ADD COLUMN title VARCHAR(100) COMMENT '菜单标题（用于显示别名/多语言）' AFTER menu_name,
 -- 是否隐藏（true=隐藏，false=显示，默认不隐藏）
     ADD COLUMN is_hide TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否隐藏菜单：0-显示（默认），1-隐藏';
+
+ALTER TABLE system_menu
+    ADD COLUMN link VARCHAR(255) COMMENT '外链地址' ;

@@ -102,7 +102,8 @@ const routeMapConfig = {
   'meta.icon': 'icon', // 菜单图标
   'meta.sort': 'sort' ,// 菜单排序
   'meta.type':'type',
-  'meta.hide': 'isHide'
+  'meta.hide': 'isHide',
+  'meta.link': 'link'
 };
 /**
  * 单个路由节点：后端结构 → 前端标准结构
@@ -128,7 +129,8 @@ export const mapToStandardRoute = (rawNode: any): any => {
       svgIcon: '',
       sort: 999 ,// 默认排序（数字越小越靠前）
       type:'0',
-      hide: 0
+      hide: 0,
+      link:''
     },
     children: []
   };
@@ -158,9 +160,9 @@ export const mapToStandardRoute = (rawNode: any): any => {
   standardNode.path = standardNode.path || `/${standardNode.name}`;
   // 处理外链和 iframe 的依赖关系（按前端规则补全）
   if (standardNode.meta.isExternal) {
-    standardNode.meta.iframe = standardNode.meta.iframe ?? false;
+    standardNode.meta.iframe = standardNode.meta.iframe ?? 0;
   } else {
-    standardNode.meta.iframe = false; // 无链接时，iframe 强制为 false
+    standardNode.meta.iframe = 0; // 无链接时，iframe 强制为 false
   }
 
   return standardNode;
@@ -203,6 +205,7 @@ export const moduleMatch = (item: any) => {
   if (item.meta.type === 1) {
     return;
   }
+
   // 容错：若 component 为空，直接设为 404 组件
   if (!item.component) {
     item.component = () => import('@/views/error/404.vue');
@@ -227,7 +230,7 @@ export const moduleMatch = (item: any) => {
   }
 
   // 匹配失败：fallback 到 404 组件（避免字符串 component 导致警告）
-  if (!matched) {
+  if (!matched && item.isExternal) {
     console.warn(`组件匹配失败：未找到 ${item.component}，已 fallback 到 404`);
     item.component = () => import('@/views/error/404.vue');
   }
