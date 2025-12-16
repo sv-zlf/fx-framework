@@ -24,7 +24,7 @@ export const currentlyRoute = (current: any) => {
   // 存入当前路由-高亮
   store.setCurrentRoute(route);
   // 如果是外链路由则不做后续任何缓存操作，条件: 有外链 && 非内嵌
-  if (route.meta.isExternal && route.meta.iframe == 1) return;
+  if (route.meta.isExternal && route.meta.iframe != 1) return;
   // 存入tabs栏数据，条件：开启tabs
   if (isTabs.value && !route.meta.isFull) store.setTabs(route);
   // 不缓存路由 || 不渲染tabs ，符合任意条件则不缓存路由
@@ -205,7 +205,6 @@ export const moduleMatch = (item: any) => {
   if (item.meta.type === 1) {
     return;
   }
-
   // 容错：若 component 为空，直接设为 404 组件
   if (!item.component) {
     item.component = () => import('@/views/error/404.vue');
@@ -230,7 +229,7 @@ export const moduleMatch = (item: any) => {
   }
 
   // 匹配失败：fallback 到 404 组件（避免字符串 component 导致警告）
-  if (!matched && item.isExternal) {
+  if (!matched) {
     console.warn(`组件匹配失败：未找到 ${item.component}，已 fallback 到 404`);
     item.component = () => import('@/views/error/404.vue');
   }

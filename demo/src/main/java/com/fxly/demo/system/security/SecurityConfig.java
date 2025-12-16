@@ -28,7 +28,8 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
 
-    public static final String[] noAuthUrl = {"/", "/index", "/doc.html","/webjars/**", "/v3/api-docs/**", "/knife4j/**","/swagger-resources/**", "/swagger-ui/**", "/system/login", "/system/register"
+    public static final String[] noAuthUrl = {"/", "/index", "/doc.html","/webjars/**", "/v3/api-docs/**", "/knife4j/**",
+            "/swagger-resources/**", "/swagger-ui/**", "/system/login", "/system/register","/druid/**"
     };
 
     @Bean
@@ -52,6 +53,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.disable()) // 关闭X-Frame-Options（因为用CSP替代）
+                        .contentSecurityPolicy(csp -> csp
+                                        // 配置允许嵌入的域名：self（同域名） + 指定域名（如localhost:3000）
+                                        .policyDirectives("frame-ancestors http://localhost:5173 'self';")
+                                // 若需允许所有域名（极不推荐，安全风险）：frame-ancestors *;
+                        )
+                )
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth

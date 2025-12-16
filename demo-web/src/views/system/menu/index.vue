@@ -467,7 +467,7 @@ const onIsLink = (is: boolean) => {
     form.value.component = "";
   } else {
     // 外链
-    form.value.component = "link/internal/index";
+    form.value.component = "link/external/index";
   }
 };
 
@@ -475,10 +475,10 @@ const onIsLink = (is: boolean) => {
 const onIframe = (is: boolean) => {
   // 非内嵌窗口
   if (!is) {
-    form.value.component = "link/internal/index";
+    form.value.component = "link/external/index";
   } else {
     // 内嵌窗口
-    form.value.component = "link/external/index";
+    form.value.component = "link/internal/index";
   }
 };
 const onSearch = () => getMenuList();
