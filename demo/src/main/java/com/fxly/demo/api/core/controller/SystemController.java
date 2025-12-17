@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -54,10 +55,17 @@ public class SystemController {
     @Operation(summary = "登录")
     @PostMapping("/login")
     public HttpResult login(@RequestParam("username") String username, @RequestParam("password") String password) {
+
+        // 非空校验
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+            return HttpResult.error(400, "用户名或密码不能为空");
+        }
         // 执行登录
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            assert authentication != null;
+            if (authentication == null) {
+                return HttpResult.error(HttpResultEnum.AUTH_ERROR.getCode(), "认证结果为空");
+            }
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             // 把当前用户信息存储到 Redis
             String token = jwtUtil.generateToken(userDetails.getUsername());
@@ -71,16 +79,11 @@ public class SystemController {
             resultMap.put("currentLoginUser", userDetails.getSystemUser());
             log.info("> Logged in as: " + userDetails.getUsername());
             return HttpResult.success(resultMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            String errorMessage = null;
-            if(e instanceof BadCredentialsException) {
-                errorMessage = HttpResultEnum.USERNAME_PASSWORD_ERROR.getMessage();
-            } else {
-                errorMessage = Optional.ofNullable(errorMessage)
-                        .orElse(e.getMessage());
-            }
-            return HttpResult.error(errorMessage);
+        }catch (BadCredentialsException e) { // 用户名或密码错误
+            return HttpResult.setResult(HttpResultEnum.USERNAME_PASSWORD_ERROR);
+        } catch (Exception e) { // 其他认证异常
+            log.error("登录失败", e);
+            return HttpResult.setResult(HttpResultEnum.AUTH_ERROR);
         }
     }
 

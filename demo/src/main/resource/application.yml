@@ -16,7 +16,7 @@ spring:
     url: jdbc:mysql://192.168.1.101:33061/demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root  # 你的数据库用户名
     password: 123456  # 你的数据库密码
-    # ===== Druid 连接池专用配置 =====
+    # Druid连接池配置
     druid:
       initial-size: 5    # 连接池初始化大小
       min-idle: 5       # 最小空闲连接数
@@ -74,16 +74,11 @@ mybatis-plus:
 
 # JWT自定义配置
 jwt:
-  secret: your-secret-key-1234567890abcdefghijklmnopqrstuvwxyz  # 密钥（生产环境需加密存储）
+  secret: 1234567890abcdefghijklmnopqrstuvwxyz  # 密钥（
   expire-time: 3600000  # 令牌过期时间（1小时，单位：毫秒）
   refresh-time: 7200000 # 刷新令牌时间（2小时，可选）
   header: Authorization  # 请求头中令牌的key
   prefix: Bearer         # 令牌前缀（空格分隔）
-
-# Spring Security配置（关闭默认表单登录）
-security:
-  basic:
-    enabled: false
 
 # springdoc-openapi项目配置
 springdoc:

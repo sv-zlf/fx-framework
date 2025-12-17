@@ -181,8 +181,6 @@ public class SqlParserUtil {
             }
         }
 
-        // 场景3：正则匹配原始SQL中的表注释（兜底方案，解决Druid解析节点丢失的问题）
-        // 优化：只匹配当前表名对应的建表语句中的注释，避免多表时匹配错误
         String tableName = createTableStatement.getTableName().replace("`", "");
         Pattern tablePattern = Pattern.compile("CREATE TABLE\\s+[`\"]?" + tableName + "[`\"]?\\s*\\([\\s\\S]*?\\)\\s*[^;]*", Pattern.CASE_INSENSITIVE);
         Matcher tableMatcher = tablePattern.matcher(originalSql);
@@ -332,31 +330,37 @@ public class SqlParserUtil {
     /**
      * 数据库列类型映射为Java类型（可根据需求扩展）
      */
+    /**
+     * 数据库列类型转Java类型名（大写开头，如String、Integer、Long）
+     */
     private static String getColumnJavaType(String columnType) {
-        if (columnType.startsWith("VARCHAR") || columnType.startsWith("CHAR") || columnType.startsWith("TEXT") ||
-                columnType.startsWith("LONGTEXT") || columnType.startsWith("MEDIUMTEXT") || columnType.startsWith("TINYTEXT")) {
-            return String.class.getName();
-        } else if (columnType.startsWith("INT") || columnType.startsWith("TINYINT") || columnType.startsWith("SMALLINT") ||
-                columnType.startsWith("MEDIUMINT")) {
-            return Integer.class.getName();
-        } else if (columnType.startsWith("BIGINT")) {
-            return Long.class.getName();
-        } else if (columnType.startsWith("FLOAT")) {
-            return Float.class.getName();
-        } else if (columnType.startsWith("DOUBLE")) {
-            return Double.class.getName();
-        } else if (columnType.startsWith("DECIMAL") || columnType.startsWith("NUMERIC")) {
-            return BigDecimal.class.getName();
-        } else if (columnType.startsWith("DATE")) {
-            return Date.class.getName();
-        } else if (columnType.startsWith("DATETIME") || columnType.startsWith("TIMESTAMP")) {
-            return Timestamp.class.getName();
-            // 若使用Java 8时间类型，替换为：return LocalDateTime.class.getName();
-        } else if (columnType.startsWith("BOOLEAN")) {
-            return Boolean.class.getName();
+        // 统一转大写（避免数据库类型小写导致匹配失败，增强鲁棒性）
+        String upperColumnType = columnType.toUpperCase();
+
+        if (upperColumnType.startsWith("VARCHAR") || upperColumnType.startsWith("CHAR") ||
+                upperColumnType.startsWith("TEXT") || upperColumnType.startsWith("LONGTEXT") ||
+                upperColumnType.startsWith("MEDIUMTEXT") || upperColumnType.startsWith("TINYTEXT")) {
+            return "String"; // 字符串类型→String
+        } else if (upperColumnType.startsWith("INT") || upperColumnType.startsWith("TINYINT") ||
+                upperColumnType.startsWith("SMALLINT") || upperColumnType.startsWith("MEDIUMINT")) {
+            return "Integer"; // 整型→Integer（Java常用包装类）
+        } else if (upperColumnType.startsWith("BIGINT")) {
+            return "Long"; // 长整型→Long
+        } else if (upperColumnType.startsWith("FLOAT")) {
+            return "Float"; // 浮点型→Float
+        } else if (upperColumnType.startsWith("DOUBLE")) {
+            return "Double"; // 双精度浮点型→Double
+        } else if (upperColumnType.startsWith("DECIMAL") || upperColumnType.startsWith("NUMERIC")) {
+            return "BigDecimal"; // 高精度小数→BigDecimal
+        } else if (upperColumnType.startsWith("DATE")) {
+            return "LocalDate"; // 日期→LocalDate
+        } else if (upperColumnType.startsWith("DATETIME") || upperColumnType.startsWith("TIMESTAMP")) {
+            return "LocalDateTime";
+        } else if (upperColumnType.startsWith("BOOLEAN")) {
+            return "Boolean"; // 布尔型→Boolean
         } else {
             // 默认映射为String
-            return String.class.getName();
+            return "String";
         }
     }
 
