@@ -24,6 +24,15 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi genGroup() {
+        return GroupedOpenApi.builder()
+                .group("代码生成")
+                .pathsToMatch("/**")
+                .packagesToScan("com.fxly.demo.api.generate.controller")
+                .build();
+    }
+
     /**
      * 根据@Tag 上的排序，写入x-order
      *

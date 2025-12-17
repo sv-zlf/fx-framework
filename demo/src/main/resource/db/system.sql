@@ -90,3 +90,23 @@ ALTER TABLE system_menu
 
 ALTER TABLE system_menu
     ADD COLUMN link VARCHAR(255) COMMENT '外链地址' ;
+
+CREATE TABLE `system_log` (
+                              `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID，自增',
+                              `log_level` VARCHAR(20) NOT NULL COMMENT '日志级别：DEBUG/INFO/WARN/ERROR/FATAL',
+                              `log_category` VARCHAR(50) NOT NULL COMMENT '日志分类（模块）：如user/order/system/auth等',
+                              `log_content` TEXT NOT NULL COMMENT '日志核心内容',
+                              `user_id` BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '操作用户ID（系统操作则为NULL）',
+                              `username` VARCHAR(50) NULL DEFAULT NULL COMMENT '操作用户名',
+                              `client_ip` VARCHAR(64) NULL DEFAULT NULL COMMENT '客户端IP地址（IPv4/IPv6）',
+                              `request_url` VARCHAR(512) NULL DEFAULT NULL COMMENT '请求URL（Web场景）',
+                              `request_method` VARCHAR(20) NULL DEFAULT NULL COMMENT '请求方法：GET/POST/PUT/DELETE等',
+                              `exception` LONGTEXT NULL DEFAULT NULL COMMENT '异常堆栈信息（错误日志时存储）',
+                              `server_node` VARCHAR(100) NULL DEFAULT NULL COMMENT '服务节点（分布式场景：主机名/IP:端口）',
+                              `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '日志创建时间',
+                              PRIMARY KEY (`id`) USING BTREE,
+                              INDEX `idx_log_level` (`log_level`) USING BTREE,
+                              INDEX `idx_log_category` (`log_category`) USING BTREE,
+                              INDEX `idx_create_time` (`create_time`) USING BTREE,
+                              INDEX `idx_user_id` (`user_id`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统日志表';
