@@ -5,7 +5,9 @@ import { Message } from "@arco-design/web-vue";
 // 是否开启本地mock
 const MOCK_FLAG = import.meta.env.VITE_APP_OPEN_MOCK === "true";
 // 创建axios实例
+//
 const service = axios.create({
+  timeout: 5000,
   baseURL: MOCK_FLAG ? "" : "/api"
 });
 // 请求拦截器
@@ -21,6 +23,9 @@ service.interceptors.request.use(
       // 有token，在请求头中携带token
       config.headers.Authorization = 'Bearer '+userInfo.token;
     }
+    const isMockUrl = config.url?.includes('mock');
+    config.baseURL = isMockUrl ? '' : '/api';
+    console.log("请求拦截器", config)
     return config;
   },
   function (error: any) {
@@ -38,7 +43,7 @@ service.interceptors.response.use(
       return Promise.reject(response.data);
     }
     let res = response.data;
-    if (res.code == 402) {
+    if (res.code == 402 || res.code == 401) {
       Message.error("登录状态已过期");
       router.push("/login");
       return Promise.reject(res);

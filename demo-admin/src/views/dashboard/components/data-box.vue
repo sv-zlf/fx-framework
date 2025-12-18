@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import HistogramChart from "@/views/home/components/histogram-chart.vue";
-import AnalysisChart from "@/views/home/components/analysis-chart.vue";
+import HistogramChart from "@/views/dashboard/components/histogram-chart.vue";
+import AnalysisChart from "@/views/dashboard/components/analysis-chart.vue";
 </script>
 
 <style lang="scss" scoped>

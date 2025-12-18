@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import FileTree from "@/views/file/document-library/components/file-tree.vue";
-import FileTable from "@/views/file/document-library/components/file-table.vue";
+import FileTree from "@/views/component/file/document-library/components/file-tree.vue";
+import FileTable from "@/views/component/file/document-library/components/file-table.vue";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
 const { isMobile } = useDevicesSize();
 const FileTableRef = ref();

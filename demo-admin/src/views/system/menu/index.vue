@@ -48,7 +48,7 @@
         show-empty-tree
         :pagination="false"
         size="large"
-        :scroll="{ x: '150%', y: '100%' }"
+        :scroll="{ x: '150%', y: '95%' }"
         :hide-expand-button-on-empty="true"
       >
         <template #columns>
@@ -118,17 +118,17 @@
               </a-space>
             </template>
           </a-table-column>
-          <a-table-column title="操作" align="center" :width="100" :fixed="tableFixed">
+          <a-table-column title="操作" align="center" :width="180" :fixed="tableFixed">
             <template #cell="{ record }">
               <a-space>
+                <a-button size="mini" type="primary" status="success" v-if="record.type == 1" @click="onCurrentAdd(record)">
+                  <template #icon><icon-plus /></template>
+                  <span>新增</span>
+                </a-button>
                 <a-button size="mini" type="primary" @click="onUpdate(record)">
                   <template #icon><icon-edit /></template>
                   <span>修改</span>
                 </a-button>
-<!--                <a-button size="mini" type="primary" status="success" v-if="record.type != 3" @click="onCurrentAdd(record)">-->
-<!--                  <template #icon><icon-plus /></template>-->
-<!--                  <span>新增</span>-->
-<!--                </a-button>-->
                 <a-popconfirm type="warning" content="确定删除该项吗?" @ok="onDelete(record.id)">
                   <a-button size="mini" type="primary" status="danger">
                     <template #icon><icon-delete /></template>
@@ -386,6 +386,7 @@ const onAdd = () => {
   formType.value = 0;
   open.value = true;
 };
+
 const handleOk = async () => {
   let state = await formRef.value.validate();
   if (state) return (open.value = true); // 校验不通过
@@ -431,6 +432,19 @@ const onUpdate = (row: Menu.MenuOptions) => {
   typeChange(data.type);
   form.value = data;
   title.value = "修改菜单";
+  open.value = true;
+};
+
+// 列表新增
+const onCurrentAdd = (record: any) => {
+  let {
+    id,
+   type
+  } = record;
+  formType.value = 0;
+  form.value.parentId = id;
+  form.value.type = type == 2 ? 3 : type;
+  title.value = "新增菜单";
   open.value = true;
 };
 

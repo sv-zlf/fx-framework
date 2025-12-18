@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import Shortcut from "@/views/home/components/shortcut.vue";
-import TargetBox from "@/views/home/components/target-box.vue";
-import Finance from "@/views/home/components/finance.vue";
-import DataBox from "@/views/home/components/data-box.vue";
+import Shortcut from "@/views/dashboard/components/shortcut.vue";
+import TargetBox from "@/views/dashboard/components/target-box.vue";
+import Finance from "@/views/dashboard/components/finance.vue";
+import DataBox from "@/views/dashboard/components/data-box.vue";
 </script>
 
 <style lang="scss" scoped>

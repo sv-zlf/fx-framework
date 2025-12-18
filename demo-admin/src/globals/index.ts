@@ -7,8 +7,6 @@ import { Message } from "@arco-design/web-vue";
  * @return 返回字典的list
  */
 export const dictFilter = (code: string) => {
-
-
   try {
     const system = useSystemStore();
     let { dict } = storeToRefs(system);
