@@ -1,6 +1,7 @@
 package com.fxly.demo.api.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fxly.demo.api.generate.entity.ColumnInfo;
 import com.fxly.demo.api.generate.entity.TableInfo;
@@ -10,6 +11,7 @@ import com.fxly.demo.api.generate.service.ITableInfoService;
 import com.fxly.demo.util.FreemarkerUtil;
 import com.fxly.demo.util.SqlParserUtil;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,5 +73,21 @@ public class TableInfoServiceImpl extends ServiceImpl<TableInfoMapper, TableInfo
             tableInfo.setColumnList(columnInfoList);
         }
         FreemarkerUtil.generateCode(tableInfo, zipOut);
+    }
+
+    @Override
+    public Page<TableInfo> getPageList(Integer pageIndex, Integer pageSize, String tableName) {
+        Page<TableInfo> page = new Page<>(pageIndex, pageSize);
+        // 查询条件
+        LambdaQueryWrapper<TableInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(tableName),TableInfo::getTableName, tableName);
+        this.page(page,queryWrapper);
+        // 获取字段信息
+        for (TableInfo tableInfo : page.getRecords()){
+            List<ColumnInfo> columnInfoList = columnInfoMapper.selectList(new LambdaQueryWrapper<ColumnInfo>()
+                    .eq(ColumnInfo::getTableId, tableInfo.getId()));
+            tableInfo.setColumnList(columnInfoList);
+        }
+        return page;
     }
 }

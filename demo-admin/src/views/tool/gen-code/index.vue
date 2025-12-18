@@ -4,11 +4,7 @@
       <s-layout-tools>
         <template #left>
           <a-space wrap>
-            <a-input v-model="searchForm.name" placeholder="请输入用户名称" allow-clear />
-            <a-input v-model="searchForm.phone" placeholder="请输入手机号码" allow-clear />
-            <a-select placeholder="用户状态" v-model="searchForm.status" style="width: 120px" allow-clear>
-              <a-option v-for="item in openState" :key="item.id" :value="item.dictItemCode">{{ item.dictItemName }}</a-option>
-            </a-select>
+            <a-input v-model="searchForm.tableName" placeholder="请输入表名称" allow-clear />
             <a-button type="primary" @click="search">
               <template #icon><icon-search /></template>
               <span>查询</span>
@@ -25,10 +21,10 @@
               <template #icon><icon-plus /></template>
               <span>新增</span>
             </a-button>
-            <a-button type="primary" status="danger" @click="onDeleteBatch">
-              <template #icon><icon-delete /></template>
-              <span>删除</span>
-            </a-button>
+<!--            <a-button type="primary" status="danger" @click="onDeleteBatch">-->
+<!--              <template #icon><icon-delete /></template>-->
+<!--              <span>删除</span>-->
+<!--            </a-button>-->
           </a-space>
         </template>
       </s-layout-tools>
@@ -49,17 +45,12 @@
           <a-table-column title="序号" :width="64">
             <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
           </a-table-column>
-          <a-table-column title="用户名称" data-index="userName" :width="120" ellipsis tooltip></a-table-column>
-          <a-table-column title="昵称" data-index="nickName" :width="120" ellipsis tooltip></a-table-column>
-          <a-table-column title="邮箱" data-index="email" :width="180" ellipsis tooltip></a-table-column>
-          <a-table-column title="手机号" data-index="phone" :width="180"></a-table-column>
-          <a-table-column title="状态" :width="100" align="center">
-            <template #cell="{ record }">
-              <a-tag bordered size="small" color="arcoblue" v-if="record.status === 1">启用</a-tag>
-              <a-tag bordered size="small" color="red" v-else>禁用</a-tag>
-            </template>
-          </a-table-column>
-          <a-table-column title="创建时间" data-index="createTime" :width="180"></a-table-column>
+          <a-table-column title="表名" data-index="tableName" :width="120" ellipsis tooltip></a-table-column>
+          <a-table-column title="类名" data-index="className" :width="120" ellipsis tooltip></a-table-column>
+          <a-table-column title="表注释" data-index="tableComment" :width="180" ellipsis tooltip></a-table-column>
+          <a-table-column title="生成方式" data-index="generateType" :width="180"></a-table-column>
+          <a-table-column title="模块名" data-index="moudleName" :width="180"></a-table-column>
+          <a-table-column title="作者" data-index="author" :width="180"></a-table-column>
           <a-table-column title="操作" :width="200" align="center" :fixed="tableFixed">
             <template #cell="{ record }">
               <a-space>
@@ -140,16 +131,13 @@
 <script setup lang="ts">
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import {deleteBatch, deleteUser, getPageList, saveOrUpdate} from "@/api/system/user";
-import {getRoleList} from "@/api/system/role";
+import { getPageList} from "@/api/tool/gen";
 
 const router = useRouter();
 const { dialogWidth, formLayout, tableFixed } = useLayoutModel();
-const openState = ref(dictFilter("STATUS"));
+
 const searchForm = ref({
-  name: "",
-  phone: "",
-  status: null,
+  tableName: "",
 });
 const open = ref(false);
 const rules = {
@@ -269,9 +257,7 @@ const search = () => {
 };
 const reset = () => {
   searchForm.value = {
-    name: "",
-    phone: "",
-    status: null,
+    tableName: "",
   };
   getAccount();
 };

@@ -51,6 +51,7 @@ public class TableInfo implements Serializable {
 
     @Schema(description = "生成方式,默认0-压缩包,1-本地工程模块")
     private Integer generateType;
+
     @Schema(description = "字段列表")
     @TableField(exist = false)
     private List<ColumnInfo> columnList;

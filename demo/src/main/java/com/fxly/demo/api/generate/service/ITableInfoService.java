@@ -1,5 +1,6 @@
 package com.fxly.demo.api.generate.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fxly.demo.api.generate.entity.TableInfo;
 
@@ -18,4 +19,6 @@ public interface ITableInfoService extends IService<TableInfo> {
     void generateCode(Long tableId);
 
     void generateCode(Long tableId, ZipOutputStream zipOut);
+
+    Page<TableInfo> getPageList(Integer pageIndex, Integer pageSize, String tableName);
 }

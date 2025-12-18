@@ -60,10 +60,12 @@ public class GenerateController {
         }
     }
 
-    @Operation(summary = "按照Id获取表信息")
-    @GetMapping("/getTableById")
-    public HttpResult getTableById(@RequestParam("id") String id) {
-        return HttpResult.success(tableInfoService.getById(id));
+    @Operation(summary = "分页列表")
+    @GetMapping("/getPageList")
+    public HttpResult getTableInfoPageList(@RequestParam(value = "pageIndex",defaultValue = "1") Integer pageIndex,
+                                   @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
+                                   @RequestParam(value = "tableName", required = false) String tableName) {
+        return HttpResult.success(tableInfoService.getPageList(pageIndex, pageSize, tableName));
     }
 
 }
