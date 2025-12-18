@@ -74,7 +74,7 @@ mybatis-plus:
 
 # JWT自定义配置
 jwt:
-  secret: 1234567890abcdefghijklmnopqrstuvwxyz  # 密钥（
+  secret: your-jwt-secret-key-1234567890abcdefghijklmnopqrstuvwxyz  # 密钥
   expire-time: 3600000  # 令牌过期时间（1小时，单位：毫秒）
   refresh-time: 7200000 # 刷新令牌时间（2小时，可选）
   header: Authorization  # 请求头中令牌的key

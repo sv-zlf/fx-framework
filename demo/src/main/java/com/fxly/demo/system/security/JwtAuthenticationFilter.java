@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = jwtUtil.extractToken(request);
             if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 校验Token过期时间
-                if (!jwtUtil.isTokenExpired(token)) {
+                if (jwtUtil.isTokenExpired(token)) {
                     ResponseUtil.writeErrorResponse(response, HttpResultEnum.UNAUTHORIZED_TOKEN_INVALID);
                     return;
                 }
