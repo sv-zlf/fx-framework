@@ -29,6 +29,7 @@ service.interceptors.request.use(
     return config;
   },
   function (error: any) {
+    console.log("请求错误拦截器", error)
     // 请求错误
     return Promise.reject(error);
   }

@@ -9,6 +9,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateTableStateme
 import com.alibaba.druid.util.JdbcConstants;
 import com.fxly.demo.api.generate.entity.ColumnInfo;
 import com.fxly.demo.api.generate.entity.TableInfo;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.security.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,35 +48,41 @@ public class SqlParserUtil {
      * @throws IllegalArgumentException 解析失败时抛出异常
      */
     public static List<TableInfo> parseSqls(String sql, String moudleName) {
-        // 参数校验
-        if (StringUtils.isBlank(sql)) {
-            throw new IllegalArgumentException("SQL语句不能为空");
-        }
 
-        // 1. 解析SQL，获取所有SQL语句节点
-        List<SQLStatement> statementList = SQLUtils.parseStatements(sql, DB_TYPE);
-        if (statementList.isEmpty()) {
-            throw new IllegalArgumentException("SQL语句解析失败，未找到有效语句");
-        }
-
-        List<TableInfo> tableInfoList = new ArrayList<>();
-        // 2. 遍历所有语句节点，筛选出CREATE TABLE语句并逐个解析
-        for (SQLStatement statement : statementList) {
-            if (statement instanceof SQLCreateTableStatement) {
-                SQLCreateTableStatement createTableStatement = (SQLCreateTableStatement) statement;
-                // 解析单个建表语句，封装为TableInfo
-                TableInfo tableInfo = parseSingleCreateTable(createTableStatement, sql);
-                tableInfo.setMoudleName(moudleName);
-                tableInfo.setAuthor(SecurityUtils.getUserName());
-                tableInfoList.add(tableInfo);
+        try {
+            // 参数校验
+            if (StringUtils.isBlank(sql)) {
+                throw new IllegalArgumentException("SQL语句不能为空");
             }
-        }
 
-        if (tableInfoList.isEmpty()) {
-            throw new IllegalArgumentException("SQL中未包含有效的CREATE TABLE语句");
-        }
+            // 1. 解析SQL，获取所有SQL语句节点
+            List<SQLStatement> statementList = SQLUtils.parseStatements(sql, DB_TYPE);
+            if (statementList.isEmpty()) {
+                throw new IllegalArgumentException("SQL语句解析失败，未找到有效语句");
+            }
 
-        return tableInfoList;
+            List<TableInfo> tableInfoList = new ArrayList<>();
+            // 2. 遍历所有语句节点，筛选出CREATE TABLE语句并逐个解析
+            for (SQLStatement statement : statementList) {
+                if (statement instanceof SQLCreateTableStatement) {
+                    SQLCreateTableStatement createTableStatement = (SQLCreateTableStatement) statement;
+                    // 解析单个建表语句，封装为TableInfo
+                    TableInfo tableInfo = parseSingleCreateTable(createTableStatement, sql);
+                    tableInfo.setMoudleName(moudleName);
+                    tableInfo.setAuthor(SecurityUtils.getUserName());
+                    tableInfoList.add(tableInfo);
+                }
+            }
+
+            if (tableInfoList.isEmpty()) {
+                throw new IllegalArgumentException("SQL中未包含有效的CREATE TABLE语句");
+            }
+
+            return tableInfoList;
+        }
+        catch (Exception e) {
+            throw new GlobalException(500,"SQL语句解析失败，请输入正确SQL");
+        }
     }
 
     /**

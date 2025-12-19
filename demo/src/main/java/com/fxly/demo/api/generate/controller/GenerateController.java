@@ -1,12 +1,17 @@
 package com.fxly.demo.api.generate.controller;
 
+import com.fxly.demo.api.generate.entity.ColumnInfo;
+import com.fxly.demo.api.generate.entity.TableInfo;
+import com.fxly.demo.api.generate.service.IColumnInfoService;
 import com.fxly.demo.api.generate.service.ITableInfoService;
 import com.fxly.demo.system.global.HttpResult;
+import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -28,11 +33,14 @@ public class GenerateController {
     @Resource
     private ITableInfoService tableInfoService;
 
+    @Resource
+    private IColumnInfoService columnInfoService;
+
     @Operation(summary = "按照建表语句生成信息")
     @PostMapping("/genTable")
     public HttpResult genTable(@RequestParam("sql") String sql,
-                               @RequestParam("moudleName") String moudleName) {
-        return HttpResult.success(tableInfoService.generateTable(sql, moudleName));
+                               @RequestParam("moduleName") String moduleName) {
+        return HttpResult.success(tableInfoService.generateTable(sql, moduleName));
     }
 
     @Operation(summary = "按照表ID生成代码，本地工程")
@@ -43,7 +51,7 @@ public class GenerateController {
     }
 
     @Operation(summary = "按照表ID生成代码，压缩包")
-    @PostMapping("/genCodeZip")
+    @GetMapping("/genCodeZip")
     public void genCodeZip(@RequestParam("tableId") Long tableId,HttpServletResponse response) throws IOException {
         response.setContentType("application/zip"); // ZIP文件类型
         response.setCharacterEncoding("UTF-8");
@@ -68,4 +76,30 @@ public class GenerateController {
         return HttpResult.success(tableInfoService.getPageList(pageIndex, pageSize, tableName));
     }
 
+    @Operation(summary = "更新")
+    @PostMapping("/update")
+    @Transactional
+    public HttpResult updateTableInfo(@RequestBody TableInfo tableInfo) {
+        Boolean b = tableInfoService.updateById(tableInfo);
+        if (b){
+            for (ColumnInfo columnInfo : tableInfo.getColumnList()){
+                columnInfoService.updateById(columnInfo);
+            }
+        }
+        return b ? HttpResult.setResult(HttpResultEnum.UPDATE_SUCCESS)
+                : HttpResult.setResult(HttpResultEnum.UPDATE_ERROR);
+    }
+
+    @Operation(summary = "删除")
+    @PostMapping("/delete")
+    public HttpResult deleteTableInfo(@RequestBody TableInfo tableInfo) {
+        Boolean b = tableInfoService.removeById(tableInfo);
+        if (b){
+            for (ColumnInfo columnInfo : tableInfo.getColumnList()){
+                columnInfoService.removeById(columnInfo);
+            }
+        }
+        return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
+                : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
+    }
 }

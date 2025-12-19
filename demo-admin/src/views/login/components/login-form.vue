@@ -48,7 +48,7 @@ const routeStore = useRouteConfigStore();
 const router = useRouter();
 const form = ref({
   username: "admin",
-  password: "11",
+  password: "123456",
   verifyCode: null,
   remember: false
 });
@@ -105,7 +105,7 @@ const onLogin = async () => {
   // 跳转首页
   router.replace("/home");
   // 设置字典
-  useSystemStore().setDictData();
+  // useSystemStore().setDictData();
 };
 </script>
 

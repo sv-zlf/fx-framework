@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ASelectOption: typeof import('@arco-design/web-vue')['SelectOption']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SBarcodeDraw: typeof import('./components/s-barcode-draw/index.vue')['default']
