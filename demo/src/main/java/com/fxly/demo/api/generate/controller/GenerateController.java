@@ -94,12 +94,10 @@ public class GenerateController {
 
     @Operation(summary = "删除")
     @PostMapping("/delete")
-    public HttpResult deleteTableInfo(@RequestBody TableInfo tableInfo) {
-        Boolean b = tableInfoService.removeById(tableInfo);
+    public HttpResult deleteTableInfo(@RequestParam("id") Long id) {
+        Boolean b = tableInfoService.removeById(id);
         if (b){
-            for (ColumnInfo columnInfo : tableInfo.getColumnList()){
-                columnInfoService.removeById(columnInfo);
-            }
+            columnInfoService.removeByTableId(id);
         }
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);

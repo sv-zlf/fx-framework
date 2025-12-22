@@ -44,6 +44,17 @@ export const updateTable = (data: any) => {
   })
 }
 
+// 删除表
+export const deleteTable = (id: any) => {
+  return axios({
+    url: "/tool/gen/delete",
+    method: "post",
+    params: {
+      id
+    }
+  })
+}
+
 // 查询表字段
 export const getColumnList = (tableId: any) => {
   return axios({

@@ -10,4 +10,6 @@ import com.fxly.demo.api.generate.entity.ColumnInfo;
  */
 
 public interface IColumnInfoService extends IService<ColumnInfo> {
+
+    boolean removeByTableId(Long tableId);
 }

@@ -80,8 +80,8 @@
                   <template #icon><icon-edit /></template>
                   <span>修改</span>
                 </a-button>
-                <a-popconfirm type="warning" content="确定删除该用户吗?" @ok="onDelete(record)">
-                  <a-button type="primary" status="danger" size="mini" :disabled="record.admin">
+                <a-popconfirm type="warning" content="确定删除该表吗?" @ok="onDelete(record)">
+                  <a-button type="primary" status="danger" size="mini" >
                     <template #icon><icon-delete /></template>
                     <span>删除</span>
                   </a-button>
@@ -196,7 +196,7 @@
 <script setup lang="ts">
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import {createCode, createTable, getPageList, updateTable} from "@/api/tool/gen";
+import {createCode, createTable, deleteTable, getPageList, updateTable} from "@/api/tool/gen";
 import {quickDownloadFile} from "@/utils/download";
 import { useRouteConfigStore } from "@/store/modules/route-config";
 
@@ -424,7 +424,7 @@ const selectAll = (state: boolean) => {
 };
 // 删除
 const onDelete = async (row: any) => {
-    // await deleteUser(row.id);
+    await deleteTable(row.id);
     arcoMessage("success", "删除成功");
     getTable();
 }

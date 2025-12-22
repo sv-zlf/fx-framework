@@ -1,5 +1,6 @@
 package com.fxly.demo.api.generate.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fxly.demo.api.generate.entity.ColumnInfo;
 import com.fxly.demo.api.generate.mapper.ColumnInfoMapper;
@@ -14,4 +15,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ColumnInfoServiceImpl extends ServiceImpl<ColumnInfoMapper, ColumnInfo> implements IColumnInfoService {
+    @Override
+    public boolean removeByTableId(Long tableId) {
+        LambdaQueryWrapper<ColumnInfo> queryWrapper = new LambdaQueryWrapper<ColumnInfo>()
+                .eq(ColumnInfo::getTableId, tableId);
+        return baseMapper.delete(queryWrapper) > 0;
+    }
 }
