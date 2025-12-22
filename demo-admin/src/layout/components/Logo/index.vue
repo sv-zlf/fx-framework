@@ -1,7 +1,7 @@
 <template>
   <div :class="layoutType == 'layoutHead' ? 'logo_head no-border' : 'logo_head'">
     <div class="logo_box" :class="(collapsed || layoutType == 'layoutHead') && 'padding-unset'">
-      <s-svg-icon name="snow" :size="30" />
+      <s-svg-icon name="fx" :size="30" />
       <span :class="isDark ? 'logo_title dark' : 'logo_title'" v-if="isTitle">{{ title }}</span>
     </div>
   </div>
