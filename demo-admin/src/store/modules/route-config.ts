@@ -23,13 +23,14 @@ export const routeConfigStore = () => {
   const cacheRoutes = ref<string[]>([]); // 所有可缓存路由的路由路径
   const tabsList = ref<Menu.MenuOptions[]>([]); // 标签页数据
   const currentRoute = ref<Menu.MenuOptions | object>({}); // 当前路由
-
+  const routeStoredParams = ref<any>({}); // 键：fullPath，值：复杂数据
   /**
    * 设置tabs名称
    * @param {string} title 路由名称
    */
   function setTabsTitle(title: string) {
     for (let i = 0; i < tabsList.value.length; i++) {
+      console.log("tabsList", tabsList.value[i])
       if (tabsList.value[i].path == getUrlWithParams()) {
         tabsList.value[i].meta.title = title;
         break;
@@ -76,8 +77,8 @@ export const routeConfigStore = () => {
    */
   function removeTabsList(path: string) {
     const index = tabsList.value.findIndex((item: Menu.MenuOptions) => item.path === path);
-    if (tabsList.value[index].meta.affix) return;
     if (index === -1) return;
+    if (tabsList.value[index].meta.affix) return;
     tabsList.value.splice(index, 1);
   }
   /**
@@ -114,6 +115,8 @@ export const routeConfigStore = () => {
     });
     // 清除有访问权限的一维路由数组
     routeList.value = [];
+    // 清除路由跳转的复杂参数
+    routeStoredParams.value = {};
   }
 
   /**
@@ -149,6 +152,31 @@ export const routeConfigStore = () => {
     routeList.value = flatRoute;
   }
 
+  /**
+   * 存储路由跳转的复杂参数
+   * @param fullPath 路由完整路径（含参数，作为唯一键）
+   * @param data 要存储的复杂数据（对象、列表、大体积数据等）
+   */
+  function setRouteStoredParams(fullPath: string, data: any) {
+    routeStoredParams.value[fullPath] = data;
+  }
+  /**
+   * 获取路由存储的复杂参数
+   * @param fullPath 路由完整路径（含参数）
+   * @returns 存储的参数（无则返回undefined）
+   */
+  function getRouteStoredParams(fullPath: string) {
+    return routeStoredParams.value[fullPath];
+  }
+
+  /**
+   * 清理指定路由的存储参数
+   * @param fullPath 路由完整路径（含参数）
+   */
+  function clearRouteStoredParams(fullPath: string) {
+    delete routeStoredParams.value[fullPath];
+  }
+
   return {
     routeTree,
     routeList,
@@ -163,7 +191,10 @@ export const routeConfigStore = () => {
     removeRouteName,
     removeRoutePaths,
     resetRoute,
-    initSetRouter
+    initSetRouter,
+    setRouteStoredParams,
+    getRouteStoredParams,
+    clearRouteStoredParams
   };
 };
 

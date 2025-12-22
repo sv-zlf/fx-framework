@@ -44,7 +44,7 @@ public class TableInfo implements Serializable {
     private String author;
 
     @Schema(description = "模块名")
-    private String moudleName;
+    private String moduleName;
 
     @Schema(description = "备注")
     private String remark;

@@ -63,6 +63,7 @@ const onTabs = (key: string) => {
 
 // 删除当前标签页并跳转到最后一个标签页
 const onDelete = (path: string) => {
+  console.log('currentRoute.path',path)
   routerStore.removeTabsList(path);
   routerStore.removeRouteName(path);
   if (tabsList.value.length == 0) return;

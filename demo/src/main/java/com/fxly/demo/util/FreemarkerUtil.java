@@ -50,7 +50,7 @@ public class FreemarkerUtil {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("table", tableInfo);
 
-        String moduleName = tableInfo.getMoudleName();
+        String moduleName = tableInfo.getModuleName();
         tableInfo.setBasePackage(BASE_PACKAGE.replaceAll("/", ".") + moduleName);
         String className = tableInfo.getClassName();
 
@@ -76,7 +76,7 @@ public class FreemarkerUtil {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("table", tableInfo);
 
-        String moduleName = tableInfo.getMoudleName();
+        String moduleName = tableInfo.getModuleName();
         tableInfo.setBasePackage(BASE_PACKAGE.replaceAll("/", ".")+moduleName);
         String className = tableInfo.getClassName();
 

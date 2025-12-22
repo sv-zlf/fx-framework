@@ -1,11 +1,12 @@
 import axios from "axios";
 import router from "@/router";
 import { Message } from "@arco-design/web-vue";
+import { useUserInfoStore } from "@/store/modules/user-info";
+import pinia from "@/store";
 
 // 是否开启本地mock
 const MOCK_FLAG = import.meta.env.VITE_APP_OPEN_MOCK === "true";
 // 创建axios实例
-//
 const service = axios.create({
   timeout: 5000,
   baseURL: MOCK_FLAG ? "" : "/api"
@@ -60,7 +61,10 @@ service.interceptors.response.use(
     }
   },
   function (error: any) {
+    console.log("响应错误拦截器", error)
     localStorage.removeItem("user-info");
+    const userStore = useUserInfoStore(pinia);
+    userStore.logOut();
     router.push("/login");
     return Promise.reject(error);
   }

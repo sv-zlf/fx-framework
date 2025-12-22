@@ -63,7 +63,7 @@ defineOptions({ name: "routing-operation" });
 const router = useRouter();
 // 普通跳转
 const connom = ref({
-  path: "/functions/routing-operation/common-route",
+  path: "/component/functions/routing-operation/common-route",
   query: {
     name: "SnowAdmin",
     text: "月之暗面"

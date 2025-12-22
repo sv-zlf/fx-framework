@@ -1,5 +1,6 @@
 package com.fxly.demo.api.generate.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fxly.demo.api.generate.entity.ColumnInfo;
 import com.fxly.demo.api.generate.entity.TableInfo;
 import com.fxly.demo.api.generate.service.IColumnInfoService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -100,6 +102,27 @@ public class GenerateController {
             }
         }
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
+                : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
+    }
+
+    @Operation(summary = "查询表字段")
+    @GetMapping("/getColumnList")
+    public HttpResult getColumnList(@RequestParam("tableId") Long tableId) {
+        return HttpResult.success(columnInfoService.list(
+                new LambdaQueryWrapper<ColumnInfo>().eq(ColumnInfo::getTableId, tableId)));
+    }
+
+    @Operation(summary = "批量更新表字段")
+    @PostMapping("/batchUpdateColumn")
+    public HttpResult batchUpdateColumn(@RequestBody List<ColumnInfo> columnInfoList) {
+        return columnInfoService.updateBatchById(columnInfoList) ? HttpResult.setResult(HttpResultEnum.UPDATE_SUCCESS)
+                : HttpResult.setResult(HttpResultEnum.UPDATE_ERROR);
+    }
+
+    @Operation(summary = "删除表字段")
+    @PostMapping("/deleteColumn")
+    public HttpResult deleteColumn(@RequestParam("id") Long id) {
+        return columnInfoService.removeById(id) ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
     }
 }

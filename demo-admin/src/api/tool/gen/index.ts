@@ -43,3 +43,34 @@ export const updateTable = (data: any) => {
     data
   })
 }
+
+// 查询表字段
+export const getColumnList = (tableId: any) => {
+  return axios({
+    url: "/tool/gen/getColumnList",
+    method: "get",
+    params:{
+      tableId
+    }
+  })
+}
+
+// 批量更新表字段信息
+export const batchUpdateColumn = (data: any) => {
+  return axios({
+    url: "/tool/gen/batchUpdateColumn",
+    method: "post",
+    data
+  })
+}
+
+// 删除表字段
+export const deleteColumn = (id: any) => {
+  return axios({
+    url: "/tool/gen/deleteColumn",
+    method: "post",
+    params: {
+      id
+    }
+  })
+}

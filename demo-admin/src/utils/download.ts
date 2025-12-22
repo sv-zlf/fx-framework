@@ -85,6 +85,7 @@ export class BackendFileDownloadUtil {
       }
       return false;
     } catch (error) {
+      console.error('文件下载失败：', error);
       return false;
     }
   }

@@ -68,7 +68,7 @@ public class SqlParserUtil {
                     SQLCreateTableStatement createTableStatement = (SQLCreateTableStatement) statement;
                     // 解析单个建表语句，封装为TableInfo
                     TableInfo tableInfo = parseSingleCreateTable(createTableStatement, sql);
-                    tableInfo.setMoudleName(moudleName);
+                    tableInfo.setModuleName(moudleName);
                     tableInfo.setAuthor(SecurityUtils.getUserName());
                     tableInfoList.add(tableInfo);
                 }

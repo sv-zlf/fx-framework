@@ -45,7 +45,13 @@
           <a-table-column title="序号" align="center" :width="64">
             <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
           </a-table-column>
-          <a-table-column title="表名" align="center" data-index="tableName" :width="120" ellipsis tooltip></a-table-column>
+          <a-table-column title="表名" align="center" data-index="tableName" :width="120" ellipsis tooltip>
+            <template #cell="{ record }">
+              <a @click="handleTableColum(record)" style="color: #1890ff; cursor: pointer">
+                {{ record.tableName }}
+              </a>
+            </template>
+          </a-table-column>
           <a-table-column title="类名" align="center" data-index="className" :width="120" ellipsis tooltip></a-table-column>
           <a-table-column title="表注释" align="center" data-index="tableComment" :width="180" ellipsis tooltip></a-table-column>
           <a-table-column title="生成方式" align="center"  data-index="generateType" :width="180">
@@ -56,13 +62,12 @@
                 placeholder="请选择生成方式"
                 @change="(value) => handleGenerateTypeChange(record, value)"
               >
-              <!-- 选项配置：0-压缩包，1-本地工程模块 -->
               <a-option :value="0" label="压缩包"></a-option>
               <a-option :value="1" label="本地工程"></a-option>
               </a-select>
             </template>
           </a-table-column>
-          <a-table-column title="模块名" align="center" data-index="moudleName" :width="180"></a-table-column>
+          <a-table-column title="模块名" align="center" data-index="moduleName" :width="180"></a-table-column>
           <a-table-column title="作者" align="center" data-index="author" :width="180"></a-table-column>
           <a-table-column title="操作" :width="200" align="center" :fixed="tableFixed">
             <template #cell="{ record }">
@@ -112,7 +117,7 @@
                 field="sql"
                 validate-trigger="blur"
                 label="建表语句："
-                label-col-style="white-space: pre-line;"
+                :label-col-style="{whiteSpace: 'pre-line'}"
               >
                 <a-textarea
                   v-model="tableFrom.sql"
@@ -134,44 +139,54 @@
         <a-form ref="formRef" auto-label-width :layout="formLayout" :rules="rules" :model="from">
           <a-row :gutter="24">
             <a-col :span="12">
-              <a-form-item field="userName" label="用户名称" validate-trigger="blur">
-                <a-input v-model="from.userName" placeholder="请输入用户名称" allow-clear />
+              <a-form-item field="tableName" label="表名" validate-trigger="blur">
+                <a-input v-model="from.tableName" placeholder="请输入表名" allow-clear />
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item field="nickName" label="昵称" validate-trigger="blur">
-                <a-input v-model="from.nickName" placeholder="请输入昵称" allow-clear />
+              <a-form-item field="className" label="类名" validate-trigger="blur">
+                <a-input v-model="from.className" placeholder="请输入类名" allow-clear />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row :gutter="24">
             <a-col :span="12">
-              <a-form-item field="phone" label="手机号码" validate-trigger="blur">
-                <a-input v-model="from.phone" placeholder="请输入手机号码" allow-clear />
+              <a-form-item field="moduleName" label="模块名" validate-trigger="blur">
+                <a-input v-model="from.moduleName" placeholder="请输入模块名" allow-clear />
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item field="email" label="邮箱" validate-trigger="blur">
-                <a-input v-model="from.email" placeholder="请输入邮箱" allow-clear />
+              <a-form-item field="author" label="作者" validate-trigger="blur">
+                <a-input v-model="from.author" placeholder="请输入作者" allow-clear />
               </a-form-item>
             </a-col>
           </a-row>
-          <a-form-item  label="角色" validate-trigger="blur">
-            <a-select v-model="from.roles" multiple placeholder="请选择角色" >
-              <a-option
-                v-for="item in roleList"
-                :key="item.id"
-                :value="item.id"
-                :label="item.roleName"
-              ></a-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item field="status" label="状态" validate-trigger="blur">
-            <a-switch type="round" :checked-value="1" :unchecked-value="0" v-model="from.status">
-              <template #checked> 启用 </template>
-              <template #unchecked> 禁用 </template>
-            </a-switch>
-          </a-form-item>
+          <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item field="generateType" label="生成方式" validate-trigger="blur">
+                  <a-select
+                    v-model="from.generateType"
+                    style="width: 100%"
+                    placeholder="请选择生成方式"
+                  >
+                    <a-option :value="0" label="压缩包"></a-option>
+                    <a-option :value="1" label="本地工程"></a-option>
+                  </a-select>
+                </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item field="tableComment" label="表注释" validate-trigger="blur">
+                <a-input v-model="from.tableComment" placeholder="请输入表注释" allow-clear />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24">
+            <a-col :span="24">
+              <a-form-item field="remark" label="备注" validate-trigger="blur">
+                <a-textarea :auto-size="{ minRows:5,maxRows:10}" v-model="from.remark" placeholder="请输入备注" allow-clear />
+              </a-form-item>
+            </a-col>
+          </a-row>
         </a-form>
       </div>
     </a-modal>
@@ -182,9 +197,10 @@
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 import {createCode, createTable, getPageList, updateTable} from "@/api/tool/gen";
-import {deleteBatch, deleteUser, saveOrUpdate} from "@/api/system/user";
 import {quickDownloadFile} from "@/utils/download";
+import { useRouteConfigStore } from "@/store/modules/route-config";
 
+const routeStore = useRouteConfigStore();
 const router = useRouter();
 const { dialogWidth, formLayout, tableFixed } = useLayoutModel();
 
@@ -222,7 +238,7 @@ const reset = () => {
   };
   getTable();
 };
-// 账户
+// 列表
 const tableList = ref();
 const getTable = async () => {
   loading.value = true;
@@ -289,6 +305,7 @@ const handleGenerateTypeChange = debounce(async (record: any, value: string | nu
     await updateTable(record);
     arcoMessage("success", `生成方式已更新为：${value === '0' ? '压缩包' : '本地工程'}`);
   } catch (error) {
+    console.log( error)
     arcoMessage("error", "更新失败，请重试");
   } finally {
     record.updating = false;
@@ -309,49 +326,65 @@ const handleGenerate = async (record: any) => {
       arcoMessage("success", "代码生成成功");
     }
   } catch (error) {
+    console.log( error)
     arcoMessage("error", "生成失败，请重试");
   }
 };
 
+// 跳转字段详情
+const handleTableColum = async (record: any) => {
+  // 缓存信息
+  const path = '/tool/gen-code/columnInfo';
+  let route = {
+    path: path, // 跳转路由
+    query:{
+      tableId: record.id,
+      tableName: record.tableName,
+      tableComment: record.tableComment
+    }
+  };
+  await routeStore.removeRouteName(path);
+  await routeStore.setRouteStoredParams(path,record.columnList)
+  router.push(route);
+};
 const open = ref(false);
 const rules = {
-  userName: [
+  tableName: [
     {
       required: true,
-      message: "请输入用户名称"
+      message: "请输入表名"
     }
   ],
-  nickName: [
+  className: [
     {
       required: true,
-      message: "请输入昵称"
+      message: "请输入类名"
     }
   ],
-  roles: [
+  moduleName: [
     {
       required: true,
-      message: "请选择角色"
+      message: "请输入模块名称"
     }
   ],
-  status: [
+  generateType: [
     {
       required: true,
-      message: "请选择状态"
+      message: "请选择生成方式"
     }
   ]
 };
 const from = ref<any>({
-  userName: "",
-  nickName: "",
-  phone: "",
-  email: "",
-  roles: [],
-  status: 1,
+  tableName: "",
+  className: "",
+  moduleName: "",
+  generateType: 0,
+  author: "",
+  tableComment: "",
+  remark: ""
 });
 const title = ref("");
 const formRef = ref();
-
-//新增
 
 // 更新
 const onUpdate = (row: any) => {
@@ -363,7 +396,7 @@ const onUpdate = (row: any) => {
 const handleOk = async () => {
   let state = await formRef.value.validate();
   if (state) return (open.value = true); // 校验不通过
-  await saveOrUpdate(from.value)
+  await updateTable(from.value)
   arcoMessage("success", "提交成功");
   getTable();
 };
@@ -371,12 +404,13 @@ const handleOk = async () => {
 const afterClose = () => {
   formRef.value.resetFields();
   from.value = {
-    userName: "",
-    nickName: "",
-    phone: "",
-    email: "",
-    roles: [],
-    status: 1,
+    tableName: "",
+    className: "",
+    moduleName: "",
+    generateType: 0,
+    author: "",
+    tableComment: "",
+    remark: ""
   };
 };
 
@@ -390,7 +424,7 @@ const selectAll = (state: boolean) => {
 };
 // 删除
 const onDelete = async (row: any) => {
-    await deleteUser(row.id);
+    // await deleteUser(row.id);
     arcoMessage("success", "删除成功");
     getTable();
 }
@@ -399,13 +433,10 @@ const onDeleteBatch = async () => {
   if (selectedKeys.value.length === 0){
     return arcoMessage("warning", "请选择要删除的用户");
   }
-  await deleteBatch(selectedKeys.value);
+  // await deleteBatch(selectedKeys.value);
   arcoMessage("success", "删除成功");
   getTable();
 }
-
-
-
 onMounted(() => {
   getTable();
 });
