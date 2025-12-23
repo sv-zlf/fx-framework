@@ -121,7 +121,7 @@
           <a-table-column title="操作" align="center" :width="180" :fixed="tableFixed">
             <template #cell="{ record }">
               <a-space>
-                <a-button size="mini" type="primary" status="success" v-if="record.type == 1" @click="onCurrentAdd(record)">
+                <a-button size="mini" type="primary" status="success" v-if="record.type != 3" @click="onCurrentAdd(record)">
                   <template #icon><icon-plus /></template>
                   <span>新增</span>
                 </a-button>
