@@ -18,6 +18,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,7 @@ public class SystemUserController {
     private ISystemUserRoleService userRoleService;
 
     @Operation(summary = "获取分页列表")
+    @PreAuthorize("hasAuthority('user:list')")
     @PostMapping("/getPageList")
     public HttpResult getUserPageList(@RequestBody UserQueryDTO userQueryDto) {
         return HttpResult.success(userService.getPageList(userQueryDto));

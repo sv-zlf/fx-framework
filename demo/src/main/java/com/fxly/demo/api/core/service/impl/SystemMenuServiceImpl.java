@@ -38,6 +38,13 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     }
 
     @Override
+    public List<SystemMenu> getMenuList(Set<Long> roleIds) {
+        MenuQueryDTO menuQuery = new MenuQueryDTO();
+        menuQuery.setCurrentLoginUserRoleIds(roleIds);
+        return baseMapper.getMenuList(menuQuery);
+    }
+
+    @Override
     public List<SystemMenu> getMenuTree(MenuQueryDTO menuQuery) {
         List<SystemMenu> menuList = baseMapper.getMenuList(menuQuery);
         return TreeUtils.buildTree(menuList);

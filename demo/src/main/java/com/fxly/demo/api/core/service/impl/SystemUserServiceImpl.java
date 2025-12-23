@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fxly.demo.api.core.dto.MenuQueryDTO;
 import com.fxly.demo.api.core.dto.UserQueryDTO;
+import com.fxly.demo.api.core.entity.SystemMenu;
 import com.fxly.demo.api.core.entity.SystemRole;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.entity.SystemUserRole;
 import com.fxly.demo.api.core.mapper.SystemUserRoleMapper;
 import com.fxly.demo.api.core.mapper.SystemRoleMapper;
 import com.fxly.demo.api.core.mapper.SystemUserMapper;
+import com.fxly.demo.api.core.service.ISystemMenuService;
 import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.api.core.service.ISystemUserService;
 import com.fxly.demo.system.constant.SystemConstants;
@@ -24,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,6 +41,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Resource
     private ISystemUserRoleService systemUserRoleService;
+
+    @Resource
+    private ISystemMenuService systemMenuService;
 
     @Resource
     private SystemRoleMapper systemRoleMapper;
@@ -80,7 +87,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             List<SystemRole> roles = systemUserRoleService.getRoleListByUserId(systemUser.getId());
             systemUser.setRoleList(roles);
             List<Long> roleIds = roles.stream().map(SystemRole::getId).toList();
-            systemUser.setRoles( roleIds);
+            systemUser.setRoles(roleIds);
+            // 获取菜单权限列表
+            List<SystemMenu> menus = systemMenuService.getMenuList(new HashSet<>(roleIds));
+            if (ObjectUtil.isNotEmpty( menus)){
+                systemUser.setPermissionList(menus.stream()
+                        .filter(menu -> ObjectUtil.isNotEmpty(menu.getPermission()))
+                        .map(SystemMenu::getPermission).toList());
+            }
         }
         return systemUser;
     }

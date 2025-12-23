@@ -6,6 +6,7 @@ import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -92,6 +93,15 @@ public class GlobalExceptionHandler {
         return HttpResult.error()
                 .code(400)
                 .msg(errorMsg);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public HttpResult handleAuthorizationDeniedException(AuthorizationDeniedException e, HttpServletRequest request) {
+        String requestUri = request.getRequestURI();
+        log.warn("请求地址：{}，权限不足：{}", requestUri, e.getMessage());
+        return HttpResult.error()
+                .code(403)
+                .msg(e.getMessage());
     }
 
 }

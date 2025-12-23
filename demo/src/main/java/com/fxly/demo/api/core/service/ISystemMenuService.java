@@ -7,6 +7,7 @@ import com.fxly.demo.api.core.entity.SystemMenu;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author zlf
@@ -16,6 +17,8 @@ import java.util.List;
 public interface ISystemMenuService extends IService<SystemMenu> {
 
     List<SystemMenu> getMenuList(MenuQueryDTO menuQuery);
+
+    List<SystemMenu> getMenuList(Set<Long> roleIds);
 
     List<SystemMenu> getMenuTree(MenuQueryDTO menuQuery);
 
