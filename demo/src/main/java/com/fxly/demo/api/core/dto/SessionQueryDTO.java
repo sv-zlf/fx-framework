@@ -18,5 +18,7 @@ public class SessionQueryDTO extends PageHelper {
 
     private String loginName;
 
-    private LocalDateTime loginTime;
+    private String startLoginTime;
+
+    private String endLoginTime;
 }

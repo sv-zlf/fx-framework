@@ -1,6 +1,7 @@
 package com.fxly.demo.api.core.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -16,10 +17,12 @@ import com.fxly.demo.utils.session.IpParseUtil;
 import com.fxly.demo.utils.session.UserAgentParseUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -42,10 +45,15 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
 
     @Override
     public Page<SystemUserSession> getPageList(SessionQueryDTO query) {
+        // 分页
         Page<SystemUserSession> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        // 查询条件
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LambdaUpdateWrapper  queryWrapper = new LambdaUpdateWrapper<SystemUserSession>()
-                .like(ObjectUtil.isNotEmpty(query.getLoginName()),SystemUserSession::getLoginName,query.getLoginName())
-                .like(ObjectUtil.isNotEmpty(query.getLoginLocation()),SystemUserSession::getLoginLocation,query.getLoginLocation());
+                .like(StringUtils.isNotEmpty(query.getLoginName()),SystemUserSession::getLoginName,query.getLoginName()) // 登录用户名
+                .like(StringUtils.isNotEmpty(query.getLoginLocation()),SystemUserSession::getLoginLocation,query.getLoginLocation())  // 登录地址
+                .ge(StringUtils.isNotEmpty(query.getStartLoginTime()),SystemUserSession::getLoginTime, LocalDateTimeUtil.parse(query.getStartLoginTime(), formatter)) // 大于等于登录时间
+                .le(StringUtils.isNotEmpty(query.getEndLoginTime()),SystemUserSession::getLoginTime, LocalDateTimeUtil.parse(query.getEndLoginTime(), formatter)); // 小于等于登录时间
         baseMapper.selectPage(page,queryWrapper);
         return page;
     }

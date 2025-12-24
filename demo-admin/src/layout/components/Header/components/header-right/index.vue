@@ -115,6 +115,7 @@ import { useThemeConfig } from "@/store/modules/theme-config";
 import { useThemeMethods } from "@/hooks/useThemeMethods";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
 import { useRouteConfigStore } from "@/store/modules/route-config";
+import {logout} from "@/api/system/user";
 
 const i18n = useI18n();
 const router = useRouter();
@@ -193,6 +194,7 @@ const logOut = () => {
     onBeforeOk: async () => {
       try {
         // 用户退出
+        await logout();
         await userStore.logOut();
         router.replace("/login");
         // 清除路由数据

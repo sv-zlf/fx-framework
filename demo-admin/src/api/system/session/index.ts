@@ -5,6 +5,9 @@ export const getPageList = (params: any) => {
   return axios({
     url: "/system/user/session/getPageList",
     method: "get",
-    params
+    params,
+    paramsSerializer: {
+      indexes: null
+    }
   });
 };

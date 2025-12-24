@@ -3,7 +3,7 @@
     <div class="snow-inner">
       <a-space wrap>
         <a-input v-model="form.loginLocation" placeholder="请输入登录地址" allow-clear />
-        <a-input v-model="form.userName" placeholder="请输入账户名称" allow-clear />
+        <a-input v-model="form.loginName" placeholder="请输入账户名称" allow-clear />
         <a-range-picker v-model="form.loginTime" show-time format="YYYY-MM-DD HH:mm" allow-clear />
         <a-button type="primary" @click="search">
           <template #icon><icon-search /></template>
@@ -31,10 +31,10 @@
           <a-table-column title="登录账户" data-index="loginName" ellipsis tooltip></a-table-column>
           <a-table-column title="IP地址" data-index="host" ellipsis tooltip></a-table-column>
           <a-table-column title="登录地址" data-index="loginLocation" ellipsis tooltip></a-table-column>
-          <a-table-column title="状态" data-index="status" align="center" :width="80">
+          <a-table-column title="状态" data-index="sessionStatus" align="center" :width="80">
             <template #cell="{ record }">
               <a-space>
-                <a-badge status="success" text="在线" v-if="record.status == 1" />
+                <a-badge status="success" text="在线" v-if="record.sessionStatus == 1" />
                 <a-badge status="normal" text="离线" v-else />
               </a-space>
             </template>
@@ -42,6 +42,7 @@
           <a-table-column title="浏览器" data-index="browser" ellipsis tooltip></a-table-column>
           <a-table-column title="操作系统" data-index="os" ellipsis tooltip></a-table-column>
           <a-table-column title="登录时间" data-index="loginTime" ellipsis tooltip></a-table-column>
+          <a-table-column title="最后访问时间" data-index="lastAccessTime" ellipsis tooltip></a-table-column>
           <a-table-column title="操作" :width="100" align="center" :fixed="isMobile ? '' : 'right'">
             <template #cell="{ record }">
               <a-space>
@@ -70,51 +71,66 @@ const { isMobile } = useDevicesSize();
 
 const form = ref({
   loginLocation: "",
-  userName: "",
+  loginName: "",
   loginTime: []
 });
 const search = () => {
-  getOnlineuser();
+  getOnlineUser();
 };
 const reset = () => {
   form.value = {
     loginLocation: "",
-    userName: "",
+    loginName: "",
     loginTime: []
   };
-  getOnlineuser();
+  getOnlineUser();
 };
 
 const onLogout = (row: any) => {
   console.log("退出", row);
   arcoMessage("success", "模拟退出成功");
-  getOnlineuser();
+  getOnlineUser();
 };
 
 // 获取列表
 const loading = ref(false);
+//  分页
 const pagination = ref({
-  current: 1,
+  total: null,
+  current:1,
   pageSize: 10,
-  showPageSize: true
+  showPageSize:true,
+  showTotal: true,
+  onChange: (current: number) => {
+    pagination.value.current = current;
+    getOnlineUser();
+  },
+  onPageSizeChange: (pageSize: number) => {
+    pagination.value.current = 1;
+    pagination.value.pageSize = pageSize;
+    getOnlineUser();
+  }
 });
 const list = ref([]);
-const getOnlineuser = async () => {
+const getOnlineUser = async () => {
   try {
     loading.value = true;
     const params = {
       ...form.value,
       pageIndex: pagination.value.current,
-      pageSize: pagination.value.pageSize
+      pageSize: pagination.value.pageSize,
+      startLoginTime: form.value.loginTime[0] || null,
+      endLoginTime: form.value.loginTime[1] || null
     };
     let res = await getPageList(params);
     list.value = res.data.records;
+    pagination.value.total = res.data.total;
   } finally {
     loading.value = false;
   }
 };
 
-getOnlineuser();
+getOnlineUser();
 </script>
 
 <style lang="scss" scoped>

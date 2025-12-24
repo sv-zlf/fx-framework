@@ -134,7 +134,7 @@
         <!-- hutool工具类 -->
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
+            <artifactId>hutool-core</artifactId>
             <version>5.8.38</version>
         </dependency>
 

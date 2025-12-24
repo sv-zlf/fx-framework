@@ -62,10 +62,13 @@ service.interceptors.response.use(
   },
   function (error: any) {
     console.log("响应错误拦截器", error)
-    localStorage.removeItem("user-info");
-    const userStore = useUserInfoStore(pinia);
-    userStore.logOut();
-    router.push("/login");
+    if (error.status == 401){
+      localStorage.removeItem("user-info");
+      const userStore = useUserInfoStore(pinia);
+      userStore.logOut();
+      router.push("/login");
+    }
+    Message.error(error.message);
     return Promise.reject(error);
   }
 );
