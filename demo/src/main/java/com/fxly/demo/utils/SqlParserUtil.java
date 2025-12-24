@@ -1,4 +1,4 @@
-package com.fxly.demo.util;
+package com.fxly.demo.utils;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -13,9 +13,6 @@ import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.security.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +32,7 @@ public class SqlParserUtil {
     private static final String DB_TYPE = JdbcConstants.MYSQL.toString();
 
     /**
-     * 正则表达式：匹配表注释的COMMENT子句（如 COMMENT='用户信息表'、COMMENT "用户信息表"）
+     * 正则表达式：匹配表注释的COMMENT子句
      */
     private static final Pattern TABLE_COMMENT_PATTERN = Pattern.compile("COMMENT\\s*=?\\s*['\"`]?(.*?)['\"`]?\\s*(,|\\))", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
@@ -129,7 +126,7 @@ public class SqlParserUtil {
             columnInfo.setJavaType(getColumnJavaType(columnType.toUpperCase()));
 
             // 列注释
-            columnInfo.setComment(columnDef.getComment().toString());
+            columnInfo.setComment(columnDef.getComment().toString().replaceAll("'", ""));
 
             // 是否主键（列级+表级）
             columnInfo.setPrimaryKey(primaryKeyColumns.contains(columnName) || isColumnPrimaryKey(columnDef));

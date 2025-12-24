@@ -110,3 +110,22 @@ CREATE TABLE `system_log` (
                               INDEX `idx_create_time` (`create_time`) USING BTREE,
                               INDEX `idx_user_id` (`user_id`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统日志表';
+
+-- 系统用户会话表：存储用户登录后的会话信息
+CREATE TABLE system_user_session (
+                                  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                  session_id VARCHAR(64) NOT NULL COMMENT '会话编号',
+                                  login_name VARCHAR(50) NOT NULL COMMENT '登录名称',
+                                  host VARCHAR(50) DEFAULT '' COMMENT '主机（客户端IP）',
+                                  login_location VARCHAR(100) DEFAULT '' COMMENT '登录地点',
+                                  browser VARCHAR(50) DEFAULT '' COMMENT '浏览器',
+                                  os VARCHAR(50) DEFAULT '' COMMENT '操作系统',
+                                  session_status TINYINT NOT NULL DEFAULT 0 COMMENT '会话状态：0-离线/过期，1-在线，2-强制下线',
+                                  login_time DATETIME NOT NULL COMMENT '登录时间',
+                                  last_access_time DATETIME NOT NULL COMMENT '最后访问时间',
+                                  expire_time DATETIME DEFAULT NULL COMMENT '会话过期时间',
+                                  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  PRIMARY KEY (id),
+                                  INDEX idx_login_name (login_name)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统用户会话表';

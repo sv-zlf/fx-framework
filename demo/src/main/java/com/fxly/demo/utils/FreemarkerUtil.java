@@ -1,4 +1,4 @@
-package com.fxly.demo.util;
+package com.fxly.demo.utils;
 
 import com.fxly.demo.api.generate.entity.TableInfo;
 import freemarker.template.Configuration;

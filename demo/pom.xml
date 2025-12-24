@@ -15,6 +15,9 @@
         <mybatis-plus.version>3.5.8</mybatis-plus.version>
         <fastjson.version>2.0.32</fastjson.version>
         <knife4j.version>4.5.0</knife4j.version>
+        <ip2region.version>2.7.0</ip2region.version>
+        <useragent.version>1.21</useragent.version>
+        <servlet-api.version>2.5</servlet-api.version>
     </properties>
     <dependencies>
 
@@ -139,6 +142,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <!-- IP解析 -->
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
+            <version>${ip2region.version}</version>
+        </dependency>
+
+        <!-- User-Agent解析 -->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>${useragent.version}</version>
         </dependency>
 
         <dependency>

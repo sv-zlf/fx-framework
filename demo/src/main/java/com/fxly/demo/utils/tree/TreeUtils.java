@@ -1,12 +1,8 @@
-package com.fxly.demo.util.tree;
+package com.fxly.demo.utils.tree;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.fxly.demo.system.global.GlobalException;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

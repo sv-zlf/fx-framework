@@ -1,4 +1,4 @@
-package com.fxly.demo.util.tree;
+package com.fxly.demo.utils.tree;
 
 import java.util.List;
 

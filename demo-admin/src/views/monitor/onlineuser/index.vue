@@ -27,10 +27,9 @@
           <a-table-column title="序号" :width="64">
             <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
           </a-table-column>
-          <a-table-column title="会话编号" data-index="tokenId" ellipsis tooltip></a-table-column>
-          <a-table-column title="登录账户" data-index="userName" ellipsis tooltip></a-table-column>
-          <a-table-column title="部门名称" data-index="deptName" ellipsis tooltip></a-table-column>
-          <a-table-column title="IP地址" data-index="ipaddr" ellipsis tooltip></a-table-column>
+          <a-table-column title="会话编号" data-index="sessionId" ellipsis tooltip></a-table-column>
+          <a-table-column title="登录账户" data-index="loginName" ellipsis tooltip></a-table-column>
+          <a-table-column title="IP地址" data-index="host" ellipsis tooltip></a-table-column>
           <a-table-column title="登录地址" data-index="loginLocation" ellipsis tooltip></a-table-column>
           <a-table-column title="状态" data-index="status" align="center" :width="80">
             <template #cell="{ record }">
@@ -63,7 +62,7 @@
 
 <script setup lang="ts">
 import { useDevicesSize } from "@/hooks/useDevicesSize";
-import { getOnlineuserAPI } from "@/api/modules/monitor/index";
+import { getPageList } from "@/api/system/session/index";
 
 defineOptions({ name: "onlineuser" });
 
@@ -95,6 +94,7 @@ const onLogout = (row: any) => {
 // 获取列表
 const loading = ref(false);
 const pagination = ref({
+  current: 1,
   pageSize: 10,
   showPageSize: true
 });
@@ -102,8 +102,13 @@ const list = ref([]);
 const getOnlineuser = async () => {
   try {
     loading.value = true;
-    let res = await getOnlineuserAPI();
-    list.value = res.data;
+    const params = {
+      ...form.value,
+      pageIndex: pagination.value.current,
+      pageSize: pagination.value.pageSize
+    };
+    let res = await getPageList(params);
+    list.value = res.data.records;
   } finally {
     loading.value = false;
   }

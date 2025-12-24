@@ -2,7 +2,7 @@ package com.fxly.demo.api.core.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fxly.demo.util.tree.Treeable;
+import com.fxly.demo.utils.tree.Treeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

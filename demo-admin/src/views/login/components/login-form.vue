@@ -95,7 +95,7 @@ const onLogin = async () => {
   // 登录
   let res = await login(form.value);
   // 存储token
-  await userStores.setToken(res.data.token);
+  await userStores.setToken(res.data);
   // 加载用户信息
   await userStores.setAccount();
   // 加载路由信息

@@ -7,7 +7,7 @@ import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.redis.RedisCache;
 import com.fxly.demo.system.redis.RedisConstants;
-import com.fxly.demo.util.ApplicationContextUtils;
+import com.fxly.demo.utils.ApplicationContextUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;

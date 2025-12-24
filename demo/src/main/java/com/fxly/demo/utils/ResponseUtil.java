@@ -1,4 +1,4 @@
-package com.fxly.demo.util;
+package com.fxly.demo.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fxly.demo.system.global.HttpResult;

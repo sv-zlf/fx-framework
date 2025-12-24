@@ -1,7 +1,6 @@
 package com.fxly.demo.api.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fxly.demo.api.core.dto.MenuQueryDTO;
 import com.fxly.demo.api.core.entity.SystemMenu;
@@ -11,7 +10,7 @@ import com.fxly.demo.api.core.service.ISystemMenuService;
 import com.fxly.demo.api.core.service.ISystemRoleMenuService;
 import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.security.SecurityUtils;
-import com.fxly.demo.util.tree.TreeUtils;
+import com.fxly.demo.utils.tree.TreeUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

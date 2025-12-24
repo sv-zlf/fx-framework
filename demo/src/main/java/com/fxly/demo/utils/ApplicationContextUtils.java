@@ -1,4 +1,4 @@
-package com.fxly.demo.util;
+package com.fxly.demo.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

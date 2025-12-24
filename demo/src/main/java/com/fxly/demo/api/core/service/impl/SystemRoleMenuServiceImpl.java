@@ -12,7 +12,7 @@ import com.fxly.demo.api.core.entity.SystemRole;
 import com.fxly.demo.api.core.mapper.SystemRoleMenuMapper;
 import com.fxly.demo.api.core.service.ISystemRoleMenuService;
 import com.fxly.demo.system.security.SecurityUtils;
-import com.fxly.demo.util.tree.TreeUtils;
+import com.fxly.demo.utils.tree.TreeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

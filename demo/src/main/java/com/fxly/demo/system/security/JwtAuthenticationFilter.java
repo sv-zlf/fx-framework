@@ -1,7 +1,8 @@
 package com.fxly.demo.system.security;
 
+import com.fxly.demo.api.core.service.ISystemUserSessionService;
 import com.fxly.demo.system.global.HttpResultEnum;
-import com.fxly.demo.util.ResponseUtil;
+import com.fxly.demo.utils.ResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.annotation.Resource;
@@ -35,6 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Resource
     private UserDetailsService userDetailsService;
+
+    @Resource
+    private ISystemUserSessionService systemUserSessionService;
+
 
     private static final List<String> NO_FILTER_PATHS = Arrays.asList(SecurityConfig.noAuthUrl);
 
@@ -77,6 +82,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                // 更新最后访问时间
+                systemUserSessionService.updateLastAccessTime(token);
             }
             // 放行请求
             filterChain.doFilter(request, response);

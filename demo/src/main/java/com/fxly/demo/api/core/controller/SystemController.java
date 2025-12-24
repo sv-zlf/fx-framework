@@ -2,6 +2,7 @@ package com.fxly.demo.api.core.controller;
 
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.service.ISystemUserService;
+import com.fxly.demo.api.core.service.ISystemUserSessionService;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.security.CustomUserDetails;
@@ -11,6 +12,7 @@ import com.fxly.demo.system.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -45,6 +47,8 @@ public class SystemController {
     private ISystemUserService systemUserService;
 
     @Resource
+    private ISystemUserSessionService systemUserSessionService;
+    @Resource
     private JwtUtil jwtUtil;
 
     @Resource
@@ -54,7 +58,7 @@ public class SystemController {
 
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public HttpResult login(@RequestParam("username") String username, @RequestParam("password") String password) {
+    public HttpResult login(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
 
         // 非空校验
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
@@ -73,12 +77,15 @@ public class SystemController {
             if(b) {
                 log.info("当前用户信息已存储到Redis：{}", userDetails);
             }
+            // 登记会话信息
+            systemUserSessionService.createSession(token, userDetails.getUsername(), request);
+
             // 封装结果
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("token", token);
-            resultMap.put("currentLoginUser", userDetails.getSystemUser());
+//            Map<String, Object> resultMap = new HashMap<>();
+//            resultMap.put("token", token);
+//            resultMap.put("currentLoginUser", userDetails.getSystemUser());
             log.info("> Logged in as: " + userDetails.getUsername());
-            return HttpResult.success(resultMap);
+            return HttpResult.success(token);
         }catch (BadCredentialsException e) { // 用户名或密码错误
             return HttpResult.setResult(HttpResultEnum.USERNAME_PASSWORD_ERROR);
         } catch (Exception e) { // 其他认证异常
