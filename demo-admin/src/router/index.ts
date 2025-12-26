@@ -44,14 +44,14 @@ router.beforeEach(async (to: any, _: any, next: any) => {
   // console.log("去", to, "来自", from);
   // next()内部加了path等于跳转指定路由会再次触发router.beforeEach，内部无参数等于放行，不会触发router.beforeEach
 
-  // 1、去登录页，无token，放行
-  if (to.path === "/login" && !token.value) return next();
+  // 去登录页，无token，放行
+  if ((to.path === "/login" || to.path === '/register') && !token.value) return next();
 
-  // 2、没有token，直接重定向到登录页
+  // 没有token，直接重定向到登录页
   if (!token.value) return next("/login");
 
-  // 3、去登录页，有token，直接重定向到home页
-  if (to.path === "/login" && token.value) {
+  // 去登录页，有token，直接重定向到home页
+  if ((to.path === "/login" || to.path === '/register') && token.value) {
     // 项目内的跳转，处理跳转路由高亮
     currentlyRoute(to);
     return next("/home");

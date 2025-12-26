@@ -160,7 +160,7 @@ public class SystemConstants {
         /**
          * 默认用户角色
          */
-        public static final String DEFAULT_ROLE_CODE = "ROLE_USER";
+        public static final String DEFAULT_ROLE_CODE = "USER";
     }
 
     public class RedisConstants {

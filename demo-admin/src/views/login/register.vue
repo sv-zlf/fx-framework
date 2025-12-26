@@ -3,16 +3,16 @@
     <div class="login">
       <LoginBanner v-if="isPc" />
       <div class="login_box">
-        <div class="login_title">欢迎回来</div>
-        <div class="login_subtitle">登录您的账户以继续使用系统</div>
-        <LoginForm />
+        <div class="login_title">创建账户</div>
+<!--        <div class="login_subtitle">注册您的账户以开始使用系统</div>-->
+        <RegisterForm />
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import LoginBanner from "@/views/login/components/login-banner.vue";
-import LoginForm from "@/views/login/components/login-form.vue";
+import RegisterForm from "@/views/login/components/register-form.vue";
 import { useDevicesSize } from "@/hooks/useDevicesSize";
 const { isPc } = useDevicesSize();
 </script>
@@ -29,8 +29,8 @@ const { isPc } = useDevicesSize();
     display: flex;
     align-items: center;
     max-width: 1000px;
-    height: 500px;
-    box-shadow: 0 0 8px 1px $color-fill-2;
+    height: 600px;
+    box-shadow: 0 0 8px 1px var(--color-fill-2);
     transform: translate(-50%, -50%);
     .login_box {
       position: relative;

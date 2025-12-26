@@ -22,6 +22,7 @@ public class SystemLogServiceImpl extends ServiceImpl<SystemLogMapper, SystemLog
         Page<SystemLog> page = new Page<>(systemLog.getPageIndex(),systemLog.getPageSize());
         // 查询条件
         LambdaQueryWrapper<SystemLog> queryWrapper = new LambdaQueryWrapper<>();
+
         // 执行查询
         baseMapper.selectPage(page,queryWrapper);
         return page;
