@@ -1,98 +1,216 @@
-<p align="center">
-  <a href="https://github.com/unibest-tech/unibest">
-    <img width="160" src="./src/static/logo.svg">
-  </a>
-</p>
+# Fx App - 移动端
 
-<h1 align="center">
-  <a href="https://github.com/unibest-tech/unibest" target="_blank">unibest - 最好的 uniapp 开发框架</a>
-</h1>
+基于 [uniest](https://github.com/feige996/uniest) 进行深度定制和优化的移动端应用，为 Fx-Framework 项目提供移动端解决方案。
 
-<div align="center">
-旧仓库 codercup 进不去了，star 也拿不回来，这里也展示一下那个地址的 star.
+## 项目说明
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/codercup/unibest?style=flat&logo=github)](https://github.com/codercup/unibest)
-[![GitHub forks](https://img.shields.io/github/forks/codercup/unibest?style=flat&logo=github)](https://github.com/codercup/unibest)
+**Fx App** 是基于开源项目 **uniest** 进行修改和扩展的移动端应用，为 Fx-Framework 项目提供完整的移动端解决方案。
 
-</div>
+### 基础来源
 
-<div align="center">
+本项目基于开源项目 **uniest** 进行修改和扩展，感谢原作者的贡献。原始项目地址：[uniest GitHub](https://github.com/feige996/uniest)
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/feige996/unibest?style=flat&logo=github)](https://github.com/feige996/unibest)
-[![GitHub forks](https://img.shields.io/github/forks/feige996/unibest?style=flat&logo=github)](https://github.com/feige996/unibest)
-[![star](https://gitee.com/feige996/unibest/badge/star.svg?theme=dark)](https://gitee.com/feige996/unibest/stargazers)
-[![fork](https://gitee.com/feige996/unibest/badge/fork.svg?theme=dark)](https://gitee.com/feige996/unibest/members)
-![node version](https://img.shields.io/badge/node-%3E%3D18-green)
-![pnpm version](https://img.shields.io/badge/pnpm-%3E%3D7.30-green)
-![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/feige996/unibest)
-![GitHub License](https://img.shields.io/github/license/feige996/unibest)
+### 主要改动
 
-</div>
+相较于原始 uniest 项目，本项目中进行了以下优化和定制：
 
-`unibest` —— 最好的 `uniapp` 开发模板，由 `uniapp` + `Vue3` + `Ts` + `Vite5` + `UnoCss` + `wot-ui` + `z-paging` 构成，使用了最新的前端技术栈，无需依靠 `HBuilderX`，通过命令行方式运行 `web`、`小程序` 和 `App`（编辑器推荐 `VSCode`，可选 `webstorm`）。
+1. **业务对接**
+   - 与后端 Spring Boot 服务完整对接
+   - 实现登录、注册等核心功能
+   - 集成系统权限管理
+   2. **API优化**
+   - 统一API接口路径和参数格式
+   - 优化认证流程，使用 JWT Token
+   - 完善错误处理和提示信息
+   3. **UI优化**
+   - 统一UI风格与Web管理端保持一致
+   - 优化移动端适配和交互体验
+   4. **功能定制**
+   - 根据业务需求定制特定功能模块
 
-`unibest` 内置了 `约定式路由`、`layout布局`、`请求封装`、`请求拦截`、`登录拦截`、`UnoCSS`、`i18n多语言` 等基础功能，提供了 `代码提示`、`自动格式化`、`统一配置`、`代码片段` 等辅助功能，让你编写 `uniapp` 拥有 `best` 体验 （ `unibest 的由来`）。
+## 技术栈
 
-![](https://raw.githubusercontent.com/andreasbm/readme/master/screenshots/lines/rainbow.png)
+- **核心框架**：Vue 3.5.15 + TypeScript 5.3.0
+- **跨平台框架**：UniApp
+- **UI组件库**：wot-ui
+- **构建工具**：Vite 6.3.5
+- **状态管理**：Pinia 2.3.0
+- **HTTP请求**：uni.request (封装axios)
+- **样式框架**：UnoCSS
+- **代码规范**：ESLint + Prettier
+- **提交规范**：Commitlint + Husky
 
-<p align="center">
-  <a href="https://unibest.tech/" target="_blank">📖 文档地址(new)</a>
-  <span style="margin:0 10px;">|</span>
-  <a href="https://unibest-tech.github.io/hello-unibest" target="_blank">📱 DEMO 地址</a>
-</p>
+## 支持平台
+
+| H5  | iOS | 安卓  | 微信小程序 |
+| --- | --- | --- | ----- |
+| ✅   | ✅   | ✅   | ✅     |
+
+## 功能特性
+
+### 基础功能
+
+- **用户认证**：完整的登录、注册、登出功能
+- **权限管理**：基于Token的权限控制
+- **路由管理**：完整的页面路由系统
+- **状态管理**：使用Pinia进行全局状态管理
+- **主题支持**：支持明暗主题切换
+- **多语言**：国际化支持（i18n）
+
+### 业务功能
+
+- **个人中心**：用户信息管理、设置
+- **系统管理**：与后台管理系统同步的业务功能
+
+## 项目结构
+
+```
+demo-app/
+├── src/                    # 源代码
+│   ├── api/               # API接口
+│   ├── assets/            # 静态资源
+│   ├── components/        # 公共组件
+│   ├── config/            # 配置文件
+│   ├── locales/           # 国际化文件
+│   ├── pages/             # 页面
+│   ├── static/            # 静态文件
+│   ├── store/             # 状态管理
+│   ├── uni_modules/       # UniApp插件
+│   ├── utils/             # 工具函数
+│   ├── App.vue            # 应用入口
+│   ├── main.ts            # 主入口
+│   └── manifest.json      # 应用配置
+├── public/                 # 公共资源
+├── .editorconfig          # 编辑器配置
+├── eslint.config.mjs       # ESLint配置
+├── package.json            # 项目依赖
+├── pages.config.ts         # 页面配置
+├── pnpm-lock.yaml          # 依赖锁文件
+├── tsconfig.json           # TypeScript配置
+├── uno.config.ts           # UnoCSS配置
+├── vite.config.ts           # Vite配置
+└── README.md               # 项目说明
+```
+
+## 快速开始
+
+### 环境要求
+
+- **Node.js**: 18.0.0+
+- **pnpm**: 8.0.0+
+- **HBuilderX**: 最新版（推荐，开发体验更好）
+- **VS Code**: 最新版（可选）
+
+### 安装依赖
+
+```bash
+# 安装pnpm（如果未安装）
+npm install -g pnpm
+
+# 安装项目依赖
+pnpm install
+```
+
+### 开发模式
+
+```bash
+# H5 开发
+pnpm dev:h5
+
+# 微信小程序开发
+pnpm dev:mp
+
+# APP 开发（需要HBuilderX）
+# 1. 使用HBuilderX打开项目
+# 2. 运行到手机模拟器或真机
+```
+
+### 生产构建
+
+```bash
+# H5 构建
+pnpm build:h5
+
+# 微信小程序构建
+pnpm build:mp
+
+# APP 构建（需要HBuilderX）
+# 1. 使用HBuilderX打开项目
+# 2. 发行 -> APP-云打包/原生App-云打包
+```
+
+## 开发指南
+
+### 1. 添加新页面
+
+1. 在 `src/pages/` 对应模块下创建页面文件
+2. 在 `pages.config.ts` 中配置页面路由
+3. 在菜单中配置页面入口（如需要）
+
+### 2. 添加新API
+
+1. 在 `src/api/` 对应模块下创建API文件
+2. 导出API方法
+3. 在页面中import并使用
+
+### 3. 使用公共组件
+
+项目提供了丰富的公共组件，位于 `src/components/` 下，按需引入使用。
+
+### 4. 状态管理
+
+使用Pinia进行状态管理，Store文件位于 `src/store/` 下。
+
+```typescript
+import { useUserStore } from '@/store/user'
+const userStore = useUserStore()
+```
+
+## 环境变量
+
+| 变量名                | 说明       | 默认值      |
+| ------------------ | -------- | -------- |
+| VITE_APP_TITLE     | 应用标题     | Demo App |
+| VITE_APP_BASE_API  | API基础路径  | /api     |
+| VITE_APP_OPEN_MOCK | 是否开启Mock | false    |
+
+## 代码规范
+
+项目使用 ESLint + Prettier 进行代码规范检查：
+
+- **ESLint**: JavaScript/TypeScript代码检查
+- **Prettier**: 代码格式化
+
+提交代码前会自动执行 lint-staged 检查，确保代码质量。
+
+## 提交规范
+
+项目使用 Commitlint 规范提交信息，格式为：
+
+```
+type(scope): description
+```
+
+- **type**: feat, fix, refactor, test, chore, docs, style, perf, build, ci, revert, wip, release, deps, merge, sync
+- **scope**: auth, user, home, etc.
+- **description**: 提交描述
+
+## 开源协议
+
+MIT License
+
+## 参考项目
+
+- [uniest](https://github.com/feige996/uniest) - 本项目基于此项目进行定制
+- [UniApp](https://uniapp.dcloud.net.cn/) - DCloud推出的跨平台开发框架
+- [Vue 3](https://vuejs.org/) - 渐进式JavaScript框架
+- [wot-ui](https://wot-design-uni.netlify.app/) - 高性能的uni-app组件库
+
+## 联系方式
+
+- 项目地址：[GitHub](https://github.com) / [Gitee](https://gitee.com)
+- 问题反馈：[Issues](https://github.com/xxx/issues)
 
 ---
 
-注意旧的地址 [codercup](https://github.com/codercup/unibest) 我进不去了，使用新的 [feige996](https://github.com/feige996/unibest)。PR和 issue 也请使用新地址，否则无法合并。
-
-## 平台兼容性
-
-| H5  | IOS | 安卓 | 微信小程序 | 字节小程序 | 快手小程序 | 支付宝小程序 | 钉钉小程序 | 百度小程序 |
-| --- | --- | ---- | ---------- | ---------- | ---------- | ------------ | ---------- | ---------- |
-| √   | √   | √    | √          | √          | √          | √            | √          | √          |
-
-注意每种 `UI框架` 支持的平台有所不同，详情请看各 `UI框架` 的官网，也可以看 `unibest` 文档。
-
-## ⚙️ 环境
-
-- node>=18
-- pnpm>=7.30
-- Vue Official>=2.1.10
-- TypeScript>=5.0
-
-## 新版分支 
-- main == base
-- base --> base-i18n
-- base-login --> base-login-i18n
-
-## &#x1F4C2; 快速开始
-
-执行 `pnpm create unibest` 创建项目
-执行 `pnpm i` 安装依赖
-执行 `pnpm dev` 运行 `H5`
-执行 `pnpm dev:mp` 运行 `微信小程序`
-
-## 📦 运行（支持热更新）
-
-- web平台： `pnpm dev:h5`, 然后打开 [http://localhost:9000/](http://localhost:9000/)。
-- weixin平台：`pnpm dev:mp` 然后打开微信开发者工具，导入本地文件夹，选择本项目的`dist/dev/mp-weixin` 文件。
-- APP平台：`pnpm dev:app`, 然后打开 `HBuilderX`，导入刚刚生成的`dist/dev/app` 文件夹，选择运行到模拟器(开发时优先使用)，或者运行的安卓/ios基座。(如果是 `安卓` 和 `鸿蒙` 平台，则不用这个方式，可以把整个unibest项目导入到hbx，通过hbx的菜单来运行到对应的平台。)
-
-## 🔗 发布
-
-- web平台： `pnpm build:h5`，打包后的文件在 `dist/build/h5`，可以放到web服务器，如nginx运行。如果最终不是放在根目录，可以在 `manifest.config.ts` 文件的 `h5.router.base` 属性进行修改。
-- weixin平台：`pnpm build:mp`, 打包后的文件在 `dist/build/mp-weixin`，然后通过微信开发者工具导入，并点击右上角的“上传”按钮进行上传。
-- APP平台：`pnpm build:app`, 然后打开 `HBuilderX`，导入刚刚生成的`dist/build/app` 文件夹，选择发行 - APP云打包。(如果是 `安卓` 和 `鸿蒙` 平台，则不用这个方式，可以把整个unibest项目导入到hbx，通过hbx的菜单来发行到对应的平台。)
-
-## 📄 License
-
-[MIT](https://opensource.org/license/mit/)
-
-Copyright (c) 2025 菲鸽
-
-## 捐赠
-
-<p align='center'>
-<img alt="special sponsor appwrite" src="https://oss.laf.run/ukw0y1-site/pay/wepay.png" height="330" style="display:inline-block; height:330px;">
-<img alt="special sponsor appwrite" src="https://oss.laf.run/ukw0y1-site/pay/alipay.jpg" height="330" style="display:inline-block; height:330px; margin-left:10px;">
-</p>
+**让开发更快速，让项目更精彩！** 🚀
