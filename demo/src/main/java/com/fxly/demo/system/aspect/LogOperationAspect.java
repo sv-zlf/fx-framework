@@ -7,6 +7,7 @@ import com.fxly.demo.api.core.service.ISystemLogService;
 import com.fxly.demo.system.annotation.LogOperation;
 import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
+import com.fxly.demo.system.security.SecurityUtils;
 import com.fxly.demo.utils.session.IpParseUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.annotation.Resource;
@@ -66,18 +67,8 @@ public class LogOperationAspect {
             HttpServletRequest request = attributes.getRequest();
 
             // 获取用户信息
-            Long userId = null;
-            String userName = "anonymous";
-            try {
-                Object userAttr = request.getAttribute("currentUser");
-                if (userAttr != null) {
-                    // TODO: 根据实际的用户信息结构获取
-                    // userId = ...
-                    // userName = ...
-                }
-            } catch (Exception e) {
-                log.debug("获取用户信息失败", e);
-            }
+            Long userId = SecurityUtils.getUserId();
+            String userName = SecurityUtils.getUserName();
 
             // 获取IP地址
             String ipAddress = ipParseUtil.getRealIp(request);
@@ -171,7 +162,9 @@ public class LogOperationAspect {
     @AfterThrowing(pointcut = "logPointCut() && @annotation(logOperation)", throwing = "throwable")
     public void doAfterThrowing(JoinPoint joinPoint, LogOperation logOperation, Throwable throwable) {
         try {
+        // 从线程本地变量中获取系统日志对象
             SystemLog log = LOG_THREADLOCAL.get();
+        // 如果日志对象为空，直接返回
             if (log == null) {
                 return;
             }
