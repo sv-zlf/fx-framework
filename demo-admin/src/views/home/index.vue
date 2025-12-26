@@ -273,6 +273,14 @@ const goToGithub = () => {
   padding: 20px;
   background: #f5f5f5;
   min-height: calc(100vh - 120px);
+  padding: 20px;
+  max-height: 80vh;
+  /* 垂直方向内容溢出时显示滚动条，允许下滑 */
+  overflow-y: auto;
+  /* 可选：添加内边距，避免内容贴边 */
+  padding: 0 16px;
+  /* 可选：隐藏横向滚动条（防止内容横向溢出） */
+  overflow-x: hidden;
 }
 
 // 欢迎横幅
