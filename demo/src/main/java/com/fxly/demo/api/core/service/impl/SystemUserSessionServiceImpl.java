@@ -11,12 +11,16 @@ import com.fxly.demo.api.core.dto.SessionQueryDTO;
 import com.fxly.demo.api.core.entity.SystemUserSession;
 import com.fxly.demo.api.core.mapper.SystemUserSessionMapper;
 import com.fxly.demo.api.core.service.ISystemUserSessionService;
+import com.fxly.demo.system.global.HttpResult;
+import com.fxly.demo.system.global.HttpResultEnum;
+import com.fxly.demo.system.security.JwtTokenManage;
 import com.fxly.demo.system.security.JwtUtil;
-import com.fxly.demo.utils.UUIDUtil;
+import com.fxly.demo.system.security.SecurityUtils;
 import com.fxly.demo.utils.session.IpParseUtil;
 import com.fxly.demo.utils.session.UserAgentParseUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 
 /**
-* 系统用户会话表 Service实现类
+* 系统用户会话表Service实现类
 * @author admin
 */
 
+@Slf4j
 @Service
 public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionMapper, SystemUserSession> implements ISystemUserSessionService {
 
@@ -39,9 +45,8 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
     private UserAgentParseUtil userAgentParseUtil;
     @Resource
     private JwtUtil jwtUtil;
-
     @Resource
-    private UUIDUtil uuidUtil;
+    private JwtTokenManage tokenManage;
 
     @Override
     public Page<SystemUserSession> getPageList(SessionQueryDTO query) {
@@ -51,9 +56,11 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LambdaUpdateWrapper  queryWrapper = new LambdaUpdateWrapper<SystemUserSession>()
                 .like(StringUtils.isNotEmpty(query.getLoginName()),SystemUserSession::getLoginName,query.getLoginName()) // 登录用户名
-                .like(StringUtils.isNotEmpty(query.getLoginLocation()),SystemUserSession::getLoginLocation,query.getLoginLocation())  // 登录地址
+                .like(StringUtils.isNotEmpty(query.getLoginLocation()),SystemUserSession::getLoginLocation,query.getLoginLocation())  // 登录地点
                 .ge(StringUtils.isNotEmpty(query.getStartLoginTime()),SystemUserSession::getLoginTime, LocalDateTimeUtil.parse(query.getStartLoginTime(), formatter)) // 大于等于登录时间
-                .le(StringUtils.isNotEmpty(query.getEndLoginTime()),SystemUserSession::getLoginTime, LocalDateTimeUtil.parse(query.getEndLoginTime(), formatter)); // 小于等于登录时间
+                .le(StringUtils.isNotEmpty(query.getEndLoginTime()),SystemUserSession::getLoginTime, LocalDateTimeUtil.parse(query.getEndLoginTime(), formatter)) // 小于等于登录时间
+                .orderByDesc(SystemUserSession::getCreateTime);
+        // 执行
         baseMapper.selectPage(page,queryWrapper);
         return page;
     }
@@ -70,7 +77,7 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
 
         // 构建实体
         SystemUserSession session = new SystemUserSession();
-        session.setSessionId(uuidUtil.generateByMd5(token));
+        session.setSessionId(token);
         session.setLoginName(loginName);
         session.setHost(ip);
         session.setLoginLocation(loginLocation);
@@ -87,9 +94,8 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
      * 更新最后访问时间
      */
     public void updateLastAccessTime(String token) {
-        String sessionId = uuidUtil.generateByMd5(token);
         LambdaUpdateWrapper updateWrapper = new LambdaUpdateWrapper<SystemUserSession>()
-                .eq(SystemUserSession::getSessionId, sessionId)
+                .eq(SystemUserSession::getSessionId, token)
                 .set(SystemUserSession::getLastAccessTime, LocalDateTime.now());
         baseMapper.update(updateWrapper);
     }
@@ -98,11 +104,46 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
      * 更新会话状态
      */
     public void updateSessionStatus(String token, Integer status) {
-        String sessionId = uuidUtil.generateByMd5(token);
         LambdaUpdateWrapper updateWrapper = new LambdaUpdateWrapper<SystemUserSession>()
-                .eq(SystemUserSession::getSessionId, sessionId)
+                .eq(SystemUserSession::getSessionId, token)
                 .set(SystemUserSession::getSessionStatus,status);
         baseMapper.update(updateWrapper);
+    }
+
+    /**
+     * 强制退出用户会话
+     */
+    @Override
+    public HttpResult forceLogout(String sessionId) {
+        try {
+            // 查询会话信息
+            LambdaQueryWrapper queryWrapper = new LambdaQueryWrapper<SystemUserSession>()
+                    .eq(SystemUserSession::getSessionId, sessionId);
+            List<SystemUserSession> sessionList = baseMapper.selectList(queryWrapper);
+            if (ObjectUtil.isEmpty(sessionList)) {
+                return HttpResult.error(400, "会话不存在");
+            }
+            else {
+                // 检查会话状态
+                SystemUserSession session = sessionList.get(0);
+                if (session.getSessionStatus() == 0) {
+                    return HttpResult.error(400, "该会话已离线");
+                }
+                // 获取当前登录用户名
+                String currentUser = SecurityUtils.getUserName();
+                log.info("管理员 {} 强制退出用户 {} 的会话", currentUser, session.getLoginName());
+                tokenManage.delToken(sessionId);
+                LambdaUpdateWrapper updateWrapper = new LambdaUpdateWrapper<SystemUserSession>()
+                        .eq(SystemUserSession::getSessionId, sessionId)
+                        .set(SystemUserSession::getSessionStatus, 0);
+                baseMapper.update(updateWrapper);
+                return HttpResult.success("强制退出成功");
+            }
+
+        } catch (Exception e) {
+            log.error("强制退出失败", e);
+            return HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
+        }
     }
 
     /**

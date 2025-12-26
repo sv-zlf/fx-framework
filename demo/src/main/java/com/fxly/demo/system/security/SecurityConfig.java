@@ -76,7 +76,7 @@ public class SecurityConfig {
                                 // 若需允许所有域名（极不推荐，安全风险）：frame-ancestors *;
                         )
                 )
-                .httpBasic(c -> c.disable())  // 禁用默认表单登录（
+                .httpBasic(c -> c.disable())  // 禁用默认表单登录
                 .formLogin(c -> c.disable())   // 禁用默认注销功能
                 .logout(c -> c.disable())
                 .csrf(csrf -> csrf.disable()) // 禁用CSRF

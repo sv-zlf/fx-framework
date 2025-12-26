@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 自定义用户详情（适配system_user表）
+ * 自定义用户详情
  */
 public class CustomUserDetails implements UserDetails {
 

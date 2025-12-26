@@ -1,8 +1,7 @@
 package com.fxly.demo.api.core.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fxly.demo.system.global.PageHelper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -75,6 +74,8 @@ public class SystemLog extends PageHelper implements Serializable{
     private String os;
 
     @Schema(description = "创建时间")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale="zh", timezone="GMT+8")
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
 
