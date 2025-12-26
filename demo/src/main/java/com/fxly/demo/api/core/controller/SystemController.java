@@ -3,6 +3,8 @@ package com.fxly.demo.api.core.controller;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.service.ISystemUserService;
 import com.fxly.demo.api.core.service.ISystemUserSessionService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.security.CustomUserDetails;
@@ -57,6 +59,7 @@ public class SystemController {
     private static final String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "登录")
+    @LogOperation(module = "示例模块", type = LogType.LOGIN)
     @PostMapping("/login")
     public HttpResult login(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
 
