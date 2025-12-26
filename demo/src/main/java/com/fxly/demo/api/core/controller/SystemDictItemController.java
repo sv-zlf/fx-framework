@@ -1,9 +1,10 @@
 package com.fxly.demo.api.core.controller;
 
-
 import com.fxly.demo.api.core.dto.DictQueryDTO;
 import com.fxly.demo.api.core.entity.SystemDictItem;
 import com.fxly.demo.api.core.service.ISystemDictItemService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ public class SystemDictItemController {
     private ISystemDictItemService itemService;
 
 
+
     @Operation(summary = "获取字典类型列表")
     @PostMapping("/getPageList")
     public HttpResult getDictItemPageList(@RequestBody DictQueryDTO dictQuery) {
@@ -37,6 +39,7 @@ public class SystemDictItemController {
     }
 
     @Operation(summary = "新增")
+    @LogOperation(module = "字典管理", type = LogType.INSERT, description = "新增字典项")
     @PostMapping(value = "/insert")
     public HttpResult insertDictItem(@RequestBody SystemDictItem dictItem) {
         boolean b = itemService.save(dictItem);
@@ -46,6 +49,7 @@ public class SystemDictItemController {
 
 
     @Operation(summary = "修改")
+    @LogOperation(module = "字典管理", type = LogType.UPDATE, description = "修改字典项")
     @PostMapping("/update")
     public HttpResult updateDictItem(@RequestBody SystemDictItem dictItem) {
         // 保存字典
@@ -55,6 +59,7 @@ public class SystemDictItemController {
     }
 
     @Operation(summary = "删除")
+    @LogOperation(module = "字典管理", type = LogType.DELETE, description = "删除字典项")
     @PostMapping("/delete")
     public HttpResult deleteDictItem(@RequestParam("id") Long id) {
         boolean b = itemService.removeById(id);
@@ -63,4 +68,3 @@ public class SystemDictItemController {
     }
 
 }
-

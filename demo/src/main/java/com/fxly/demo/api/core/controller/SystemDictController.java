@@ -1,6 +1,5 @@
 package com.fxly.demo.api.core.controller;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.fxly.demo.api.core.dto.DictQueryDTO;
@@ -8,6 +7,8 @@ import com.fxly.demo.api.core.entity.SystemDictItem;
 import com.fxly.demo.api.core.entity.SystemDictType;
 import com.fxly.demo.api.core.service.ISystemDictItemService;
 import com.fxly.demo.api.core.service.ISystemDictTypeService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ public class SystemDictController {
     private ISystemDictItemService itemService;
 
 
+
     @Operation(summary = "获取字典类型列表")
     @PostMapping("/getPageList")
     public HttpResult getDictTypePageList(@RequestBody DictQueryDTO dictQuery) {
@@ -38,6 +40,7 @@ public class SystemDictController {
     }
 
     @Operation(summary = "新增")
+    @LogOperation(module = "字典管理", type = LogType.INSERT, description = "新增字典类型")
     @PostMapping(value = "/insert")
     @Transactional(rollbackFor = Exception.class)
     public HttpResult insertDictType(@RequestBody SystemDictType dictType) {
@@ -59,6 +62,7 @@ public class SystemDictController {
     }
 
     @Operation(summary = "修改")
+    @LogOperation(module = "字典管理", type = LogType.UPDATE, description = "修改字典类型")
     @PostMapping("/update")
     @Transactional(rollbackFor = Exception.class)
     public HttpResult updateDictType(@RequestBody SystemDictType dictType) {
@@ -82,6 +86,7 @@ public class SystemDictController {
     }
 
     @Operation(summary = "删除")
+    @LogOperation(module = "字典管理", type = LogType.DELETE, description = "删除字典类型")
     @PostMapping("/delete")
     @Transactional(rollbackFor = Exception.class)
     public HttpResult deleteDictType(@RequestParam("id") Long id) {
@@ -96,4 +101,3 @@ public class SystemDictController {
     }
 
 }
-

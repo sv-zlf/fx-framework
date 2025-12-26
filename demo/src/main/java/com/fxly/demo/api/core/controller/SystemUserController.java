@@ -10,6 +10,8 @@ import com.fxly.demo.api.core.dto.UserQueryDTO;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.api.core.service.ISystemUserService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +58,7 @@ public class SystemUserController {
     }
 
     @Operation(summary = "修改用户信息")
+    @LogOperation(module = "用户管理", type = LogType.INSERT, description = "新增用户")
     @PostMapping("/saveOrUpdate")
     public HttpResult saveOrUpdateUser(@RequestBody SystemUser user) {
 
@@ -86,6 +89,7 @@ public class SystemUserController {
     }
 
     @Operation(summary = "删除用户")
+    @LogOperation(module = "用户管理", type = LogType.DELETE, description = "删除用户")
     @PostMapping("/delete")
     public HttpResult deleteUser(@RequestParam("userId") Long userId) {
         boolean b = userService.removeById(userId);
@@ -94,6 +98,7 @@ public class SystemUserController {
     }
 
     @Operation(summary = "批量删除用户")
+    @LogOperation(module = "用户管理", type = LogType.DELETE, description = "批量删除用户")
     @PostMapping("/deleteBatch")
     public HttpResult batchDeleteUser(@RequestParam("userIds")  List<Long> userIds) {
         boolean b = userService.removeByIds(userIds);
@@ -103,6 +108,7 @@ public class SystemUserController {
 
     // 基本信息设置
     @Operation(summary = "基本信息设置")
+    @LogOperation(module = "用户管理", type = LogType.UPDATE, description = "修改用户基本信息", saveRequestData = false, saveResponseData = false)
     @PostMapping("/basicSetting")
     public HttpResult basicSetting(@RequestBody SystemUser user) {
         // 参数校验
@@ -123,6 +129,7 @@ public class SystemUserController {
                 : HttpResult.error("更新失败");
     }
     @Operation(summary = "安全设置")
+    @LogOperation(module = "用户管理", type = LogType.UPDATE, description = "修改用户密码", saveRequestData = false)
     @PostMapping("/safeSetting")
     @Transactional
     public HttpResult resetPassword(@RequestBody SystemUser user) {
@@ -146,7 +153,7 @@ public class SystemUserController {
     }
 
     private HttpResult userValid(SystemUser user) {
-        // TODO demo 系统暂时无需这个校验，仅通过用户名称作为唯一标识
+        // TODO demo 系统暂时无需这个校验，仅通过用户名作为唯一标识
         // 根据用户名、手机号及邮箱查重，系统允许使用用户名、手机号及邮箱多种方式登录，所以同一个系统中用户名、手机号及邮箱不能重复
         LambdaQueryWrapper<SystemUser> queryWrapper = Wrappers.lambdaQuery(SystemUser.class)
                 .eq(StringUtils.checkValNotNull(user.getUserName()), SystemUser::getUserName, user.getUserName())

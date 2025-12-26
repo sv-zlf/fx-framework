@@ -11,6 +11,8 @@ import com.fxly.demo.api.core.entity.SystemUserRole;
 import com.fxly.demo.api.core.service.ISystemRoleMenuService;
 import com.fxly.demo.api.core.service.ISystemRoleService;
 import com.fxly.demo.api.core.service.ISystemUserRoleService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +53,7 @@ public class SystemRoleController {
     }
 
     @Operation(summary = "新增角色")
+    @LogOperation(module = "角色管理", type = LogType.INSERT, description = "新增角色")
     @PostMapping("/insert")
     public HttpResult insertRole(@RequestBody SystemRole role) {
         //
@@ -66,6 +69,7 @@ public class SystemRoleController {
     }
 
     @Operation(summary = "修改角色")
+    @LogOperation(module = "角色管理", type = LogType.UPDATE, description = "修改角色")
     @PostMapping("/update")
     public HttpResult updateRole(@RequestBody  SystemRole role) {
         //
@@ -85,6 +89,7 @@ public class SystemRoleController {
     }
 
     @Operation(summary = "删除角色")
+    @LogOperation(module = "角色管理", type = LogType.DELETE, description = "删除角色")
     @PostMapping("/delete")
     public HttpResult deleteRole(@RequestParam("roleId") Long roleId) {
         // 首先，查看该角色是否绑定用户
@@ -108,4 +113,3 @@ public class SystemRoleController {
     }
 
 }
-

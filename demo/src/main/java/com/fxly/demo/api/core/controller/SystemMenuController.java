@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.fxly.demo.api.core.dto.MenuQueryDTO;
 import com.fxly.demo.api.core.entity.SystemMenu;
 import com.fxly.demo.api.core.service.ISystemMenuService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.security.SecurityUtils;
@@ -48,7 +50,7 @@ public class SystemMenuController {
         }
         MenuQueryDTO menuQuery = new MenuQueryDTO();
         menuQuery.setCurrentLoginUserRoleIds(SecurityUtils.getRoleIds());
-        menuQuery.setStatus(1); // 获取已启用的数据
+        menuQuery.setStatus(1); // 获取已启用数据
         //
         List<SystemMenu> menuTree = menuService.getMenuTree(menuQuery);
         return HttpResult.success(menuTree);
@@ -62,6 +64,7 @@ public class SystemMenuController {
     }
 
     @Operation(summary = "新增菜单")
+    @LogOperation(module = "菜单管理", type = LogType.INSERT, description = "新增菜单")
     @PostMapping(value = "/insert")
     public HttpResult insertMenu(@RequestBody SystemMenu menu) {
         boolean b = menuService.insert(menu);
@@ -70,18 +73,19 @@ public class SystemMenuController {
     }
 
     @Operation(summary = "修改")
+    @LogOperation(module = "菜单管理", type = LogType.UPDATE, description = "修改菜单")
     @PostMapping("/update")
     public HttpResult updateMenu(@RequestBody SystemMenu menu) {
         //
         if(ObjectUtil.isEmpty(menu) || ObjectUtil.isEmpty(menu.getId())) {
-            return HttpResult.setResult(400, "菜单编号不能为空");
+            return HttpResult.setResult(400, "菜单编码不能为空");
         }
         //
         SystemMenu dbMenu = menuService.getById(menu.getId());
         if(Objects.isNull(dbMenu)) {
             return HttpResult.setResult(400 , "无效的菜单编号");
         }
-        // 父级菜单校验
+        // 下级菜单检查
         if(ObjectUtil.isNotEmpty(menu.getParentId())) {
             SystemMenu parentMenu = menuService.getById(menu.getParentId());
             if(Objects.isNull(parentMenu)) {
@@ -95,6 +99,7 @@ public class SystemMenuController {
     }
 
     @Operation(summary = "排序")
+    @LogOperation(module = "菜单管理", type = LogType.UPDATE, description = "菜单排序")
     @PostMapping("/sortedMenu")
     public HttpResult sorted(@RequestBody List<SystemMenu> menuList) {
         //
@@ -104,6 +109,7 @@ public class SystemMenuController {
     }
 
     @Operation(summary = "删除")
+    @LogOperation(module = "菜单管理", type = LogType.DELETE, description = "删除菜单")
     @PostMapping("/delete")
     public HttpResult deleteMenu(@RequestParam("menuId") Long menuId) {
         //
@@ -111,11 +117,10 @@ public class SystemMenuController {
         if(Objects.isNull(dbMenu)) {
             return HttpResult.setResult(400, "无效的菜单编号");
         }
-        // 删除该菜单项
+        // 删除该菜单
         boolean b = menuService.delete(menuId);
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
     }
 
 }
-

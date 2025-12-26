@@ -5,6 +5,8 @@ import com.fxly.demo.api.generate.entity.ColumnInfo;
 import com.fxly.demo.api.generate.entity.TableInfo;
 import com.fxly.demo.api.generate.service.IColumnInfoService;
 import com.fxly.demo.api.generate.service.ITableInfoService;
+import com.fxly.demo.system.annotation.LogOperation;
+import com.fxly.demo.system.constant.LogType;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,31 +40,34 @@ public class GenerateController {
     @Resource
     private IColumnInfoService columnInfoService;
 
-    @Operation(summary = "按照建表语句生成信息")
+    @Operation(summary = "选择数据库表生成信息")
+    @LogOperation(module = "代码生成", type = LogType.INSERT, description = "导入表结构")
     @PostMapping("/genTable")
     public HttpResult genTable(@RequestParam("sql") String sql,
                                @RequestParam("moduleName") String moduleName) {
         return HttpResult.success(tableInfoService.generateTable(sql, moduleName));
     }
 
-    @Operation(summary = "按照表ID生成代码，本地工程")
+    @Operation(summary = "选择表ID生成代码，本地项目")
+    @LogOperation(module = "代码生成", type = LogType.OTHER, description = "生成代码到本地", saveRequestData = false)
     @PostMapping("/genCode")
     public HttpResult genCode(@RequestParam("tableId") Long tableId ) {
         tableInfoService.generateCode(tableId);
         return HttpResult.success();
     }
 
-    @Operation(summary = "按照表ID生成代码，压缩包")
+    @Operation(summary = "选择表ID生成代码，下载包")
+    @LogOperation(module = "代码生成", type = LogType.OTHER, description = "下载代码压缩包", saveRequestData = false)
     @GetMapping("/genCodeZip")
     public void genCodeZip(@RequestParam("tableId") Long tableId,HttpServletResponse response) throws IOException {
-        response.setContentType("application/zip"); // ZIP文件类型
+        response.setContentType("application/zip"); // ZIP文件格式
         response.setCharacterEncoding("UTF-8");
         // 文件名编码
         String fileName = URLEncoder.encode("code-gen.zip", "UTF-8").replace("+", "%20");
-        // 触发浏览器下载文件
+        // 提示写入浏览器下载文件
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
-            // 调用Service方法，生成代码到ZIP流
+            // 调用Service层，生成代码到ZIP流
             tableInfoService.generateCode(tableId, zipOut);
             zipOut.finish();
         } catch (Exception e) {
@@ -79,6 +84,7 @@ public class GenerateController {
     }
 
     @Operation(summary = "更新")
+    @LogOperation(module = "代码生成", type = LogType.UPDATE, description = "更新代码生成配置")
     @PostMapping("/update")
     @Transactional
     public HttpResult updateTableInfo(@RequestBody TableInfo tableInfo) {
@@ -93,6 +99,7 @@ public class GenerateController {
     }
 
     @Operation(summary = "删除")
+    @LogOperation(module = "代码生成", type = LogType.DELETE, description = "删除代码生成配置")
     @PostMapping("/delete")
     public HttpResult deleteTableInfo(@RequestParam("id") Long id) {
         Boolean b = tableInfoService.removeById(id);
@@ -111,6 +118,7 @@ public class GenerateController {
     }
 
     @Operation(summary = "批量更新表字段")
+    @LogOperation(module = "代码生成", type = LogType.UPDATE, description = "批量更新字段配置")
     @PostMapping("/batchUpdateColumn")
     public HttpResult batchUpdateColumn(@RequestBody List<ColumnInfo> columnInfoList) {
         return columnInfoService.updateBatchById(columnInfoList) ? HttpResult.setResult(HttpResultEnum.UPDATE_SUCCESS)
@@ -118,6 +126,7 @@ public class GenerateController {
     }
 
     @Operation(summary = "删除表字段")
+    @LogOperation(module = "代码生成", type = LogType.DELETE, description = "删除字段配置")
     @PostMapping("/deleteColumn")
     public HttpResult deleteColumn(@RequestParam("id") Long id) {
         return columnInfoService.removeById(id) ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
