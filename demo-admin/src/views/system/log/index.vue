@@ -44,7 +44,7 @@
           <a-table-column title="模块名称" data-index="moduleName" :width="120" ellipsis tooltip></a-table-column>
           <a-table-column title="操作类型" data-index="operationType" :width="100" align="center">
             <template #cell="{ record }">
-              <a-tag v-if="record.operationType === 'CREATE'" color="green">新增</a-tag>
+              <a-tag v-if="record.operationType === 'INSERT'" color="green">新增</a-tag>
               <a-tag v-else-if="record.operationType === 'UPDATE'" color="arcoblue">修改</a-tag>
               <a-tag v-else-if="record.operationType === 'DELETE'" color="red">删除</a-tag>
               <a-tag v-else-if="record.operationType === 'QUERY'" color="orangered">查询</a-tag>

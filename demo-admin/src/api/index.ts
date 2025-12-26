@@ -68,7 +68,7 @@ service.interceptors.response.use(
       userStore.logOut();
       router.push("/login");
     }
-    Message.error(error.message);
+    Message.error(error.response.data.msg || "服务器异常，请联系管理员");
     return Promise.reject(error);
   }
 );

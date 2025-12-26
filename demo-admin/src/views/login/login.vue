@@ -3,11 +3,9 @@
     <div class="login">
       <LoginBanner v-if="isPc" />
       <div class="login_box">
-        <div class="login_title">Welcome Back</div>
-        <div class="login_title_desc">国际化，路由配置，状态管理应有尽有</div>
-        <div class="login_title_desc">丰富的的页面模板，覆盖大多数典型业务场景</div>
+        <div class="login_title">欢迎回来</div>
+        <div class="login_subtitle">登录您的账户以继续使用系统</div>
         <LoginForm />
-        <!-- <div class="author">by 兔子先森</div> -->
       </div>
     </div>
   </div>
@@ -41,19 +39,16 @@ const { isPc } = useDevicesSize();
       height: 100%;
       padding: 40px 30px 30px;
       .login_title {
-        margin-bottom: $margin-text;
-        font-size: $font-size-title-2;
-        color: $color-text-1;
+        margin-bottom: 8px;
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--color-text-1);
       }
-      .login_title_desc {
-        font-size: $font-size-body-1;
-        color: $color-text-3;
-      }
-      .author {
-        position: absolute;
-        bottom: 30px;
-        font-size: $font-size-body-1;
-        color: $color-text-4;
+      .login_subtitle {
+        margin-bottom: 32px;
+        font-size: 14px;
+        color: var(--color-text-3);
+        line-height: 1.5;
       }
     }
   }

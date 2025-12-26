@@ -2,8 +2,8 @@
   <div class="snow-page">
     <div class="snow-inner">
       <a-space wrap>
-        <a-input v-model="form.loginLocation" placeholder="请输入登录地址" allow-clear />
-        <a-input v-model="form.loginName" placeholder="请输入账户名称" allow-clear />
+        <a-input v-model="form.loginLocation" placeholder="请输入登录地点" allow-clear />
+        <a-input v-model="form.loginName" placeholder="请输入账户名" allow-clear />
         <a-range-picker v-model="form.loginTime" show-time format="YYYY-MM-DD HH:mm" allow-clear />
         <a-button type="primary" @click="search">
           <template #icon><icon-search /></template>
@@ -25,12 +25,12 @@
       >
         <template #columns>
           <a-table-column title="序号" :width="64">
-            <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
+            <template #cell="cell">{{ cell.rowIndex +1 }}</template>
           </a-table-column>
           <a-table-column title="会话编号" data-index="sessionId" ellipsis tooltip></a-table-column>
           <a-table-column title="登录账户" data-index="loginName" ellipsis tooltip></a-table-column>
           <a-table-column title="IP地址" data-index="host" ellipsis tooltip></a-table-column>
-          <a-table-column title="登录地址" data-index="loginLocation" ellipsis tooltip></a-table-column>
+          <a-table-column title="登录地点" data-index="loginLocation" ellipsis tooltip></a-table-column>
           <a-table-column title="状态" data-index="sessionStatus" align="center" :width="80">
             <template #cell="{ record }">
               <a-space>
@@ -46,8 +46,8 @@
           <a-table-column title="操作" :width="100" align="center" :fixed="isMobile ? '' : 'right'">
             <template #cell="{ record }">
               <a-space>
-                <a-popconfirm type="warning" content="确定强制退出该账号吗?" @ok="onLogout(record)">
-                  <a-button type="primary" status="danger" size="mini">
+                <a-popconfirm type="warning" content="确定强制退出该账户吗？" @ok="onForceLogout(record)">
+                  <a-button type="primary" status="danger" size="mini" :disabled="record.sessionStatus != 1">
                     <template #icon><icon-export /></template>
                     <span>强退</span>
                   </a-button>
@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { useDevicesSize } from "@/hooks/useDevicesSize";
-import { getPageList } from "@/api/system/session/index";
+import { getPageList, forceLogout } from "@/api/system/session";
 
 defineOptions({ name: "onlineuser" });
 
@@ -86,10 +86,10 @@ const reset = () => {
   getOnlineUser();
 };
 
-const onLogout = (row: any) => {
-  console.log("退出", row);
-  arcoMessage("success", "模拟退出成功");
-  getOnlineUser();
+const onForceLogout = async (row: any) => {
+    await forceLogout(row.sessionId);
+    arcoMessage("success", "强制退出成功");
+    getOnlineUser();
 };
 
 // 获取列表
@@ -106,7 +106,7 @@ const pagination = ref({
     getOnlineUser();
   },
   onPageSizeChange: (pageSize: number) => {
-    pagination.value.current = 1;
+    pagination.value.current =1;
     pagination.value.pageSize = pageSize;
     getOnlineUser();
   }

@@ -11,3 +11,21 @@ export const getPageList = (params: any) => {
     }
   });
 };
+
+// 删除会话
+export const deleteSession = (id: number) => {
+  return axios({
+    url: "/system/user/session/delete",
+    method: "post",
+    params: { id }
+  });
+};
+
+// 强制退出
+export const forceLogout = (sessionId: string) => {
+  return axios({
+    url: "/system/user/session/forceLogout",
+    method: "post",
+    params: { sessionId }
+  });
+};

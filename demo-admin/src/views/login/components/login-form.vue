@@ -3,7 +3,7 @@
     <div class="login_form_box">
       <a-form :rules="rules" :model="form" layout="vertical" @submit="onSubmit">
         <a-form-item field="username" :hide-asterisk="true">
-          <a-input v-model="form.username" allow-clear placeholder="请输入账号：admin/common">
+          <a-input v-model="form.username" allow-clear placeholder="请输入用户名">
             <template #prefix>
               <icon-user />
             </template>
@@ -16,15 +16,9 @@
             </template>
           </a-input-password>
         </a-form-item>
-<!--        <a-form-item field="verifyCode" :hide-asterisk="true">-->
-<!--          <div class="verifyCode">-->
-<!--            <a-input style="width: 160px" v-model="form.verifyCode" allow-clear placeholder="请输入验证码" />-->
-<!--            <s-verify-code :content-height="30" :font-size-max="30" :content-width="110" @verify-code-change="verifyCodeChange" />-->
-<!--          </div>-->
-<!--        </a-form-item>-->
         <a-form-item field="remember">
           <div class="remember">
-            <a-checkbox v-model="form.remember">记住密码</a-checkbox>
+            <a-checkbox v-model="form.remember">记住我</a-checkbox>
             <div class="forgot-password">忘记密码</div>
           </div>
         </a-form-item>
@@ -33,7 +27,7 @@
         </a-form-item>
       </a-form>
     </div>
-    <div class="register">注册账号</div>
+    <div class="register" @click="goToRegister">立即注册</div>
   </div>
 </template>
 
@@ -56,7 +50,7 @@ const rules = ref({
   username: [
     {
       required: true,
-      message: "请输入账号"
+      message: "请输入用户名"
     }
   ],
   password: [
@@ -64,25 +58,8 @@ const rules = ref({
       required: true,
       message: "请输入密码"
     }
-  ],
-  verifyCode: [
-    {
-      required: true,
-      message: "请输入验证码"
-    },
-    {
-      validator: (value: string, cb: any) => {
-        if (value !== verifyCode.value) {
-          cb("请输入正确的验证码");
-        } else {
-          cb();
-        }
-      }
-    }
   ]
 });
-const verifyCode = ref("");
-const verifyCodeChange = (code: string) => (verifyCode.value = code);
 
 // 提交表单
 const onSubmit = async ({ errors }: any) => {
@@ -94,7 +71,7 @@ const onSubmit = async ({ errors }: any) => {
 const onLogin = async () => {
   // 登录
   let res = await login(form.value);
-  // 存储token
+  // 保存token
   await userStores.setToken(res.data);
   // 加载用户信息
   await userStores.setAccount();
@@ -102,37 +79,39 @@ const onLogin = async () => {
   await routeStore.initSetRouter();
 
   arcoMessage("success", "登录成功");
-  // 跳转首页
+  // 跳转到首页
   router.replace("/home");
-  // 设置字典
-  // useSystemStore().setDictData();
+};
+
+// 跳转到注册
+const goToRegister = () => {
+  router.push("/register");
 };
 </script>
 
 <style lang="scss" scoped>
 .login_form_box {
   margin-top: 28px;
-  .verifyCode {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
   .remember {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     .forgot-password {
-      color: $color-primary;
+      color: var(--color-primary);
       cursor: pointer;
     }
   }
 }
 .register {
-  font-size: $font-size-body-1;
-  color: $color-text-3;
+  font-size: 14px;
+  color: var(--color-text-3);
   text-align: center;
   cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: var(--color-primary);
+  }
 }
 </style>
