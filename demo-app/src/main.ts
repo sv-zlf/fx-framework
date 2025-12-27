@@ -1,5 +1,5 @@
+import uViewPro from 'uview-pro'
 import { createSSRApp } from 'vue'
-import uViewPro from 'uview-pro';
 import App from './App.vue'
 import { requestInterceptor } from './http/interceptor'
 import { routeInterceptor } from './router/interceptor'
@@ -10,7 +10,7 @@ import 'virtual:uno.css'
 
 export function createApp() {
   const app = createSSRApp(App)
-  app.use(uViewPro);
+  app.use(uViewPro)
   app.use(store)
   app.use(routeInterceptor)
   app.use(requestInterceptor)

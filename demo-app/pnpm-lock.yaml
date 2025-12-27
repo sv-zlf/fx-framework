@@ -81,6 +81,9 @@ importers:
       pinia-plugin-persistedstate:
         specifier: 3.2.1
         version: 3.2.1(pinia@2.0.36(typescript@5.8.3)(vue@3.4.21(typescript@5.8.3)))
+      uview-pro:
+        specifier: latest
+        version: 0.4.10
       vue:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.8.3)
@@ -6003,6 +6006,10 @@ packages:
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+
+  uview-pro@0.4.10:
+    resolution: {integrity: sha512-VHzCPEcPDsIZNEVwl0uEHj0GN1wRsvrEgtM5WPzR6VXT1Z3AkXVabLrQzZCWqiBbPmHgjTlpTyGT0LUiso3uJg==}
+    engines: {HBuilderX: ^4.07, uni-app: ^4.07, uni-app-x: ''}
 
   v8-to-istanbul@8.1.1:
     resolution: {integrity: sha512-FGtKtv3xIpR6BYhvgH8MI/y78oT7d8Au3ww4QIxymrCtZEh5b8gCw2siywE+puhEmuWKDtmfrvF5UlB298ut3w==}
@@ -13754,6 +13761,8 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   utils-merge@1.0.1: {}
+
+  uview-pro@0.4.10: {}
 
   v8-to-istanbul@8.1.1:
     dependencies:
