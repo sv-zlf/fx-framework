@@ -19,8 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class QuartzUtil {
 
-    @Resource
-    private ISystemCronTaskService systemCronTaskService;
 
     /**
      * 创建Job
