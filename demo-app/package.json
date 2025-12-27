@@ -120,11 +120,11 @@
     "dayjs": "1.11.10",
     "pinia": "2.0.36",
     "pinia-plugin-persistedstate": "3.2.1",
-    "uview-pro": "latest",
     "vue": "^3.4.21",
     "vue-i18n": "9.1.9",
     "vue-router": "4.5.1",
-    "z-paging": "2.8.7"
+    "z-paging": "2.8.7",
+    "uview-pro": "latest"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

@@ -23,4 +23,5 @@ onHide(() => {
 
 <style lang="scss">
 @import 'uview-pro/index.scss';
+
 </style>

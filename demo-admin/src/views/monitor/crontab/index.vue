@@ -1,71 +1,92 @@
 <template>
   <div class="snow-page">
     <div class="snow-inner">
-      <a-space wrap>
-        <a-input v-model="form.loginLocation" placeholder="请输入任务名称" allow-clear />
-        <a-select placeholder="任务状态" v-model="form.status" style="width: 120px" allow-clear>
-          <a-option v-for="item in openState" :key="item.value" :value="item.value">{{ item.name }}</a-option>
-        </a-select>
-        <a-range-picker v-model="form.createTime" show-time format="YYYY-MM-DD HH:mm" allow-clear />
-        <a-button type="primary" @click="search">
-          <template #icon><icon-search /></template>
-          <span>查询</span>
-        </a-button>
-        <a-button @click="reset">
-          <template #icon><icon-refresh /></template>
-          <span>重置</span>
-        </a-button>
-      </a-space>
-
-      <a-row>
-        <a-space wrap>
-          <a-button type="primary" @click="onAdd">
-            <template #icon><icon-plus /></template>
-            <span>新增</span>
-          </a-button>
-        </a-space>
-      </a-row>
+      <s-layout-tools>
+        <template #left>
+          <a-space wrap>
+            <a-input v-model="searchForm.taskName" placeholder="请输入任务名称" allow-clear />
+            <a-select placeholder="任务分组" v-model="searchForm.taskGroup" style="width: 120px" allow-clear>
+              <a-option value="DEFAULT">默认分组</a-option>
+              <a-option value="SYSTEM">系统分组</a-option>
+              <a-option value="BUSINESS">业务分组</a-option>
+            </a-select>
+            <a-select placeholder="状态" v-model="searchForm.status" style="width: 120px" allow-clear>
+              <a-option :value="0">正常</a-option>
+              <a-option :value="1">暂停</a-option>
+            </a-select>
+            <a-button type="primary" @click="search">
+              <template #icon><icon-search /></template>
+              <span>查询</span>
+            </a-button>
+            <a-button @click="reset">
+              <template #icon><icon-refresh /></template>
+              <span>重置</span>
+            </a-button>
+          </a-space>
+        </template>
+        <template #right>
+          <a-space wrap>
+            <a-button type="primary" status="success" @click="onAdd">
+              <template #icon><icon-plus /></template>
+              <span>新增</span>
+            </a-button>
+          </a-space>
+        </template>
+      </s-layout-tools>
 
       <a-table
         row-key="id"
-        :data="list"
+        :data="taskList"
         :bordered="{ cell: true }"
         :loading="loading"
-        :scroll="{ x: '100%', y: '100%', minWidth: 1000 }"
+        :scroll="{ x: '100%', y: '100%', minWidth: 1600 }"
         :pagination="pagination"
       >
         <template #columns>
-          <a-table-column title="序号" :width="64">
+          <a-table-column title="序号" :width="64" :fixed="'left'">
             <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
           </a-table-column>
-          <a-table-column title="任务名称" data-index="name" ellipsis tooltip></a-table-column>
-          <a-table-column title="执行服务" data-index="service" ellipsis tooltip></a-table-column>
-          <a-table-column title="定时规则" data-index="taskType" ellipsis tooltip>
+          <a-table-column title="任务名称" data-index="taskName" :width="150" ellipsis tooltip></a-table-column>
+          <a-table-column title="任务分组" data-index="taskGroup" :width="120" ellipsis tooltip></a-table-column>
+          <a-table-column title="Cron表达式" data-index="cronExpression" :width="150" ellipsis tooltip></a-table-column>
+          <a-table-column title="调用目标" data-index="invokeTarget" :width="200" ellipsis tooltip></a-table-column>
+          <a-table-column title="描述" data-index="description" :width="200" ellipsis tooltip></a-table-column>
+          <a-table-column title="状态" :width="80" align="center">
             <template #cell="{ record }">
-              <span v-if="record.taskType == 0">CRON: {{ record.cron }}</span>
-              <span v-else>间隔时间: {{ record.every }} 秒</span>
+              <a-tag bordered size="small" color="arcoblue" v-if="record.status === 0">正常</a-tag>
+              <a-tag bordered size="small" color="red" v-else>暂停</a-tag>
             </template>
           </a-table-column>
-          <a-table-column title="状态" align="center" data-index="status" :width="80">
+          <a-table-column title="并发" :width="80" align="center">
             <template #cell="{ record }">
-              <a-tag bordered size="small" color="arcoblue" v-if="record.status === 1">启用</a-tag>
-              <a-tag bordered size="small" color="red" v-else>禁用</a-tag>
+              <a-tag bordered size="small" color="green" v-if="record.concurrent === 1">允许</a-tag>
+              <a-tag bordered size="small" color="orange" v-else>禁止</a-tag>
             </template>
           </a-table-column>
-          <a-table-column title="备注" data-index="remark" ellipsis tooltip></a-table-column>
-          <a-table-column title="创建时间" data-index="createTime" :width="180"></a-table-column>
-          <a-table-column title="操作" :width="250" align="center" :fixed="tableFixed">
+          <a-table-column title="执行次数" data-index="executionCount" :width="100" align="center"></a-table-column>
+          <a-table-column title="失败次数" data-index="failureCount" :width="100" align="center"></a-table-column>
+          <a-table-column title="上次执行时间" data-index="lastExecutionTime" :width="180" ellipsis tooltip></a-table-column>
+          <a-table-column title="上次执行结果" data-index="lastExecutionResult" :width="200" ellipsis tooltip></a-table-column>
+          <a-table-column title="操作" :width="280" align="center" :fixed="tableFixed">
             <template #cell="{ record }">
               <a-space>
-                <a-button type="primary" status="success" size="mini" @click="onLogs(record)">
-                  <template #icon><icon-file /></template>
-                  <span>日志</span>
+                <a-button type="primary" status="success" size="mini" @click="onExecute(record)" :disabled="record.status === 1">
+                  <template #icon><icon-play-circle /></template>
+                  <span>执行</span>
                 </a-button>
-                <a-button type="primary" size="mini" @click="onUpdate(record)">
+                <a-button type="primary" size="mini" @click="onPause(record)" :disabled="record.status === 1">
+                  <template #icon><icon-pause-circle /></template>
+                  <span>暂停</span>
+                </a-button>
+                <a-button type="primary" status="success" size="mini" @click="onResume(record)" :disabled="record.status === 0">
+                  <template #icon><icon-check-circle /></template>
+                  <span>恢复</span>
+                </a-button>
+                <a-button type="primary" size="mini" @click="onEdit(record)">
                   <template #icon><icon-edit /></template>
                   <span>修改</span>
                 </a-button>
-                <a-popconfirm type="warning" content="确定删除吗?">
+                <a-popconfirm type="warning" content="确定删除该任务吗？" @ok="onDelete(record)">
                   <a-button type="primary" status="danger" size="mini">
                     <template #icon><icon-delete /></template>
                     <span>删除</span>
@@ -78,60 +99,41 @@
       </a-table>
     </div>
 
-    <a-modal :width="dialogWidth()" v-model:visible="open" @close="afterClose" @ok="handleOk" @cancel="afterClose">
-      <template #title> {{ title }} </template>
+    <!-- 新增/编辑弹窗 -->
+    <a-modal :width="dialogWidth('50%')" v-model:visible="open" @close="afterClose" @ok="handleOk" @cancel="afterClose">
+      <template #title> {{ dialogTitle }} </template>
       <div>
-        <a-form ref="formRef" auto-label-width :layout="formLayout" :rules="rules" :model="addFrom">
-          <a-form-item field="name" label="任务名称" validate-trigger="blur">
-            <a-input v-model="addFrom.name" placeholder="请输入任务名称" allow-clear />
+        <a-form ref="formRef" auto-label-width :layout="formLayout" :rules="rules" :model="form">
+          <a-form-item field="taskName" label="任务名称" validate-trigger="blur">
+            <a-input v-model="form.taskName" placeholder="请输入任务名称" allow-clear />
           </a-form-item>
-          <a-form-item field="status" label="任务状态" validate-trigger="blur">
-            <a-switch type="round" :checked-value="1" :unchecked-value="0" v-model="addFrom.status">
-              <template #checked> 启用 </template>
-              <template #unchecked> 禁用 </template>
-            </a-switch>
+          <a-form-item field="taskGroup" label="任务分组" validate-trigger="blur">
+            <a-input v-model="form.taskGroup" placeholder="请输入任务分组" allow-clear />
           </a-form-item>
-          <a-row :gutter="24">
-            <a-col :span="12">
-              <a-form-item field="taskType" label="任务类型" validate-trigger="blur">
-                <a-select placeholder="请选择执行策略" v-model="addFrom.taskType" allow-clear @change="onTaskTypeChange">
-                  <a-option v-for="item in taskTypeOption" :key="item.value" :value="item.value">{{ item.name }}</a-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item field="cron" label="Cron表达式" validate-trigger="blur" v-if="addFrom.taskType == 0">
-                <a-input v-model="addFrom.cron" placeholder="******" allow-clear />
-              </a-form-item>
-              <a-form-item field="every" label="间隔时长" validate-trigger="blur" v-else>
-                <a-input-number
-                  v-model="addFrom.every"
-                  placeholder="请输入"
-                  :min="1"
-                  :max="999999999"
-                  :step="1"
-                  :precision="0"
-                  allow-clear
-                >
-                  <template #suffix> 秒 </template>
-                </a-input-number>
-              </a-form-item>
-            </a-col>
-          </a-row>
-
-          <a-form-item field="service" label="执行服务" validate-trigger="blur">
-            <a-input v-model="addFrom.service" placeholder="请输入执行服务service" allow-clear />
+          <a-form-item field="cronExpression" label="Cron表达式" validate-trigger="blur">
+            <a-input v-model="form.cronExpression" placeholder="例如: 0/5 * * * * ?" allow-clear />
+            <a-link href="https://cron.qqe2.com/" target="_blank" style="margin-left: 8px;">Cron表达式生成器</a-link>
           </a-form-item>
-          <a-form-item field="startDate" label="开始时间" validate-trigger="blur">
-            <a-date-picker v-model="addFrom.startDate" show-time allow-clear format="YYYY-MM-DD HH:mm:ss" />
+          <a-form-item field="invokeTarget" label="调用目标" validate-trigger="blur">
+            <a-input v-model="form.invokeTarget" placeholder="例如: com.fxly.demo.api.generate.task.SampleTask" allow-clear />
           </a-form-item>
-          <a-form-item field="misfirePolicy" label="执行策略" validate-trigger="blur">
-            <a-select placeholder="请选择执行策略" v-model="addFrom.misfirePolicy" allow-clear>
-              <a-option v-for="item in misfirePolicyOption" :key="item.value" :value="item.value">{{ item.name }}</a-option>
-            </a-select>
+          <a-form-item field="description" label="任务描述" validate-trigger="blur">
+            <a-textarea v-model="form.description" placeholder="请输入任务描述" allow-clear />
           </a-form-item>
-          <a-form-item field="remark" label="备注" validate-trigger="blur">
-            <a-textarea v-model="addFrom.remark" placeholder="请输入描述" allow-clear />
+          <a-form-item field="status" label="任务状态">
+            <a-radio-group v-model="form.status">
+              <a-radio :value="0">正常</a-radio>
+              <a-radio :value="1">暂停</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item field="concurrent" label="并发执行">
+            <a-radio-group v-model="form.concurrent">
+              <a-radio :value="1">允许</a-radio>
+              <a-radio :value="0">禁止</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item field="remark" label="备注">
+            <a-textarea v-model="form.remark" placeholder="请输入备注" allow-clear />
           </a-form-item>
         </a-form>
       </div>
@@ -140,135 +142,152 @@
 </template>
 
 <script setup lang="ts">
-import { deepClone } from "@/utils";
-import { getCrontabAPI } from "@/api/modules/monitor/index";
+import { getPageList, saveOrUpdate, deleteTask, executeTask, pauseTask, resumeTask } from "@/api/system/task";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
+import { deepClone } from "@/utils";
 
 defineOptions({ name: "crontab" });
 
-const router = useRouter();
-const openState = ref(dictFilter("status"));
 const { dialogWidth, formLayout, tableFixed } = useLayoutModel();
-const misfirePolicyOption = ref([
-  { name: "循环", value: 1 },
-  { name: "执行一次", value: 2 }
-]);
-const taskTypeOption = ref([
-  { name: "cron", value: 0 },
-  { name: "时间间隔", value: 1 }
-]);
-const form = ref({
-  loginLocation: "",
-  userName: "",
+
+const searchForm = ref({
+  taskName: "",
+  taskGroup: null,
   status: null,
-  createTime: []
 });
-const search = () => {
-  getCrontab();
-};
-const reset = () => {
-  form.value = {
-    loginLocation: "",
-    userName: "",
-    status: null,
-    createTime: []
+
+const loading = ref(false);
+const taskList = ref([]);
+const pagination = ref({
+  total: null,
+  current: 1,
+  pageSize: 10,
+  showPageSize: true,
+  showTotal: true,
+  onChange: (current: number) => {
+    pagination.value.current = current;
+    getTaskList();
+  },
+  onPageSizeChange: (pageSize: number) => {
+    pagination.value.current = 1;
+    pagination.value.pageSize = pageSize;
+    getTaskList();
+  }
+});
+
+const getTaskList = async () => {
+  loading.value = true;
+  const params = {
+    ...searchForm.value,
+    pageIndex: pagination.value.current,
+    pageSize: pagination.value.pageSize,
   };
-  getCrontab();
+  let res = await getPageList(params);
+  taskList.value = res.data.records || [];
+  pagination.value.total = res.data.total;
+  loading.value = false;
+};
+
+const search = () => {
+  pagination.value.current = 1;
+  getTaskList();
+};
+
+const reset = () => {
+  searchForm.value = {
+    taskName: "",
+    taskGroup: null,
+    status: null,
+  };
+  pagination.value.current = 1;
+  getTaskList();
 };
 
 // 新增
 const open = ref(false);
-const rules = {
-  name: [{ required: true, message: "请输入任务名称" }],
-  status: [{ required: true, message: "请选择任务状态" }],
-  taskType: [{ required: true, message: "请选择任务类型" }],
-  cron: [{ required: true, message: "请输入Cron表达式" }],
-  every: [{ required: true, message: "请输入间隔时间(秒)" }],
-  service: [{ required: true, message: "请输入执行服务service" }],
-  startDate: [{ required: true, message: "请选择开始时间" }],
-  misfirePolicy: [{ required: true, message: "请选择执行策略" }]
-};
-const addFrom = ref<any>({
-  name: "",
-  status: 1,
-  taskType: 0,
-  cron: "",
-  every: null,
-  service: "",
-  startDate: "",
-  misfirePolicy: 1,
+const dialogTitle = ref("");
+const formRef = ref();
+const formType = ref(0); // 0-新增, 1-编辑
+const form = ref({
+  taskName: "",
+  taskGroup: "DEFAULT",
+  cronExpression: "",
+  invokeTarget: "",
+  description: "",
+  status: 0,
+  concurrent: 1,
   remark: ""
 });
-const title = ref("");
-const formRef = ref();
+const rules = {
+  taskName: [{ required: true, message: "请输入任务名称" }],
+  taskGroup: [{ required: true, message: "请输入任务分组" }],
+  cronExpression: [{ required: true, message: "请输入Cron表达式" }],
+  invokeTarget: [{ required: true, message: "请输入调用目标" }]
+};
+
 const onAdd = () => {
-  title.value = "添加任务";
+  dialogTitle.value = "新增任务";
+  formType.value = 0;
   open.value = true;
 };
+
+const onEdit = (record: any) => {
+  dialogTitle.value = "修改任务";
+  formType.value = 1;
+  form.value = deepClone(record);
+  open.value = true;
+};
+
 const handleOk = async () => {
   let state = await formRef.value.validate();
-  if (state) return (open.value = true); // 校验不通过
-  arcoMessage("success", "模拟提交成功");
-  getCrontab();
+  if (state) return (open.value = true);
+  
+  let res = await saveOrUpdate(form.value);
+  arcoMessage("success", res.msg || "保存成功");
+  open.value = false;
+  getTaskList();
 };
-// 关闭对话框动画结束后触发
+
 const afterClose = () => {
   formRef.value.resetFields();
-  addFrom.value = {
-    name: "",
-    status: 1,
-    taskType: 0,
-    cron: "",
-    every: null,
-    service: "",
-    startDate: "",
-    misfirePolicy: 1,
+  form.value = {
+    taskName: "",
+    taskGroup: "DEFAULT",
+    cronExpression: "",
+    invokeTarget: "",
+    description: "",
+    status: 0,
+    concurrent: 1,
     remark: ""
   };
 };
-const onTaskTypeChange = (value: number) => {
-  if (value == 0) return (addFrom.value.every = null);
-  addFrom.value.cron = "";
-  addFrom.value.startDate = "";
-};
-const onUpdate = (row: any) => {
-  title.value = "修改任务";
-  addFrom.value = deepClone(row);
-  open.value = true;
+
+const onDelete = async (record: any) => {
+  await deleteTask(record.id);
+  arcoMessage("success", "删除成功");
+  getTaskList();
 };
 
-const onLogs = (row: any) => {
-  router.push({
-    path: "/monitor/crontab-logs",
-    query: {
-      id: row.id,
-      name: row.name
-    }
-  });
+const onExecute = async (record: any) => {
+  let res = await executeTask(record.id);
+  arcoMessage("success", res.msg || "执行成功");
+  getTaskList();
 };
 
-// 获取列表
-const loading = ref(false);
-const pagination = ref({
-  pageSize: 10,
-  showPageSize: true
-});
-const list = ref([]);
-const getCrontab = async () => {
-  try {
-    loading.value = true;
-    let res = await getCrontabAPI();
-    list.value = res.data;
-  } finally {
-    loading.value = false;
-  }
+const onPause = async (record: any) => {
+  let res = await pauseTask(record.id);
+  arcoMessage("success", res.msg || "暂停成功");
+  getTaskList();
 };
 
-getCrontab();
+const onResume = async (record: any) => {
+  let res = await resumeTask(record.id);
+  arcoMessage("success", res.msg || "恢复成功");
+  getTaskList();
+};
+
+getTaskList();
 </script>
 
 <style lang="scss" scoped>
-.text-right-gap {
-  margin-right: $margin;
-}
 </style>

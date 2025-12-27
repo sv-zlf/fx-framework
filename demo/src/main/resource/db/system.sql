@@ -129,3 +129,23 @@ CREATE TABLE system_user_session (
                                   PRIMARY KEY (id),
                                   INDEX idx_login_name (login_name)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统用户会话表';
+
+CREATE TABLE `system_cron_task` (
+                                    `id` bigint NOT NULL AUTO_INCREMENT,
+                                    `task_name` varchar(100) NOT NULL COMMENT '任务名称',
+                                    `task_group` varchar(100) DEFAULT 'DEFAULT' COMMENT '任务分组',
+                                    `cron_expression` varchar(100) NOT NULL COMMENT 'Cron表达式',
+                                    `invoke_target` varchar(255) NOT NULL COMMENT '调用目标类',
+                                    `description` varchar(500) DEFAULT NULL COMMENT '任务描述',
+                                    `status` tinyint DEFAULT 0 COMMENT '任务状态：0-正常,1-暂停',
+                                    `concurrent` tinyint DEFAULT 1 COMMENT '并发执行：0-禁止,1-允许',
+                                    `last_execution_time` datetime DEFAULT NULL COMMENT '上次执行时间',
+                                    `last_execution_result` text COMMENT '上次执行结果',
+                                    `execution_count` int DEFAULT 0 COMMENT '执行次数',
+                                    `failure_count` int DEFAULT 0 COMMENT '失败次数',
+                                    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                    `create_time` datetime NOT NULL COMMENT '创建时间',
+                                    `update_time` datetime NOT NULL COMMENT '更新时间',
+                                    PRIMARY KEY (`id`),
+                                    UNIQUE KEY `uk_task_name` (`task_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务表';

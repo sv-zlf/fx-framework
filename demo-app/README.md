@@ -1,6 +1,6 @@
 # Fx App - 移动端
 
-基于 [uniest](https://github.com/feige996/uniest) 进行深度定制和优化的移动端应用，为 Fx-Framework 项目提供移动端解决方案。
+基于 [unbest](https://github.com/feige996/uniest) 进行深度定制和优化的移动端应用，为 Fx-Framework 项目提供移动端解决方案。
 
 ## 项目说明
 

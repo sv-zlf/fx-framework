@@ -8,7 +8,7 @@ definePage({
   style: {
     // 'custom' 表示开启自定义导航栏，默认 'default'
     navigationStyle: 'custom',
-    navigationBarTitleText: '%tabbar.home%',
+    navigationBarTitleText: '首页',
   },
 })
 
@@ -50,5 +50,4 @@ onLoad(() => {
       </text>
     </view>
   </view>
-  <tabbar />
 </template>
