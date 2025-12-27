@@ -1,7 +1,8 @@
-package com.fxly.demo.api.core.task;
+package com.fxly.demo.system.quartz;
 
 import com.fxly.demo.api.core.entity.SystemCronTask;
 import com.fxly.demo.api.core.service.ISystemCronTaskService;
+import com.fxly.demo.system.quartz.InvokeTarget;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 

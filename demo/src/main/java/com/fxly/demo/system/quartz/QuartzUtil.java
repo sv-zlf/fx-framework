@@ -1,19 +1,12 @@
-package com.fxly.demo.utils.quartz;
+package com.fxly.demo.system.quartz;
 
 import com.fxly.demo.api.core.entity.SystemCronTask;
-import com.fxly.demo.api.core.service.ISystemCronTaskService;
-import com.fxly.demo.system.global.HttpResultEnum;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Quartz工具类
- * @author admin
  */
 @Slf4j
 @Component
@@ -24,15 +17,10 @@ public class QuartzUtil {
      * 创建Job
      */
     public void createJob(Scheduler scheduler, SystemCronTask task) throws SchedulerException {
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(task.getInvokeTarget());
-        } catch (ClassNotFoundException e) {
-            throw new SchedulerException("任务类不存在：" + task.getInvokeTarget());
-        }
+        Class<? extends Job> clazz = QuartzJobBean.class;
 
         // 构建JobDetail
-        JobDetail jobDetail = JobBuilder.newJob((Class<? extends Job>) clazz)
+        JobDetail jobDetail = JobBuilder.newJob(clazz)
                 .withIdentity(getJobKey(task))
                 .withDescription(task.getDescription())
                 .build();
@@ -151,3 +139,8 @@ public class QuartzUtil {
         return new TriggerKey(task.getTaskName(), task.getTaskGroup());
     }
 }
+
+
+
+
+

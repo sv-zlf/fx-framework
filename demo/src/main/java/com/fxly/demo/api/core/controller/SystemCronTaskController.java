@@ -26,7 +26,6 @@ public class SystemCronTaskController{
     private ISystemCronTaskService systemCronTaskService;
 
     @Operation(summary = "分页列表")
-    @PreAuthorize("hasAuthority('task:list')")
     @PostMapping("/getPageList")
     public HttpResult getPageList(@RequestBody TaskQueryDTO taskQuery) {
         return HttpResult.success(systemCronTaskService.getPageList(taskQuery));
@@ -34,7 +33,6 @@ public class SystemCronTaskController{
 
     @Operation(summary = "保存或更新")
     @LogOperation(module = "定时任务", type = LogType.OTHER, description = "保存定时任务")
-    @PreAuthorize("hasAuthority('task:add') or hasAuthority('task:edit')")
     @PostMapping("/saveOrUpdate")
     public HttpResult saveOrUpdate(@RequestBody SystemCronTask task) {
         return systemCronTaskService.saveOrUpdateTask(task);
@@ -42,7 +40,6 @@ public class SystemCronTaskController{
 
     @Operation(summary = "删除")
     @LogOperation(module = "定时任务", type = LogType.DELETE, description = "删除定时任务")
-    @PreAuthorize("hasAuthority('task:delete')")
     @PostMapping("/delete")
     public HttpResult delete(@RequestParam("id") Long id) {
         return systemCronTaskService.deleteTask(id);
@@ -50,7 +47,6 @@ public class SystemCronTaskController{
 
     @Operation(summary = "执行")
     @LogOperation(module = "定时任务", type = LogType.OTHER, description = "执行定时任务")
-    @PreAuthorize("hasAuthority('task:execute')")
     @PostMapping("/execute")
     public HttpResult execute(@RequestParam("id") Long id) {
         return systemCronTaskService.executeTask(id);
@@ -58,7 +54,6 @@ public class SystemCronTaskController{
 
     @Operation(summary = "暂停")
     @LogOperation(module = "定时任务", type = LogType.OTHER, description = "暂停定时任务")
-    @PreAuthorize("hasAuthority('task:pause')")
     @PostMapping("/pause")
     public HttpResult pause(@RequestParam("id") Long id) {
         return systemCronTaskService.pauseTask(id);
@@ -66,7 +61,6 @@ public class SystemCronTaskController{
 
     @Operation(summary = "恢复")
     @LogOperation(module = "定时任务", type = LogType.OTHER, description = "恢复定时任务")
-    @PreAuthorize("hasAuthority('task:resume')")
     @PostMapping("/resume")
     public HttpResult resume(@RequestParam("id") Long id) {
         return systemCronTaskService.resumeTask(id);

@@ -1,5 +1,6 @@
 package com.fxly.demo.api.core.task;
 
+import com.fxly.demo.system.quartz.InvokeTarget;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;

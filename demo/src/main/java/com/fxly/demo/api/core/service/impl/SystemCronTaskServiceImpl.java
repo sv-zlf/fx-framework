@@ -1,25 +1,21 @@
 package com.fxly.demo.api.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fxly.demo.api.core.dto.TaskQueryDTO;
 import com.fxly.demo.api.core.entity.SystemCronTask;
 import com.fxly.demo.api.core.mapper.SystemCronTaskMapper;
 import com.fxly.demo.api.core.service.ISystemCronTaskService;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
-import com.fxly.demo.utils.quartz.QuartzUtil;
+import com.fxly.demo.system.quartz.QuartzUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
-import org.quartz.TriggerKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 定时任务Service实现类
@@ -91,7 +87,6 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
                 if (dbTask == null) {
                     return HttpResult.error(400, "任务不存在");
                 }
-                
                 // 检查任务是否暂停
                 boolean wasPaused = dbTask.getStatus() == 1;
                 
@@ -105,7 +100,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
             }
         } catch (Exception e) {
             log.error("保存或更新任务失败", e);
-            return HttpResult.error(500, "操作失败：" + e.getMessage());
+            throw new GlobalException(500,"操作失败：" + e.getMessage());
         }
     }
 

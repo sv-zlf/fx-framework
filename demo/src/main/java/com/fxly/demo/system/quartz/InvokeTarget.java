@@ -1,4 +1,4 @@
-package com.fxly.demo.api.core.task;
+package com.fxly.demo.system.quartz;
 
 /**
  * 定时任务调用目标接口

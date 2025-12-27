@@ -115,7 +115,7 @@
             <a-link href="https://cron.qqe2.com/" target="_blank" style="margin-left: 8px;">Cron表达式生成器</a-link>
           </a-form-item>
           <a-form-item field="invokeTarget" label="调用目标" validate-trigger="blur">
-            <a-input v-model="form.invokeTarget" placeholder="例如: com.fxly.demo.api.generate.task.SampleTask" allow-clear />
+            <a-input v-model="form.invokeTarget" placeholder="例如: com.fxly.demo.api.core.task.SampleTask" allow-clear />
           </a-form-item>
           <a-form-item field="description" label="任务描述" validate-trigger="blur">
             <a-textarea v-model="form.description" placeholder="请输入任务描述" allow-clear />
