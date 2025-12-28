@@ -1,6 +1,5 @@
 package com.fxly.demo.api.core.controller;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -13,6 +12,7 @@ import com.fxly.demo.api.core.service.ISystemRoleService;
 import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.system.annotation.LogOperation;
 import com.fxly.demo.system.constant.LogType;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +61,7 @@ public class SystemRoleController {
                 .eq(SystemRole::getRoleName, role.getRoleName());
         SystemRole dbRole = roleService.getOne(queryWrapper);
         if(dbRole != null) {
-            return HttpResult.setResult(400,"角色已存在！");
+            throw new GlobalException(400, "角色已存在！");
         }
         boolean b = roleService.save(role);
         return b ? HttpResult.setResult(HttpResultEnum.INSERT_SUCCESS)
@@ -79,7 +79,7 @@ public class SystemRoleController {
         if(queryWrapper.nonEmptyOfWhere()){
             SystemRole dbRole = roleService.getOne(queryWrapper);
             if(dbRole != null && !dbRole.getId().equals(role.getId())){
-                return HttpResult.setResult(400,"角色已存在！");
+                throw new GlobalException(400, "角色已存在！");
             }
         }
         //
@@ -97,7 +97,7 @@ public class SystemRoleController {
                 .eq(SystemUserRole::getRoleId, roleId);
         Long count = userRoleService.count(queryUserRole);
         if(count > 0) {
-            return HttpResult.setResult(400,"操作失败，该角色已绑定用户！");
+            throw new GlobalException(400, "操作失败，该角色已绑定用户！");
         }
         // 然后，删除该角色
         boolean b = roleService.removeById(roleId);

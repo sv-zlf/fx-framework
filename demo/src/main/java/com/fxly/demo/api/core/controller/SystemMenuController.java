@@ -6,6 +6,7 @@ import com.fxly.demo.api.core.entity.SystemMenu;
 import com.fxly.demo.api.core.service.ISystemMenuService;
 import com.fxly.demo.system.annotation.LogOperation;
 import com.fxly.demo.system.constant.LogType;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.security.SecurityUtils;
@@ -78,18 +79,18 @@ public class SystemMenuController {
     public HttpResult updateMenu(@RequestBody SystemMenu menu) {
         //
         if(ObjectUtil.isEmpty(menu) || ObjectUtil.isEmpty(menu.getId())) {
-            return HttpResult.setResult(400, "菜单编码不能为空");
+            throw new GlobalException(400, "菜单编码不能为空");
         }
         //
         SystemMenu dbMenu = menuService.getById(menu.getId());
         if(Objects.isNull(dbMenu)) {
-            return HttpResult.setResult(400 , "无效的菜单编号");
+            throw new GlobalException(400, "无效的菜单编号");
         }
         // 下级菜单检查
         if(ObjectUtil.isNotEmpty(menu.getParentId())) {
             SystemMenu parentMenu = menuService.getById(menu.getParentId());
             if(Objects.isNull(parentMenu)) {
-                return HttpResult.setResult(400, "无效的父级编号");
+                throw new GlobalException(400, "无效的父级编号");
             }
         }
         //
@@ -115,7 +116,7 @@ public class SystemMenuController {
         //
         SystemMenu dbMenu = menuService.getById(menuId);
         if(Objects.isNull(dbMenu)) {
-            return HttpResult.setResult(400, "无效的菜单编号");
+            throw new GlobalException(400, "无效的菜单编号");
         }
         // 删除该菜单
         boolean b = menuService.delete(menuId);

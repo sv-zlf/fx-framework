@@ -12,6 +12,7 @@ import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.api.core.service.ISystemUserService;
 import com.fxly.demo.system.annotation.LogOperation;
 import com.fxly.demo.system.constant.LogType;
+import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResult;
 import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,10 +64,7 @@ public class SystemUserController {
     public HttpResult saveOrUpdateUser(@RequestBody SystemUser user) {
 
         if (ObjectUtil.isEmpty(user.getId())){
-            HttpResult setResult = userValid(user);
-            if (setResult != null) {
-                return setResult;
-            }
+//            userService.validateUser(user);
             // 设置默认密码
             user.setPassword(passwordEncoder.encode("123456"));
         }
@@ -113,11 +111,11 @@ public class SystemUserController {
     public HttpResult basicSetting(@RequestBody SystemUser user) {
         // 参数校验
         if(Objects.isNull(user) || Objects.isNull(user.getId())) {
-            return HttpResult.setResult(400, "用户id不能为空");
+            throw new GlobalException(400, "用户id不能为空");
         }
         //
         if (StringUtils.isBlank(user.getUserName())) {
-            return HttpResult.setResult(400, "用户名不能为空");
+            throw new GlobalException(400, "用户名不能为空");
         }
         //
         LambdaUpdateWrapper<SystemUser> updateWrapper = new LambdaUpdateWrapper<SystemUser>()
@@ -135,11 +133,11 @@ public class SystemUserController {
     public HttpResult resetPassword(@RequestBody SystemUser user) {
         // 参数校验
         if(Objects.isNull(user) || Objects.isNull(user.getId())) {
-            return HttpResult.setResult(400, "用户id不能为空");
+            throw new GlobalException(400, "用户id不能为空");
         }
         //
         if (StringUtils.isBlank(user.getPassword())) {
-            return HttpResult.setResult(400, "密码不能为空");
+            throw new GlobalException(400, "密码不能为空");
         }
         //
         LambdaUpdateWrapper<SystemUser> updateWrapper = new LambdaUpdateWrapper<SystemUser>()
@@ -152,34 +150,6 @@ public class SystemUserController {
                 : HttpResult.error("更新失败");
     }
 
-    private HttpResult userValid(SystemUser user) {
-        // TODO demo 系统暂时无需这个校验，仅通过用户名作为唯一标识
-        // 根据用户名、手机号及邮箱查重，系统允许使用用户名、手机号及邮箱多种方式登录，所以同一个系统中用户名、手机号及邮箱不能重复
-        LambdaQueryWrapper<SystemUser> queryWrapper = Wrappers.lambdaQuery(SystemUser.class)
-                .eq(StringUtils.checkValNotNull(user.getUserName()), SystemUser::getUserName, user.getUserName())
-                .or()
-                .eq(StringUtils.checkValNotNull(user.getPhone()), SystemUser::getPhone, user.getPhone());
-        //todo 邮箱校验先去掉，太多导入数据
-//                .or()
-//                .eq(StringUtils.checkValNotNull(user.getEmail()), SystemUser::getEmail, user.getEmail());
-        // 查询条件不为空
-        if(queryWrapper.nonEmptyOfWhere()) {
-            List<SystemUser> userList = userService.list(queryWrapper);
-            if(CollectionUtils.isNotEmpty(userList)) {
-                for (SystemUser dbUser : userList) {
-                    if(dbUser != null && !dbUser.getId().equals(user.getId())) {
-                        if(dbUser.getUserName().equals(user.getUserName())) {
-                            return HttpResult.error(400,"用户名已注册！");
-                        } else if(StringUtils.isNotBlank(dbUser.getPhone()) && StringUtils.isNotBlank(user.getPhone()) && dbUser.getPhone().equals(user.getPhone())) {
-                            return HttpResult.error(400,"手机号已注册！");
-                        }
-//                        else if(StringUtils.isNotBlank(dbUser.getEmail()) && StringUtils.isNotBlank(user.getEmail()) && dbUser.getEmail().equals(user.getEmail())) {
-//                            return HttpResult.error(400,"邮箱已注册！");
-//                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
+
+
 }
