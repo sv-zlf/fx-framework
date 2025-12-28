@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="60">
+    <Properties>
+        <Property name="LOG_HOME">logs</Property>
+        <Property name="APP_NAME">demo</Property>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="ROLLING_PATTERN">%d{yyyy-MM-dd}-%i.log</Property>
+        <!-- 异步日志队列大小 -->
+        <Property name="ASYNC_RING_BUFFER_SIZE">262144</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 控制台输出（仅ERROR级别） -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <!-- 所有日志异步输出 -->
+        <RollingFile name="RollingFileAll" fileName="${LOG_HOME}/${APP_NAME}-all.log"
+                     filePattern="${LOG_HOME}/all/${APP_NAME}-all-${ROLLING_PATTERN}">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="200 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30">
+                <Delete basePath="${LOG_HOME}/all" maxDepth="1">
+                    <IfFileName glob="*.log"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- ERROR级别异步日志 -->
+        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/${APP_NAME}-error.log"
+                     filePattern="${LOG_HOME}/error/${APP_NAME}-error-${ROLLING_PATTERN}">
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="90">
+                <Delete basePath="${LOG_HOME}/error" maxDepth="1">
+                    <IfFileName glob="*.log"/>
+                    <IfLastModified age="90d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- WARN级别异步日志 -->
+        <RollingFile name="RollingFileWarn" fileName="${LOG_HOME}/${APP_NAME}-warn.log"
+                     filePattern="${LOG_HOME}/warn/${APP_NAME}-warn-${ROLLING_PATTERN}">
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="60">
+                <Delete basePath="${LOG_HOME}/warn" maxDepth="1">
+                    <IfFileName glob="*.log"/>
+                    <IfLastModified age="60d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- INFO级别异步日志 -->
+        <RollingFile name="RollingFileInfo" fileName="${LOG_HOME}/${APP_NAME}-info.log"
+                     filePattern="${LOG_HOME}/info/${APP_NAME}-info-${ROLLING_PATTERN}">
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="200 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30">
+                <Delete basePath="${LOG_HOME}/info" maxDepth="1">
+                    <IfFileName glob="*.log"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 全局异步日志配置 -->
+        <AsyncLogger name="com.fxly.demo" level="INFO" additivity="false"
+                     includeLocation="false">
+            <AppenderRef ref="RollingFileAll"/>
+            <AppenderRef ref="RollingFileError"/>
+            <AppenderRef ref="RollingFileWarn"/>
+            <AppenderRef ref="RollingFileInfo"/>
+            <AppenderRef ref="Console"/>
+        </AsyncLogger>
+
+        <Root level="WARN">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFileAll"/>
+            <AppenderRef ref="RollingFileError"/>
+            <AppenderRef ref="RollingFileWarn"/>
+            <AppenderRef ref="RollingFileInfo"/>
+        </Root>
+
+        <!-- 第三方框架日志级别（生产环境优化） -->
+        <AsyncLogger name="org.springframework" level="WARN" additivity="false">
+            <AppenderRef ref="RollingFileAll"/>
+        </AsyncLogger>
+        <AsyncLogger name="org.hibernate" level="ERROR" additivity="false">
+            <AppenderRef ref="RollingFileAll"/>
+        </AsyncLogger>
+        <AsyncLogger name="com.alibaba.druid" level="INFO" additivity="false">
+            <AppenderRef ref="RollingFileAll"/>
+        </AsyncLogger>
+    </Loggers>
+</Configuration>
