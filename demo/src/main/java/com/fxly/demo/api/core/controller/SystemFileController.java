@@ -5,6 +5,8 @@ import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.service.ISystemFileService;
 import com.fxly.demo.system.global.GlobalException;
 import com.fxly.demo.system.global.HttpResult;
+import com.fxly.demo.system.global.PageHelper;
+import com.fxly.demo.system.global.PageResult;
 import com.fxly.demo.system.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +39,13 @@ public class SystemFileController {
 
    @Resource
     private ISystemFileService systemFileService;
+
+    
+    @Operation(summary = "获取文件分页列表")
+    @PostMapping("/getPageList")
+    public HttpResult getPageList(@RequestBody PageHelper pageHelper) {
+        return HttpResult.success(systemFileService.getPageList(pageHelper));
+    }
 
     @Operation(summary = "单文件上传")
     @PostMapping("/upload")

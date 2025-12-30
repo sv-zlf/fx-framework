@@ -16,6 +16,7 @@ public class PageResult {
     // 分页数据
     private Object pageList;
 
+
     public static PageResult getPageResult(IPage page) {
         return PageResult.builder()
                 .totalNum(page.getTotal())

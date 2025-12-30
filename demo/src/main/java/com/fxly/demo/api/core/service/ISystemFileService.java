@@ -3,6 +3,8 @@ package com.fxly.demo.api.core.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fxly.demo.api.core.entity.SystemFile;
 import com.fxly.demo.api.core.entity.SystemUser;
+import com.fxly.demo.system.global.PageHelper;
+import com.fxly.demo.system.global.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -11,6 +13,7 @@ import java.io.File;
  * 文件信息服务接口
  */
 public interface ISystemFileService extends IService<SystemFile> {
+    PageResult getPageList(PageHelper pageHelper);
 
     /**
      * 上传文件

@@ -4,7 +4,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fxly.demo.api.core.entity.SystemFile;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.mapper.SystemFileMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fxly.demo.system.global.PageHelper;
+import com.fxly.demo.system.global.PageResult;
 import com.fxly.demo.api.core.service.ISystemFileService;
+import com.fxly.demo.system.global.PageHelper;
+import com.fxly.demo.system.global.PageResult;
 import com.fxly.demo.utils.FileUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +90,15 @@ public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemF
         FILE_TYPE_MAP.put("mp4", "video");
         FILE_TYPE_MAP.put("avi", "video");
         FILE_TYPE_MAP.put("mov", "video");
+    }
+
+    @Override
+    public PageResult getPageList(PageHelper pageHelper) {
+        Page<SystemFile> page = new Page<>(pageHelper.getPageIndex(), pageHelper.getPageSize());
+        LambdaQueryWrapper<SystemFile> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(SystemFile::getCreateTime);
+        this.page(page, queryWrapper);
+        return  PageResult.getPageResult(page.getTotal(), page.getRecords());
     }
 
     @Override
