@@ -63,11 +63,6 @@ const handleQuickAction = (item: any) => {
 
 <template>
   <view class="workspace-container">
-    <!-- 自定义导航栏 -->
-    <view class="custom-navbar">
-      <view class="navbar-title">工作台</view>
-    </view>
-
     <!-- 统计卡片 -->
     <view class="stats-card">
       <view class="stats-item">
@@ -159,7 +154,7 @@ const handleQuickAction = (item: any) => {
 .workspace-container {
   min-height: 100vh;
   background: #f5f5f5;
-  padding-top: var(--status-bar-height);
+  padding-top: calc(var(--status-bar-height) + 12px);
   padding-bottom: var(--tab-bar-height);
 }
 

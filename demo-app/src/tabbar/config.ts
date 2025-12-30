@@ -1,12 +1,12 @@
-import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
+﻿import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
 import type { CustomTabBarItem, NativeTabBarItem } from './types'
 
 /**
  * tabbar 选择的策略，更详细的介绍见 tabbar.md 文件
- * 0: 'NO_TABBAR' `无 tabbar`
- * 1: 'NATIVE_TABBAR'  `完全原生 tabbar`
- * 2: 'CUSTOM_TABBAR_WITH_CACHE' `有缓存自定义 tabbar`
- * 3: 'CUSTOM_TABBAR_WITHOUT_CACHE' `无缓存自定义 tabbar`
+ * 0: ''NO_TABBAR'' `无 tabbar`
+ * 1: ''NATIVE_TABBAR'' `完全原生 tabbar`
+ * 2: ''CUSTOM_TABBAR_WITH_CACHE'' `有缓存自定义 tabbar`
+ * 3: ''CUSTOM_TABBAR_WITHOUT_CACHE'' `无缓存自定义 tabbar`
  *
  * 温馨提示：本文件的任何代码更改了之后，都需要重新运行，否则 pages.json 不会更新导致配置不生效
  */
@@ -26,7 +26,7 @@ export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.CUSTOM_TABBAR_WITH_CAC
 // TODO: 2/3. 使用 NATIVE_TABBAR 时，更新下面的 tabbar 配置
 export const nativeTabbarList: NativeTabBarItem[] = [
   {
-    iconPath: 'static/tabbar/home.png',
+    iconPath:'static/tabbar/home.png',
     selectedIconPath: 'static/tabbar/homeHL.png',
     pagePath: 'pages/index/index',
     text: '首页',
@@ -40,60 +40,29 @@ export const nativeTabbarList: NativeTabBarItem[] = [
 ]
 
 // TODO: 3/3. 使用 CUSTOM_TABBAR(2,3) 时，更新下面的 tabbar 配置
-// 如果需要配置鼓包，需要在 'tabbar/store.ts' 里面设置，最后在 `tabbar/index.vue` 里面更改鼓包的图片
+// 如果需要配置鼓包，需要在 ''tabbar/store.ts'' 里面设置，最后在 `tabbar/index.vue` 里面更改鼓包的图片
 export const customTabbarList: CustomTabBarItem[] = [
   {
     text: '首页',
     pagePath: 'pages/index/index',
-    // 注意 unocss 图标需要如下处理：（二选一）
-    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
-    // 2）配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
-    icon: 'i-carbon-home',
-    // badge: 'dot',
+    iconType: 'image',
+    icon: '/static/tabbar/home.png',
+    iconActive: '/static/tabbar/homeHL.png',
   },
   {
     pagePath: 'pages/workspace/index',
     text: '工作台',
-    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
-    // 2）配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
-    icon: 'i-carbon-apps',
+    iconType: 'image',
+    icon: '/static/tabbar/workspace.png',
+    iconActive: '/static/tabbar/workspaceHL.png',
   },
   {
     pagePath: 'pages/me/me',
     text: '我的',
-    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
-    // 2）配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
-    icon: 'i-carbon-user',
-    // badge: 10,
+    iconType: 'image',
+    icon: '/static/tabbar/me.png',
+    iconActive: '/static/tabbar/meHL.png',
   },
-  // 其他类型演示
-  // 1、uiLib
-  // {
-  //   pagePath: 'pages/index/index',
-  //   text: '首页',
-  //   iconType: 'uiLib',
-  //   icon: 'home',
-  // },
-  // 2、iconfont
-  // {
-  //   pagePath: 'pages/index/index',
-  //   text: '首页',
-  //   // 注意 iconfont 图标需要额外加上 'iconfont'，如下
-  //   iconType: 'iconfont',
-  //   icon: 'iconfont icon-my',
-  // },
-  // 3、image
-  // {
-  //   pagePath: 'pages/index/index',
-  //   text: '首页',
-  //   // 使用 ‘image’时，需要配置 icon + iconActive 2张图片
-  //   iconType: 'image',
-  //   icon: '/static/tabbar/home.png',
-  //   iconActive: '/static/tabbar/homeHL.png',
-  // },
 ]
 
 /**
