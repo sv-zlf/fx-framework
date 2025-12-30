@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +26,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 文件管理Controller
- */
+* 文件管理Controller
+*/
 @Slf4j
 @Tag(name = "文件管理")
 @RestController
 @RequestMapping("/file")
+@Validated
 public class SystemFileController {
 
-    @Resource
+   @Resource
     private ISystemFileService systemFileService;
 
     @Operation(summary = "单文件上传")
@@ -75,7 +78,7 @@ public class SystemFileController {
 
     @Operation(summary = "文件下载")
     @GetMapping("/download/{id}")
-    public void download(@Parameter(description = "文件ID") @PathVariable("id") Long id, HttpServletResponse response) {
+    public void download(@NotNull(message = "文件ID不能为空") @PathVariable("id") Long id, HttpServletResponse response) {
         try {
             SystemFile fileInfo = systemFileService.getById(id);
             if (fileInfo == null) {
@@ -118,7 +121,7 @@ public class SystemFileController {
 
     @Operation(summary = "文件预览")
     @GetMapping("/preview/{id}")
-    public void preview(@Parameter(description = "文件ID") @PathVariable("id") Long id, HttpServletResponse response) {
+    public void preview(@NotNull(message = "文件ID不能为空") @PathVariable("id") Long id, HttpServletResponse response) {
         try {
             SystemFile fileInfo = systemFileService.getById(id);
             if (fileInfo == null) {
@@ -160,7 +163,7 @@ public class SystemFileController {
 
     @Operation(summary = "删除文件")
     @DeleteMapping("/delete/{id}")
-    public HttpResult delete(@Parameter(description = "文件ID") @PathVariable("id") Long id) {
+    public HttpResult delete(@NotNull(message = "文件ID不能为空") @PathVariable("id") Long id) {
         try {
             boolean success = systemFileService.deleteFile(id);
             return success ? HttpResult.success("删除成功") : HttpResult.error("删除失败");

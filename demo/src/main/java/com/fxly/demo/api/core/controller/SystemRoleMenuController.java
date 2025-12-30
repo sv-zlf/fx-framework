@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +28,10 @@ import java.util.Set;
 @RestController
 @RequestMapping("/system/roleMenu")
 @Slf4j
+@Validated
 public class SystemRoleMenuController {
 
-    @Resource
+   @Resource
     private ISystemRoleMenuService roleMenuService;
 
     /**
@@ -37,7 +41,7 @@ public class SystemRoleMenuController {
      */
     @Operation(summary = "授权")
     @GetMapping("/toBind")
-    public HttpResult toBind(@RequestParam("roleId") Long roleId) {
+    public HttpResult toBind(@NotNull(message = "角色ID不能为空") @RequestParam("roleId") Long roleId) {
         List<SystemMenu> menuTree = roleMenuService.toBind(roleId);
         return HttpResult.success(menuTree);
     }
@@ -50,7 +54,7 @@ public class SystemRoleMenuController {
             @Parameter(name = "menuIds", required = true, in = ParameterIn.QUERY,
                     schema = @io.swagger.v3.oas.annotations.media.Schema(type = "array", implementation = Long.class))
     })
-    public HttpResult bindMenu(@RequestParam("roleId") Long roleId, @RequestParam("menuIds") Set<Long> menuIds) {
+    public HttpResult bindMenu(@NotNull(message = "角色ID不能为空") @RequestParam("roleId") Long roleId, @NotEmpty(message = "菜单ID不能为空") @RequestParam("menuIds") Set<Long> menuIds) {
         //
         boolean b = roleMenuService.bindMenu(roleId, menuIds);
         return b ? HttpResult.success()

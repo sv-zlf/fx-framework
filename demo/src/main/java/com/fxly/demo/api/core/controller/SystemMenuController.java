@@ -14,7 +14,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +33,10 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/system/menu")
 @Slf4j
+@Validated
 public class SystemMenuController {
 
-    @Resource
+   @Resource
     private ISystemMenuService menuService;
 
     @Operation(summary = "获取菜单列表")
@@ -67,7 +71,7 @@ public class SystemMenuController {
     @Operation(summary = "新增菜单")
     @LogOperation(module = "菜单管理", type = LogType.INSERT, description = "新增菜单")
     @PostMapping(value = "/insert")
-    public HttpResult insertMenu(@RequestBody SystemMenu menu) {
+    public HttpResult insertMenu(@Valid @RequestBody SystemMenu menu) {
         boolean b = menuService.insert(menu);
         return b ? HttpResult.setResult(HttpResultEnum.INSERT_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.INSERT_ERROR);
@@ -76,12 +80,7 @@ public class SystemMenuController {
     @Operation(summary = "修改")
     @LogOperation(module = "菜单管理", type = LogType.UPDATE, description = "修改菜单")
     @PostMapping("/update")
-    public HttpResult updateMenu(@RequestBody SystemMenu menu) {
-        //
-        if(ObjectUtil.isEmpty(menu) || ObjectUtil.isEmpty(menu.getId())) {
-            throw new GlobalException(400, "菜单编码不能为空");
-        }
-        //
+    public HttpResult updateMenu(@Valid @RequestBody SystemMenu menu) {
         SystemMenu dbMenu = menuService.getById(menu.getId());
         if(Objects.isNull(dbMenu)) {
             throw new GlobalException(400, "无效的菜单编号");
@@ -112,7 +111,7 @@ public class SystemMenuController {
     @Operation(summary = "删除")
     @LogOperation(module = "菜单管理", type = LogType.DELETE, description = "删除菜单")
     @PostMapping("/delete")
-    public HttpResult deleteMenu(@RequestParam("menuId") Long menuId) {
+    public HttpResult deleteMenu(@NotNull(message = "菜单ID不能为空") @RequestParam("menuId") Long menuId) {
         //
         SystemMenu dbMenu = menuService.getById(menuId);
         if(Objects.isNull(dbMenu)) {

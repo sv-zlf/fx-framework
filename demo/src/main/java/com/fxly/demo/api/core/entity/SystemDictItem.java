@@ -3,6 +3,8 @@ package com.fxly.demo.api.core.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -32,9 +34,11 @@ public class SystemDictItem implements Serializable {
     private String dictItemCode;
 
     @Schema(description = "字典项名称")
+    @NotBlank(message = "字典项名称不能为空")
     private String dictItemName;
 
     @Schema(description = "字典类型编码")
+    @NotBlank(message = "字典类型编码不能为空")
     private String dictTypeCode;
 
     @Schema(description = "排序")

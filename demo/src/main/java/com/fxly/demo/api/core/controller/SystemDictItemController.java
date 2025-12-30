@@ -10,6 +10,10 @@ import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +22,11 @@ import java.util.List;
 @Tag(name = "数据字典项")
 @RestController
 @RequestMapping("/system/dict/item")
+@Slf4j
+@Validated
 public class SystemDictItemController {
 
-    @Resource
+   @Resource
     private ISystemDictItemService itemService;
 
 
@@ -41,7 +47,7 @@ public class SystemDictItemController {
     @Operation(summary = "新增")
     @LogOperation(module = "字典管理", type = LogType.INSERT, description = "新增字典项")
     @PostMapping(value = "/insert")
-    public HttpResult insertDictItem(@RequestBody SystemDictItem dictItem) {
+    public HttpResult insertDictItem(@Valid @RequestBody SystemDictItem dictItem) {
         boolean b = itemService.save(dictItem);
         return b ? HttpResult.setResult(HttpResultEnum.INSERT_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.INSERT_ERROR);
@@ -51,7 +57,7 @@ public class SystemDictItemController {
     @Operation(summary = "修改")
     @LogOperation(module = "字典管理", type = LogType.UPDATE, description = "修改字典项")
     @PostMapping("/update")
-    public HttpResult updateDictItem(@RequestBody SystemDictItem dictItem) {
+    public HttpResult updateDictItem(@Valid @RequestBody SystemDictItem dictItem) {
         // 保存字典
         boolean b = itemService.updateById(dictItem);
         return b ? HttpResult.setResult(HttpResultEnum.UPDATE_SUCCESS)
@@ -61,7 +67,7 @@ public class SystemDictItemController {
     @Operation(summary = "删除")
     @LogOperation(module = "字典管理", type = LogType.DELETE, description = "删除字典项")
     @PostMapping("/delete")
-    public HttpResult deleteDictItem(@RequestParam("id") Long id) {
+    public HttpResult deleteDictItem(@NotNull(message = "字典项ID不能为空") @RequestParam("id") Long id) {
         boolean b = itemService.removeById(id);
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);

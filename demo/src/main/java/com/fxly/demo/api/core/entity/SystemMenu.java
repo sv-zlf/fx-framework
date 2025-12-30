@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fxly.demo.utils.tree.Treeable;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -29,12 +31,14 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     private Long parentId;
 
     @Schema(description = "菜单标题")
+    @NotBlank(message = "菜单标题不能为空")
     private String title;
 
     @Schema(description = "菜单名称")
     private String menuName;
 
     @Schema(description = "前端路由路径")
+    @NotBlank(message = "路由路径不能为空")
     private String path;
 
     @Schema(description = "前端组件路径")
@@ -77,18 +81,19 @@ public class SystemMenu implements Serializable,Treeable<SystemMenu> {
     private Integer affix;
 
     @Schema(description = "创建时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale="zh", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale="zh", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "子菜单列表")
     @TableField(exist = false)
-    private List<SystemMenu> children = new ArrayList<>();;
+    private List<SystemMenu> children = new ArrayList<>();
+    ;
 
     @Schema(description = "是否菜单")
     @TableField(exist = false)
