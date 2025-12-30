@@ -5,9 +5,9 @@ import axios from "@/api";
  */
 
 // 获取列表数据
-export const getPageList = (data: any) => {
+export const getDictTypeList = (data: any) => {
   return axios({
-    url: "/system/dict/type/getPageList",
+    url: "/system/dict/type/list",
     method: "post",
     data
   });
@@ -46,9 +46,9 @@ export const deleteDictType = (id: any) => {
  */
 
 // 分页获取字典列表
-  export const getDictItemPageList = (data: any) => {
+  export const getDictItemList = (data: any) => {
     return axios({
-      url: "/system/dict/item/getPageList",
+      url: "/system/dict/item/list",
       method: "post",
       data
     })

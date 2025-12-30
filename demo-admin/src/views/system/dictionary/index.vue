@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -199,9 +199,9 @@
 import {
   addDictItem,
   addDictType, deleteDictItem, deleteDictType,
-  getDictItemPageList,
+  getDictItemList,
   getListByCode,
-  getPageList,
+  getDictTypeList,
   updateDictItem,
   updateDictType
 } from "@/api/system/dict/index";
@@ -341,7 +341,7 @@ const getDict = async () => {
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize
   };
-  let res = await getPageList(params);
+  let res = await getDictTypeList(params);
   dictList.value = res.data.records || [];
   pagination.value.total = res.data.total;
   loading.value = false;
@@ -406,7 +406,7 @@ const getDictItem = async () => {
     pageIndex: dictItemPage.value.current,
     pageSize: dictItemPage.value.pageSize
   };
-  let res = await getDictItemPageList(params);
+  let res = await getDictItemList(params);
   dictItemList.value = res.data.records || [];
   dictItemPage.value.total = res.data.total;
   detailLoading.value = false;

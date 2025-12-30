@@ -26,9 +26,9 @@ public class SystemCronTaskController{
     private ISystemCronTaskService systemCronTaskService;
 
     @Operation(summary = "分页列表")
-    @PostMapping("/getPageList")
-    public HttpResult getPageList(@RequestBody TaskQueryDTO taskQuery) {
-        return HttpResult.success(systemCronTaskService.getPageList(taskQuery));
+    @PostMapping("/list")
+    public HttpResult getTaskList(@RequestBody TaskQueryDTO taskQuery) {
+        return HttpResult.success(systemCronTaskService.getTaskList(taskQuery));
     }
 
     @Operation(summary = "保存或更新")

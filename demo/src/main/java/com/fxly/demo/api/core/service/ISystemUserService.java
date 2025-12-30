@@ -17,7 +17,7 @@ public interface ISystemUserService extends IService<SystemUser> {
     /*
      * 分页列表
      */
-    Page<SystemUser> getPageList(UserQueryDTO userQueryDto);
+    Page<SystemUser> getUserList(UserQueryDTO userQueryDto);
 
     /**
      * 根据用户名查询用户（含角色权限）
@@ -52,3 +52,4 @@ public interface ISystemUserService extends IService<SystemUser> {
     HttpResult logout(String token, HttpServletRequest request);
 
 }
+

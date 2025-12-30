@@ -15,7 +15,7 @@ public interface ISystemCronTaskService extends IService<SystemCronTask> {
     /**
      * 分页列表
      */
-    Page<SystemCronTask> getPageList(TaskQueryDTO taskQueryDto);
+    Page<SystemCronTask> getTaskList(TaskQueryDTO taskQueryDto);
 
     /**
      * 保存或更新任务
@@ -47,3 +47,4 @@ public interface ISystemCronTaskService extends IService<SystemCronTask> {
      */
     void updateExecutionResult(Long id, String result, boolean success);
 }
+

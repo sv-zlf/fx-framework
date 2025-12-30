@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <a-space wrap>
@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { useDevicesSize } from "@/hooks/useDevicesSize";
-import { getPageList, forceLogout } from "@/api/system/session";
+import { getUserSessionList, forceLogout } from "@/api/system/session";
 
 defineOptions({ name: "onlineuser" });
 
@@ -122,7 +122,7 @@ const getOnlineUser = async () => {
       startLoginTime: form.value.loginTime[0] || null,
       endLoginTime: form.value.loginTime[1] || null
     };
-    let res = await getPageList(params);
+    let res = await getUserSessionList(params);
     list.value = res.data.records;
     pagination.value.total = res.data.total;
   } finally {

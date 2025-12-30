@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SystemDictTypeServiceImpl extends ServiceImpl<SystemDictTypeMapper,SystemDictType> implements ISystemDictTypeService {
     @Override
-    public Page<SystemDictType> getPageList(DictQueryDTO dictQuery) {
+    public Page<SystemDictType> getDictTypeList(DictQueryDTO dictQuery) {
         Page<SystemDictType> page = new Page<>(dictQuery.getPageIndex(), dictQuery.getPageSize());
         // 查询条件
         LambdaQueryWrapper<SystemDictType> queryWrapper = new LambdaQueryWrapper();
@@ -29,3 +29,4 @@ public class SystemDictTypeServiceImpl extends ServiceImpl<SystemDictTypeMapper,
         return baseMapper.selectPage(page, queryWrapper);
     }
 }
+

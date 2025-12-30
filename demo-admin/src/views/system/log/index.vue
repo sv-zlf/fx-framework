@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { getPageList, deleteLog } from "@/api/system/log";
+import { getLogList, deleteLog } from "@/api/system/log";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 
 const { tableFixed } = useLayoutModel();
@@ -149,23 +149,23 @@ const pagination = ref({
   showTotal: true,
   onChange: (current: number) => {
     pagination.value.current = current;
-    getLogList();
+    getLog();
   },
   onPageSizeChange: (pageSize: number) => {
     pagination.value.current = 1;
     pagination.value.pageSize = pageSize;
-    getLogList();
+    getLog();
   }
 });
 
-const getLogList = async () => {
+const getLog = async () => {
   loading.value = true;
   const params = {
     ...searchForm.value,
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize,
   };
-  let res = await getPageList(params);
+  let res = await getLogList(params);
   logList.value = res.data.records || [];
   pagination.value.total = res.data.total;
   loading.value = false;
@@ -173,7 +173,7 @@ const getLogList = async () => {
 
 const search = () => {
   pagination.value.current = 1;
-  getLogList();
+  getLog();
 };
 
 const reset = () => {
@@ -184,13 +184,13 @@ const reset = () => {
     status: null,
   };
   pagination.value.current = 1;
-  getLogList();
+  getLog();
 };
 
 const onDelete = async (record: any) => {
   await deleteLog(record.id);
   arcoMessage("success", "删除成功");
-  getLogList();
+  getLog();
 };
 
 const detailOpen = ref(false);
@@ -201,7 +201,7 @@ const onDetail = (record: any) => {
 };
 
 onMounted(() => {
-  getLogList();
+  getLog();
 });
 </script>
 

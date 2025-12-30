@@ -29,9 +29,9 @@ public class SystemUserSessionController{
     private ISystemUserSessionService systemUserSessionService;
 
     @Operation(summary = "列表查询")
-    @GetMapping("/getPageList")
-    public HttpResult getUserSessionPageList(SessionQueryDTO query) {
-        return HttpResult.success(systemUserSessionService.getPageList(query)) ;
+    @GetMapping("/list")
+    public HttpResult getUserSessionList(SessionQueryDTO query) {
+        return HttpResult.success(systemUserSessionService.getUserSessionList(query)) ;
     }
 
 

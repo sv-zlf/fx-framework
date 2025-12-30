@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -140,7 +140,7 @@
 <script setup lang="ts">
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import {deleteBatch, deleteUser, getPageList, saveOrUpdate} from "@/api/system/user";
+import {deleteBatch, deleteUser, getUserList, saveOrUpdate} from "@/api/system/user";
 import {getRoleList} from "@/api/system/role";
 
 const router = useRouter();
@@ -284,7 +284,7 @@ const getAccount = async () => {
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize,
   };
-  let res = await getPageList(params);
+  let res = await getUserList(params);
   accountList.value = res.data.records;
   pagination.value.total = res.data.total;
   loading.value = false;

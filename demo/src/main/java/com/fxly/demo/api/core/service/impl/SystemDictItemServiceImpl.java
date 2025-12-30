@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class SystemDictItemServiceImpl extends ServiceImpl<SystemDictItemMapper, SystemDictItem> implements ISystemDictItemService {
     @Override
-    public Page<SystemDictItem> getPageList(DictQueryDTO dictQuery) {
+    public Page<SystemDictItem> getDictItemList(DictQueryDTO dictQuery) {
         Page<SystemDictItem> page = new Page<>(dictQuery.getPageIndex(), dictQuery.getPageSize());
         LambdaQueryWrapper<SystemDictItem> queryWrapper = new LambdaQueryWrapper<SystemDictItem>()
                 .eq(ObjectUtil.isNotEmpty(dictQuery.getDictTypeCode()),SystemDictItem::getDictTypeCode, dictQuery.getDictTypeCode())
@@ -37,3 +37,4 @@ public class SystemDictItemServiceImpl extends ServiceImpl<SystemDictItemMapper,
         return list(queryWrapper);
     }
 }
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -196,7 +196,7 @@
 <script setup lang="ts">
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import {createCode, createTable, deleteTable, getPageList, updateTable} from "@/api/tool/gen";
+import {createCode, createTable, deleteTable, getTableInfoList, updateTable} from "@/api/tool/gen";
 import {quickDownloadFile} from "@/utils/download";
 import { useRouteConfigStore } from "@/store/modules/route-config";
 
@@ -247,7 +247,7 @@ const getTable = async () => {
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize,
   };
-  let res = await getPageList(params);
+  let res = await getTableInfoList(params);
   tableList.value = res.data.records;
   pagination.value.total = res.data.total;
   loading.value = false;

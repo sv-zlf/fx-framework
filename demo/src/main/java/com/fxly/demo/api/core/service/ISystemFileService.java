@@ -13,7 +13,7 @@ import java.io.File;
  * 文件信息服务接口
  */
 public interface ISystemFileService extends IService<SystemFile> {
-    PageResult getPageList(PageHelper pageHelper);
+    PageResult getFileList(PageHelper pageHelper);
 
     /**
      * 上传文件
@@ -39,3 +39,4 @@ public interface ISystemFileService extends IService<SystemFile> {
     File getFile(String relativePath);
 
 }
+

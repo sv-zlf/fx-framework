@@ -91,7 +91,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     private static final String TOKEN_PREFIX = "Bearer ";
 
     @Override
-    public Page<SystemUser> getPageList(UserQueryDTO userQueryDto) {
+    public Page<SystemUser> getUserList(UserQueryDTO userQueryDto) {
         // 分页
         Page<SystemUser> page = new Page<>(userQueryDto.getPageIndex(),userQueryDto.getPageSize());
         // 查询条件
@@ -343,3 +343,4 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         }
     }
 }
+

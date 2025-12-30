@@ -1,9 +1,9 @@
 import axios from "@/api";
 
 // 获取列表数据
-export const getPageList = (params: any) => {
+export const getUserSessionList = (params: any) => {
   return axios({
-    url: "/system/user/session/getPageList",
+    url: "/system/user/session/list",
     method: "get",
     params,
     paramsSerializer: {

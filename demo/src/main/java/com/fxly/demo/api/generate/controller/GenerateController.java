@@ -80,11 +80,11 @@ public class GenerateController {
     }
 
     @Operation(summary = "分页列表")
-    @GetMapping("/getPageList")
-    public HttpResult getTableInfoPageList(@RequestParam(value = "pageIndex",defaultValue = "1") Integer pageIndex,
+    @GetMapping("/list")
+    public HttpResult getTableInfoList(@RequestParam(value = "pageIndex",defaultValue = "1") Integer pageIndex,
                                    @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
                                    @RequestParam(value = "tableName", required = false) String tableName) {
-        return HttpResult.success(tableInfoService.getPageList(pageIndex, pageSize, tableName));
+        return HttpResult.success(tableInfoService.getTableInfoList(pageIndex, pageSize, tableName));
     }
 
     @Operation(summary = "更新")

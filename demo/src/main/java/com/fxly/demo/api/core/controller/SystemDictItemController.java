@@ -32,9 +32,9 @@ public class SystemDictItemController {
 
 
     @Operation(summary = "获取字典类型列表")
-    @PostMapping("/getPageList")
-    public HttpResult getDictItemPageList(@RequestBody DictQueryDTO dictQuery) {
-        return HttpResult.success(itemService.getPageList(dictQuery));
+    @PostMapping("/list")
+    public HttpResult getDictItemList(@RequestBody DictQueryDTO dictQuery) {
+        return HttpResult.success(itemService.getDictItemList(dictQuery));
     }
 
     @Operation(summary = "获取字典项列表")

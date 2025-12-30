@@ -1,21 +1,21 @@
-import axios from "@/api";
+锘縤mport axios from "@/api";
 
-// 获取系统日志列表数据
-export const getPageList = (data: any) => {
+// 鑾峰彇绯荤粺鏃ュ織鍒楄〃鏁版嵁
+export const getLogList = (data: any) => {
   return axios({
-    url: "/system/log/getPageList",
+    url: "/system/log/list",
     method: "get",
     params: data
   });
 };
 
-// 删除系统日志
+// 鍒犻櫎绯荤粺鏃ュ織
 export const deleteLog = (id: number) => {
   return axios({
     url: "/system/log/delete",
     method: "post",
     params: {
       id
-    }
-  });
+    }});
 };
+

@@ -14,7 +14,8 @@ import java.util.List;
  */
 public interface ISystemDictItemService extends IService<SystemDictItem> {
 
-    Page<SystemDictItem> getPageList(DictQueryDTO dictQuery);
+    Page<SystemDictItem> getDictItemList(DictQueryDTO dictQuery);
 
     List<SystemDictItem> getItemList(String dictTypeCode);
 }
+

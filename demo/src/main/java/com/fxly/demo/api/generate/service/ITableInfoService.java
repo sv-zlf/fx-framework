@@ -20,5 +20,6 @@ public interface ITableInfoService extends IService<TableInfo> {
 
     void generateCode(Long tableId, ZipOutputStream zipOut);
 
-    Page<TableInfo> getPageList(Integer pageIndex, Integer pageSize, String tableName);
+    Page<TableInfo> getTableInfoList(Integer pageIndex, Integer pageSize, String tableName);
 }
+

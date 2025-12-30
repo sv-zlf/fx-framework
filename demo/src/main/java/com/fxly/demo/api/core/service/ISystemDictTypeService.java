@@ -12,6 +12,7 @@ import com.fxly.demo.api.core.entity.SystemDictType;
  */
 public interface ISystemDictTypeService extends IService<SystemDictType> {
 
-    Page<SystemDictType> getPageList(DictQueryDTO dictQuery);
+    Page<SystemDictType> getDictTypeList(DictQueryDTO dictQuery);
 
 }
+

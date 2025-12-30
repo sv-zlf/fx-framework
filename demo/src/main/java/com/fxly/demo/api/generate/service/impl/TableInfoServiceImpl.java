@@ -76,7 +76,7 @@ public class TableInfoServiceImpl extends ServiceImpl<TableInfoMapper, TableInfo
     }
 
     @Override
-    public Page<TableInfo> getPageList(Integer pageIndex, Integer pageSize, String tableName) {
+    public Page<TableInfo> getTableInfoList(Integer pageIndex, Integer pageSize, String tableName) {
         Page<TableInfo> page = new Page<>(pageIndex, pageSize);
         // 查询条件
         LambdaQueryWrapper<TableInfo> queryWrapper = new LambdaQueryWrapper<>();
@@ -91,3 +91,4 @@ public class TableInfoServiceImpl extends ServiceImpl<TableInfoMapper, TableInfo
         return page;
     }
 }
+

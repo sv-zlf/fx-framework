@@ -33,7 +33,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
     private QuartzUtil quartzUtil;
 
     @Override
-    public Page<SystemCronTask> getPageList(TaskQueryDTO taskQueryDto) {
+    public Page<SystemCronTask> getTaskList(TaskQueryDTO taskQueryDto) {
         // 分页
         Page<SystemCronTask> page = new Page<>(taskQueryDto.getPageIndex(), taskQueryDto.getPageSize());
         
@@ -212,3 +212,4 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
         updateById(task);
     }
 }
+

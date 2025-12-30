@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class SystemLogServiceImpl extends ServiceImpl<SystemLogMapper, SystemLog> implements ISystemLogService {
 
     @Override
-    public Page<SystemLog> getPageList(SystemLog systemLog) {
+    public Page<SystemLog> getLogList(SystemLog systemLog) {
         // 分页
         Page<SystemLog> page = new Page<>(systemLog.getPageIndex(),systemLog.getPageSize());
         // 查询条件
@@ -28,3 +28,4 @@ public class SystemLogServiceImpl extends ServiceImpl<SystemLogMapper, SystemLog
         return page;
     }
 }
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { getPageList, saveOrUpdate, deleteTask, executeTask, pauseTask, resumeTask } from "@/api/system/task";
+import { getTaskList, saveOrUpdate, deleteTask, executeTask, pauseTask, resumeTask } from "@/api/system/task";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 import { deepClone } from "@/utils";
 
@@ -166,23 +166,23 @@ const pagination = ref({
   showTotal: true,
   onChange: (current: number) => {
     pagination.value.current = current;
-    getTaskList();
+    getTask();
   },
   onPageSizeChange: (pageSize: number) => {
     pagination.value.current = 1;
     pagination.value.pageSize = pageSize;
-    getTaskList();
+    getTask();
   }
 });
 
-const getTaskList = async () => {
+const getTask = async () => {
   loading.value = true;
   const params = {
     ...searchForm.value,
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize,
   };
-  let res = await getPageList(params);
+  let res = await getTaskList(params);
   taskList.value = res.data.records || [];
   pagination.value.total = res.data.total;
   loading.value = false;
@@ -200,7 +200,7 @@ const reset = () => {
     status: null,
   };
   pagination.value.current = 1;
-  getTaskList();
+  getTask();
 };
 
 // 新增
@@ -245,7 +245,7 @@ const handleOk = async () => {
   let res = await saveOrUpdate(form.value);
   arcoMessage("success", res.msg || "保存成功");
   open.value = false;
-  getTaskList();
+  getTask();
 };
 
 const afterClose = () => {
@@ -265,28 +265,28 @@ const afterClose = () => {
 const onDelete = async (record: any) => {
   await deleteTask(record.id);
   arcoMessage("success", "删除成功");
-  getTaskList();
+  getTask();
 };
 
 const onExecute = async (record: any) => {
   let res = await executeTask(record.id);
   arcoMessage("success", res.msg || "执行成功");
-  getTaskList();
+  getTask();
 };
 
 const onPause = async (record: any) => {
   let res = await pauseTask(record.id);
   arcoMessage("success", res.msg || "暂停成功");
-  getTaskList();
+  getTask();
 };
 
 const onResume = async (record: any) => {
   let res = await resumeTask(record.id);
   arcoMessage("success", res.msg || "恢复成功");
-  getTaskList();
+  getTask();
 };
 
-getTaskList();
+getTask();
 </script>
 
 <style lang="scss" scoped>

@@ -18,9 +18,9 @@ export const createCodeZip = (params: any) => {
 }
 
 // 获取列表数据
-export const getPageList = (params: any) => {
+export const getTableInfoList = (params: any) => {
   return axios({
-    url: "/tool/gen/getPageList",
+    url: "/tool/gen/list",
     method: "get",
     params
   });

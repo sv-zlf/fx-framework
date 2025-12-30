@@ -14,9 +14,10 @@ import java.util.List;
  */
 public interface ISystemRoleService extends IService<SystemRole> {
 
-    Page<SystemRole> getPageList(RoleQueryDTO query);
+    Page<SystemRole> getRoleList(RoleQueryDTO query);
 
     List<SystemRole> getRoleList(String roleName);
 
 }
+
 

@@ -27,9 +27,9 @@ export const uploadBatch = (files: FormData, subPath?: string) => {
 };
 
 // 获取文件分页列表
-export const getPageList = (data: any) => {
+export const getFileList = (data: any) => {
   return axios({
-    url: "/file/getPageList",
+    url: "/file/list",
     method: "post",
     data
   });

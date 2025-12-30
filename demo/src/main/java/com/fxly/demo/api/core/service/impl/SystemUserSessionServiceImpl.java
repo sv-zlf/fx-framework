@@ -49,7 +49,7 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
     private JwtTokenManage tokenManage;
 
     @Override
-    public Page<SystemUserSession> getPageList(SessionQueryDTO query) {
+    public Page<SystemUserSession> getUserSessionList(SessionQueryDTO query) {
         // 分页
         Page<SystemUserSession> page = new Page<>(query.getPageIndex(), query.getPageSize());
         // 查询条件
@@ -153,3 +153,4 @@ public class SystemUserSessionServiceImpl extends ServiceImpl<SystemUserSessionM
 //        sysUserSessionMapper.deleteExpiredSession(new Date());
 //    }
 }
+

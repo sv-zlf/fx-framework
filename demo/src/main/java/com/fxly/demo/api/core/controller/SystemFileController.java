@@ -42,9 +42,9 @@ public class SystemFileController {
 
     
     @Operation(summary = "获取文件分页列表")
-    @PostMapping("/getPageList")
-    public HttpResult getPageList(@RequestBody PageHelper pageHelper) {
-        return HttpResult.success(systemFileService.getPageList(pageHelper));
+    @PostMapping("/list")
+    public HttpResult getFileList(@RequestBody PageHelper pageHelper) {
+        return HttpResult.success(systemFileService.getFileList(pageHelper));
     }
 
     @Operation(summary = "单文件上传")

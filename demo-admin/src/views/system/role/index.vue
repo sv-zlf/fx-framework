@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="snow-page">
     <div class="snow-inner">
       <s-layout-tools>
@@ -155,7 +155,7 @@
 
 <script setup lang="ts">
 import useGlobalProperties from "@/hooks/useGlobalProperties";
-import {addRole, bindMenu, getPageList, toBind, updateRole, deleteRole} from "@/api/system/role";
+import {addRole, bindMenu, getRolePageList, toBind, updateRole, deleteRole} from "@/api/system/role";
 import { deepClone } from "@/utils";
 import { useLayoutModel } from "@/hooks/useLayoutModel";
 
@@ -268,7 +268,7 @@ const getRole = async () => {
       pageIndex: pagination.value.current,
       pageSize: pagination.value.pageSize,
     };
-    let res = await getPageList(params);
+    let res = await getRolePageList(params);
     roleList.value = res.data.records;
     pagination.value.total = res.data.total;
   } finally {

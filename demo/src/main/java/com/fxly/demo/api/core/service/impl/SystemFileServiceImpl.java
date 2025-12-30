@@ -93,7 +93,7 @@ public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemF
     }
 
     @Override
-    public PageResult getPageList(PageHelper pageHelper) {
+    public PageResult getFileList(PageHelper pageHelper) {
         Page<SystemFile> page = new Page<>(pageHelper.getPageIndex(), pageHelper.getPageSize());
         LambdaQueryWrapper<SystemFile> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(SystemFile::getCreateTime);
@@ -196,3 +196,4 @@ public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemF
     }
 
 }
+

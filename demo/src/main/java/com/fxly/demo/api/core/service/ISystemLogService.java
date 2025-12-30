@@ -10,6 +10,6 @@ import com.fxly.demo.api.core.entity.SystemLog;
 */
 public interface ISystemLogService extends IService<SystemLog> {
 
-    Page<SystemLog> getPageList(SystemLog systemLog);
+    Page<SystemLog> getLogList(SystemLog systemLog);
 
 }

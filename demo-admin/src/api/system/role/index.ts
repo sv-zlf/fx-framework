@@ -1,9 +1,9 @@
 import axios from "@/api";
 
 // 获取列表数据
-export const getPageList = (data: any) => {
+export const getRolePageList = (data: any) => {
   return axios({
-    url: "/system/role/getPageList",
+    url: "/system/role/list",
     method: "post",
     data
   });

@@ -37,9 +37,9 @@ export const getUserInfo = (params?: any) => {
 
 
 // 获取列表数据
-export const getPageList = (data: any) => {
+export const getUserList = (data: any) => {
   return axios({
-    url: "/system/user/getPageList",
+    url: "/system/user/list",
     method: "post",
     data
   });

@@ -22,7 +22,7 @@ import java.util.List;
 public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemRole> implements ISystemRoleService {
 
     @Override
-    public Page<SystemRole> getPageList(RoleQueryDTO query) {
+    public Page<SystemRole> getRoleList(RoleQueryDTO query) {
         // 分页
         Page<SystemRole> page = new Page<>(query.getPageIndex(),query.getPageSize());
         // 查询条件
@@ -42,3 +42,4 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         return this.list(queryWrapper);
     }
 }
+

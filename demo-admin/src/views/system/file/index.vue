@@ -143,7 +143,7 @@
 
 <script setup lang="ts">
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import { getPageList, upload, uploadBatch, deleteFile, download as downloadFile } from "@/api/system/file";
+import { getFileList, upload, uploadBatch, deleteFile, download as downloadFile } from "@/api/system/file";
 // import { arcoMessage } from "@/utils";
 
 import { useRouter } from "vue-router";
@@ -202,7 +202,7 @@ const getFileList = async () => {
     pageIndex: pagination.value.current,
     pageSize: pagination.value.pageSize
   };
-  let res = await getPageList(params);
+  let res = await getFileList(params);
   fileList.value = res.data.records;
   pagination.value.total = res.data.total;
   loading.value = false;
@@ -351,3 +351,5 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 </style>
+import { getFileList, upload, uploadBatch, deleteFile, download as downloadFile } from "@/api/system/file";
+ let res = await getFileList(params);

@@ -1,9 +1,9 @@
 import axios from "@/api";
 
 // 获取列表数据
-export const getPageList = (data: any) => {
+export const getTaskList = (data: any) => {
   return axios({
-    url: "/system/task/getPageList",
+    url: "/system/task/list",
     method: "post",
     data
   });

@@ -22,9 +22,9 @@ public class SystemLogController{
     private ISystemLogService systemLogService;
 
     @Operation(summary = "列表查询")
-    @GetMapping("/getPageList")
-    public HttpResult getPageList(SystemLog systemLog) {
-        return HttpResult.success(systemLogService.getPageList(systemLog)) ;
+    @GetMapping("/list")
+    public HttpResult getLogList(SystemLog systemLog) {
+        return HttpResult.success(systemLogService.getLogList(systemLog)) ;
     }
     @Operation(summary = "删除")
     @PostMapping("/delete")

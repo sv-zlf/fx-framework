@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface ISystemUserSessionService extends IService<SystemUserSession> {
 
-    Page<SystemUserSession> getPageList(SessionQueryDTO query);
+    Page<SystemUserSession> getUserSessionList(SessionQueryDTO query);
 
     public void createSession(String token, String loginName, HttpServletRequest request);
 
@@ -34,3 +34,4 @@ public interface ISystemUserSessionService extends IService<SystemUserSession> {
      */
     HttpResult forceLogout(String sessionId);
 }
+
