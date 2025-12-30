@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fxly.demo.api.core.dto.UserQueryDTO;
 import com.fxly.demo.api.core.entity.SystemUser;
+import com.fxly.demo.api.core.entity.SystemUser.Create;
+import com.fxly.demo.api.core.entity.SystemUser.Update;
 import com.fxly.demo.api.core.service.ISystemUserRoleService;
 import com.fxly.demo.api.core.service.ISystemUserService;
 import com.fxly.demo.system.annotation.LogOperation;
@@ -18,12 +20,15 @@ import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +44,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/system/user")
 @Slf4j
+@Validated
 public class SystemUserController {
 
     @Resource
@@ -58,13 +64,12 @@ public class SystemUserController {
         return HttpResult.success(userService.getPageList(userQueryDto));
     }
 
-    @Operation(summary = "修改用户信息")
+    @Operation(summary = "修改或新增用户信息")
     @LogOperation(module = "用户管理", type = LogType.INSERT, description = "新增用户")
     @PostMapping("/saveOrUpdate")
-    public HttpResult saveOrUpdateUser(@RequestBody SystemUser user) {
+    public HttpResult saveOrUpdateUser(@Valid @RequestBody SystemUser user) {
 
         if (ObjectUtil.isEmpty(user.getId())){
-//            userService.validateUser(user);
             // 设置默认密码
             user.setPassword(passwordEncoder.encode("123456"));
         }
@@ -88,9 +93,9 @@ public class SystemUserController {
 
     @Operation(summary = "删除用户")
     @LogOperation(module = "用户管理", type = LogType.DELETE, description = "删除用户")
-    @PostMapping("/delete")
-    public HttpResult deleteUser(@RequestParam("userId") Long userId) {
-        boolean b = userService.removeById(userId);
+   @PostMapping("/delete")
+    public HttpResult deleteUser(@NotNull(message = "用户ID不能为空") @RequestParam("userId") Long userId) {
+       boolean b = userService.removeById(userId);
         return b ? HttpResult.setResult(HttpResultEnum.DELETE_SUCCESS)
                 : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
     }
@@ -108,16 +113,8 @@ public class SystemUserController {
     @Operation(summary = "基本信息设置")
     @LogOperation(module = "用户管理", type = LogType.UPDATE, description = "修改用户基本信息", saveRequestData = false, saveResponseData = false)
     @PostMapping("/basicSetting")
-    public HttpResult basicSetting(@RequestBody SystemUser user) {
-        // 参数校验
-        if(Objects.isNull(user) || Objects.isNull(user.getId())) {
-            throw new GlobalException(400, "用户id不能为空");
-        }
-        //
-        if (StringUtils.isBlank(user.getUserName())) {
-            throw new GlobalException(400, "用户名不能为空");
-        }
-        //
+    public HttpResult basicSetting(@Validated(Update.class) @RequestBody SystemUser user) {
+       //
         LambdaUpdateWrapper<SystemUser> updateWrapper = new LambdaUpdateWrapper<SystemUser>()
                 .eq(SystemUser::getId, user.getId())
                 .set(SystemUser::getUserName, user.getUserName())
@@ -130,16 +127,8 @@ public class SystemUserController {
     @LogOperation(module = "用户管理", type = LogType.UPDATE, description = "修改用户密码", saveRequestData = false)
     @PostMapping("/safeSetting")
     @Transactional
-    public HttpResult resetPassword(@RequestBody SystemUser user) {
-        // 参数校验
-        if(Objects.isNull(user) || Objects.isNull(user.getId())) {
-            throw new GlobalException(400, "用户id不能为空");
-        }
-        //
-        if (StringUtils.isBlank(user.getPassword())) {
-            throw new GlobalException(400, "密码不能为空");
-        }
-        //
+    public HttpResult resetPassword(@NotNull(message = "用户ID不能为空") @RequestBody SystemUser user) {
+       //
         LambdaUpdateWrapper<SystemUser> updateWrapper = new LambdaUpdateWrapper<SystemUser>()
                 .eq(SystemUser::getId, user.getId())
                 .set(SystemUser::getPassword, passwordEncoder.encode(user.getPassword()))

@@ -1,6 +1,7 @@
 package com.fxly.demo.api.core.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import jakarta.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -24,9 +25,11 @@ public class SystemRole implements Serializable {
     private Long id;
 
     @Schema(description = "角色名称")
+    @NotBlank(message = "角色名称不能为空")
     private String roleName;
 
     @Schema(description = "角色编码")
+    @NotBlank(message = "角色编码不能为空")
     private String roleCode;
 
     @Schema(description = "角色描述")

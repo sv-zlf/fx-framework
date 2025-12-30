@@ -18,7 +18,10 @@ import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,9 +34,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/system/role")
 @Slf4j
+@Validated
 public class SystemRoleController {
 
-    @Resource
+   @Resource
     private ISystemUserRoleService userRoleService;
     @Resource
     private ISystemRoleService roleService;
@@ -55,8 +59,7 @@ public class SystemRoleController {
     @Operation(summary = "新增角色")
     @LogOperation(module = "角色管理", type = LogType.INSERT, description = "新增角色")
     @PostMapping("/insert")
-    public HttpResult insertRole(@RequestBody SystemRole role) {
-        //
+    public HttpResult insertRole(@Valid @RequestBody SystemRole role) {
         LambdaQueryWrapper<SystemRole> queryWrapper = Wrappers.lambdaQuery(SystemRole.class)
                 .eq(SystemRole::getRoleName, role.getRoleName());
         SystemRole dbRole = roleService.getOne(queryWrapper);
@@ -71,7 +74,7 @@ public class SystemRoleController {
     @Operation(summary = "修改角色")
     @LogOperation(module = "角色管理", type = LogType.UPDATE, description = "修改角色")
     @PostMapping("/update")
-    public HttpResult updateRole(@RequestBody  SystemRole role) {
+    public HttpResult updateRole(@Valid @RequestBody  SystemRole role) {
         //
         LambdaQueryWrapper<SystemRole> queryWrapper = Wrappers.lambdaQuery(SystemRole.class)
                 .eq(StringUtils.isNotBlank(role.getRoleName()), SystemRole::getRoleName, role.getRoleName());
@@ -91,7 +94,7 @@ public class SystemRoleController {
     @Operation(summary = "删除角色")
     @LogOperation(module = "角色管理", type = LogType.DELETE, description = "删除角色")
     @PostMapping("/delete")
-    public HttpResult deleteRole(@RequestParam("roleId") Long roleId) {
+    public HttpResult deleteRole(@NotNull(message = "角色ID不能为空") @RequestParam("roleId") Long roleId) {
         // 首先，查看该角色是否绑定用户
         LambdaQueryWrapper queryUserRole = new LambdaQueryWrapper<SystemUserRole>()
                 .eq(SystemUserRole::getRoleId, roleId);

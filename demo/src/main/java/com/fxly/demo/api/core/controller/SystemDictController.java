@@ -14,7 +14,10 @@ import com.fxly.demo.system.global.HttpResultEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +26,10 @@ import java.util.List;
 @Tag(name = "数据字典类型")
 @RestController
 @RequestMapping("/system/dict/type")
+@Validated
 public class SystemDictController {
 
-    @Resource
+   @Resource
     private ISystemDictTypeService dictService;
 
     @Resource
@@ -43,7 +47,7 @@ public class SystemDictController {
     @LogOperation(module = "字典管理", type = LogType.INSERT, description = "新增字典类型")
     @PostMapping(value = "/insert")
     @Transactional(rollbackFor = Exception.class)
-    public HttpResult insertDictType(@RequestBody SystemDictType dictType) {
+    public HttpResult insertDictType(@Valid @RequestBody SystemDictType dictType) {
         boolean b = dictService.save(dictType);
         if(b && CollectionUtils.isNotEmpty(dictType.getItemList())) {
             List<SystemDictItem> itemList = getDictItemList(dictType);
@@ -65,7 +69,7 @@ public class SystemDictController {
     @LogOperation(module = "字典管理", type = LogType.UPDATE, description = "修改字典类型")
     @PostMapping("/update")
     @Transactional(rollbackFor = Exception.class)
-    public HttpResult updateDictType(@RequestBody SystemDictType dictType) {
+    public HttpResult updateDictType(@Valid @RequestBody SystemDictType dictType) {
         // 保存字典
         boolean b = dictService.updateById(dictType);
         if(b && CollectionUtils.isNotEmpty(dictType.getItemList())) {
@@ -89,7 +93,7 @@ public class SystemDictController {
     @LogOperation(module = "字典管理", type = LogType.DELETE, description = "删除字典类型")
     @PostMapping("/delete")
     @Transactional(rollbackFor = Exception.class)
-    public HttpResult deleteDictType(@RequestParam("id") Long id) {
+    public HttpResult deleteDictType(@NotNull(message = "字典ID不能为空") @RequestParam("id") Long id) {
         SystemDictType dictType = dictService.getById(id);
         //
         boolean b = dictService.removeById(id);
