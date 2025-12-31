@@ -34,11 +34,6 @@ public class SystemRoleMenuController {
    @Resource
     private ISystemRoleMenuService roleMenuService;
 
-    /**
-     * 授予角色菜单和按钮的操作权限
-     * @param roleId 待授权的角色编号，就是点击给哪个角色授权就传哪个角色的编号
-     * @return 每一级都有一个isSelected 属性，代表这个菜单或者按钮是否已授权。
-     */
     @Operation(summary = "授权")
     @GetMapping("/toBind")
     public HttpResult toBind(@NotNull(message = "角色ID不能为空") @RequestParam("roleId") Long roleId) {

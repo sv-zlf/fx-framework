@@ -22,14 +22,14 @@ public class SystemUserRoleController {
     private ISystemUserRoleService userRoleService;
 
     @Operation(summary = "根据用户编号获取已分配的角色列表")
-    @GetMapping("/getRoleListByUserId.do")
+    @GetMapping("/getRoleListByUserId")
     public HttpResult getRoleListByUserId(@RequestParam("userId") Long userId) {
         List<SystemRole> roleList = userRoleService.getRoleListByUserId(userId);
         return HttpResult.success(roleList);
     }
 
     @Operation(summary = "分配角色")
-    @PostMapping("/grantRole.do")
+    @PostMapping("/grantRole")
     public HttpResult grantRole(@RequestParam("userId") Long userId, @RequestParam("roleIds") List<Long> roleIds) {
         //
         boolean b = userRoleService.grantRole(userId, roleIds);
@@ -38,7 +38,7 @@ public class SystemUserRoleController {
     }
 
     @Operation(summary = "批量授权")
-    @PostMapping("/batchGrant.do")
+    @PostMapping("/batchGrant")
     public HttpResult batchGrant(@RequestParam("userIds") Set<Long> userIds, @RequestParam("roleIds") Set<Long> roleIds) {
         //
         boolean b = userRoleService.batchGrant(userIds, roleIds);

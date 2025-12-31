@@ -1,6 +1,8 @@
 package com.fxly.demo.api.core.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fxly.demo.api.core.dto.FileQueryDTO;
 import com.fxly.demo.api.core.entity.SystemFile;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.system.global.PageHelper;
@@ -13,7 +15,7 @@ import java.io.File;
  * 文件信息服务接口
  */
 public interface ISystemFileService extends IService<SystemFile> {
-    PageResult getFileList(PageHelper pageHelper);
+    Page getFileList(FileQueryDTO query);
 
     /**
      * 上传文件

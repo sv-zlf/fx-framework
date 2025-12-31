@@ -1,5 +1,6 @@
 package com.fxly.demo.api.core.controller;
 
+import com.fxly.demo.api.core.dto.FileQueryDTO;
 import com.fxly.demo.api.core.entity.SystemFile;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.service.ISystemFileService;
@@ -42,9 +43,9 @@ public class SystemFileController {
 
     
     @Operation(summary = "获取文件分页列表")
-    @PostMapping("/list")
-    public HttpResult getFileList(@RequestBody PageHelper pageHelper) {
-        return HttpResult.success(systemFileService.getFileList(pageHelper));
+    @GetMapping("/list")
+    public HttpResult getFileList(FileQueryDTO query) {
+        return HttpResult.success(systemFileService.getFileList(query));
     }
 
     @Operation(summary = "单文件上传")

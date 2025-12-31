@@ -10,9 +10,12 @@ import lombok.Data;
 @Data
 public class PageHelper {
 
-    @Schema(name = "分页查询参数")
+    @Schema(name = "分页查询页码，默认第一页")
     @TableField(exist = false)
-    private Long pageIndex = 1L // 页码，默认第一页
-            , pageSize = 10L; // 每页显示条数，默认每页显示10条数据
+    private Long pageIndex = 1L ;
+
+    @Schema(name = "每页显示条数，默认每页显示10条数据")
+    @TableField(exist = false)
+    private Long PageSize = 10L;
 
 }

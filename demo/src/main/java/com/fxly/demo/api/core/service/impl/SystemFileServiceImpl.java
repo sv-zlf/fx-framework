@@ -1,6 +1,7 @@
 package com.fxly.demo.api.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fxly.demo.api.core.dto.FileQueryDTO;
 import com.fxly.demo.api.core.entity.SystemFile;
 import com.fxly.demo.api.core.entity.SystemUser;
 import com.fxly.demo.api.core.mapper.SystemFileMapper;
@@ -14,6 +15,7 @@ import com.fxly.demo.system.global.PageResult;
 import com.fxly.demo.utils.FileUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +31,7 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemFile> 
+public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemFile>
         implements ISystemFileService {
 
     @Resource
@@ -93,12 +95,17 @@ public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemF
     }
 
     @Override
-    public PageResult getFileList(PageHelper pageHelper) {
-        Page<SystemFile> page = new Page<>(pageHelper.getPageIndex(), pageHelper.getPageSize());
+    public Page getFileList(FileQueryDTO query) {
+        // 分页参数
+        Page<SystemFile> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        // 查询条件
         LambdaQueryWrapper<SystemFile> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(query.getFileName()), SystemFile::getOriginalName, query.getFileName());
+        queryWrapper.eq(StringUtils.isNotBlank(query.getFileType()), SystemFile::getFileType, query.getFileType());
         queryWrapper.orderByDesc(SystemFile::getCreateTime);
-        this.page(page, queryWrapper);
-        return  PageResult.getPageResult(page.getTotal(), page.getRecords());
+        //
+        baseMapper.selectPage(page, queryWrapper);
+        return page;
     }
 
     @Override
