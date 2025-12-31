@@ -45,8 +45,8 @@ public class SystemRoleController {
     private ISystemRoleMenuService roleMenuService;
 
     @Operation(summary = "获取分页列表")
-    @PostMapping("/list")
-    public HttpResult getRoleList(@RequestBody RoleQueryDTO query) {
+    @GetMapping("/list")
+    public HttpResult getRoleList(RoleQueryDTO query) {
         return HttpResult.success(roleService.getRoleList(query));
     }
 

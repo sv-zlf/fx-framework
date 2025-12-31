@@ -103,9 +103,8 @@ public class SystemFileServiceImpl extends ServiceImpl<SystemFileMapper, SystemF
         queryWrapper.like(StringUtils.isNotBlank(query.getFileName()), SystemFile::getOriginalName, query.getFileName());
         queryWrapper.eq(StringUtils.isNotBlank(query.getFileType()), SystemFile::getFileType, query.getFileType());
         queryWrapper.orderByDesc(SystemFile::getCreateTime);
-        //
-        baseMapper.selectPage(page, queryWrapper);
-        return page;
+
+        return baseMapper.selectPage(page, queryWrapper);
     }
 
     @Override

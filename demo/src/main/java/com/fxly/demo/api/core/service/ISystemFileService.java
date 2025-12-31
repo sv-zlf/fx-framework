@@ -15,6 +15,7 @@ import java.io.File;
  * 文件信息服务接口
  */
 public interface ISystemFileService extends IService<SystemFile> {
+
     Page getFileList(FileQueryDTO query);
 
     /**

@@ -5,11 +5,11 @@ import axios from "@/api";
  */
 
 // 获取列表数据
-export const getDictTypeList = (data: any) => {
+export const getDictTypeList = (params: any) => {
   return axios({
     url: "/system/dict/type/list",
-    method: "post",
-    data
+    method: "get",
+    params
   });
 };
 
@@ -46,11 +46,11 @@ export const deleteDictType = (id: any) => {
  */
 
 // 分页获取字典列表
-  export const getDictItemList = (data: any) => {
+  export const getDictItemList = (params: any) => {
     return axios({
       url: "/system/dict/item/list",
-      method: "post",
-      data
+      method: "get",
+      params
     })
 }
 // 按照字典类型获取列表

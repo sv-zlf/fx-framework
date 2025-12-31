@@ -27,7 +27,7 @@ export const logout = () => {
 }
 
 // 获取用户信息
-export const getUserInfo = (params?: any) => {
+export const getUserInfo = (params: any) => {
   return axios({
     url: "/system/currentUser",
     method: "get",
@@ -37,11 +37,11 @@ export const getUserInfo = (params?: any) => {
 
 
 // 获取列表数据
-export const getUserList = (data: any) => {
+export const getUserList = (params: any) => {
   return axios({
     url: "/system/user/list",
-    method: "post",
-    data
+    method: "get",
+    params
   });
 };
 

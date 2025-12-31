@@ -35,11 +35,9 @@ public class SystemDictController {
     @Resource
     private ISystemDictItemService itemService;
 
-
-
     @Operation(summary = "获取字典类型列表")
-    @PostMapping("/list")
-    public HttpResult getDictTypeList(@RequestBody DictQueryDTO dictQuery) {
+    @GetMapping("/list")
+    public HttpResult getDictTypeList(DictQueryDTO dictQuery) {
         return HttpResult.success(dictService.getDictTypeList(dictQuery));
     }
 

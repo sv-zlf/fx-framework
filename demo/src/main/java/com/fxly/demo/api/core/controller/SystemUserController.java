@@ -59,8 +59,8 @@ public class SystemUserController {
 
     @Operation(summary = "获取分页列表")
     @PreAuthorize("hasAuthority('user:list')")
-    @PostMapping("/list")
-    public HttpResult getUserList(@RequestBody UserQueryDTO userQueryDto) {
+    @GetMapping("/list")
+    public HttpResult getUserList(UserQueryDTO userQueryDto) {
         return HttpResult.success(userService.getUserList(userQueryDto));
     }
 

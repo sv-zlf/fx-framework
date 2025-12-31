@@ -1,11 +1,11 @@
 import axios from "@/api";
 
 // 获取列表数据
-export const getTaskList = (data: any) => {
+export const getTaskList = (params: any) => {
   return axios({
     url: "/system/task/list",
-    method: "post",
-    data
+    method: "get",
+    params
   });
 };
 

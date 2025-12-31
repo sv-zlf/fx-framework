@@ -41,7 +41,6 @@ public class SystemFileController {
    @Resource
     private ISystemFileService systemFileService;
 
-    
     @Operation(summary = "获取文件分页列表")
     @GetMapping("/list")
     public HttpResult getFileList(FileQueryDTO query) {

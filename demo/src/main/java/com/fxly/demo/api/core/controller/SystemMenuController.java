@@ -40,8 +40,8 @@ public class SystemMenuController {
     private ISystemMenuService menuService;
 
     @Operation(summary = "获取菜单列表")
-    @PostMapping("/getMenuList")
-    public HttpResult getMenuList(@RequestBody MenuQueryDTO menuQuery) {
+    @GetMapping("/list")
+    public HttpResult getMenuList(MenuQueryDTO menuQuery) {
         List<SystemMenu> menuList = menuService.getMenuList(menuQuery);
         return HttpResult.success(menuList);
     }
