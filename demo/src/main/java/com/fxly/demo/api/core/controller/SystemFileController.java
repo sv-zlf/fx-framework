@@ -86,8 +86,8 @@ public class SystemFileController {
     }
 
     @Operation(summary = "文件下载")
-    @GetMapping("/download/{id}")
-    public void download(@NotNull(message = "文件ID不能为空") @PathVariable("id") Long id, HttpServletResponse response) {
+    @GetMapping("/download")
+    public void download(@NotNull(message = "文件ID不能为空") @RequestParam("id") Long id, HttpServletResponse response) {
         try {
             SystemFile fileInfo = systemFileService.getById(id);
             if (fileInfo == null) {
@@ -129,8 +129,8 @@ public class SystemFileController {
     }
 
     @Operation(summary = "文件预览")
-    @GetMapping("/preview/{id}")
-    public void preview(@NotNull(message = "文件ID不能为空") @PathVariable("id") Long id, HttpServletResponse response) {
+    @GetMapping("/preview")
+    public void preview(@NotNull(message = "文件ID不能为空") @RequestParam("id") Long id, HttpServletResponse response) {
         try {
             SystemFile fileInfo = systemFileService.getById(id);
             if (fileInfo == null) {

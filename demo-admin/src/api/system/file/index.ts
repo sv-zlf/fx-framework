@@ -1,7 +1,7 @@
 ﻿import axios from "@/api";
 
 // 单文件上传
-export const upload = (file: FormData, subPath?: string) => {
+export const upload = (file: any, subPath?: string) => {
   return axios({
     url: "/file/upload",
     method: "post",
@@ -14,7 +14,7 @@ export const upload = (file: FormData, subPath?: string) => {
 };
 
 // 多文件上传
-export const uploadBatch = (files: FormData, subPath?: string) => {
+export const uploadBatch = (files: [], subPath?: string) => {
   return axios({
     url: "/file/upload/batch",
     method: "post",
@@ -22,28 +22,22 @@ export const uploadBatch = (files: FormData, subPath?: string) => {
     params: { subPath },
     headers: {
       "Content-Type": "multipart/form-data"
+    },
+    paramsSerializer: {
+      indexes: null // 禁用数组索引（避免生成 menuIds[0]=5&menuIds[1]=1）
     }
   });
 };
 
 // 获取文件分页列表
-export const getFileList = (data: any) => {
+export const getFileList = (params: any) => {
   return axios({
     url: "/file/list",
-    method: "post",
-    data
+    method: "get",
+    params
   });
 };
 
-// 文件下载
-export const download = (id: number) => {
-  return `/file/download/${id}`;
-};
-
-// 文件预览
-export const preview = (id: number) => {
-  return `/file/preview/${id}`;
-};
 
 // 删除文件
 export const deleteFile = (id: number) => {

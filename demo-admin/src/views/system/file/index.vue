@@ -95,10 +95,10 @@
     <a-modal :width="dialogWidth()" v-model:visible="uploadVisible" @close="uploadClose" title="上传文件">
       <a-upload
         ref="uploadRef"
-        :custom-request="customUpload"
-        :file-list="fileList"
+        :file-list="uploadFileList"
         :auto-upload="false"
         multiple
+        :custom-request="customUpload"
         :limit="10"
         :show-file-list="true"
         @change="onFileChange"
@@ -143,14 +143,14 @@
 
 <script setup lang="ts">
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import { getFileList, upload, uploadBatch, deleteFile, download as downloadFile } from "@/api/system/file";
-// import { arcoMessage } from "@/utils";
+import { getFileList, upload, uploadBatch, deleteFile, } from "@/api/system/file";
 
-import { useRouter } from "vue-router";
-import type { RequestOption, FileItem } from "@arco-design/web-vue";
+import {quickDownloadFile} from "@/utils/download";
+import {FilePreviewUtil, quickPreviewFile} from "@/utils/preview";
+import {RequestOption} from "@arco-design/web-vue/es/upload/interfaces";
 
 const { dialogWidth, tableFixed } = useLayoutModel();
-const router = useRouter();
+
 
 const searchForm = ref({
   fileName: "",
@@ -167,12 +167,12 @@ const pagination = ref({
   showTotal: true,
   onChange: (current: number) => {
     pagination.value.current = current;
-    getFileList();
+    getFile();
   },
   onPageSizeChange: (pageSize: number) => {
     pagination.value.current = 1;
     pagination.value.pageSize = pageSize;
-    getFileList();
+    getFile();
   }
 });
 
@@ -189,13 +189,13 @@ const fileTypeOptions = [
 const uploadVisible = ref(false);
 const uploadRef = ref();
 const uploading = ref(false);
-const uploadFileList = ref<FileItem[]>([]);
+const uploadFileList = ref<File[]>([]);
 const previewVisible = ref(false);
 const previewFile = ref<any>(null);
 const previewUrl = ref("");
 
 // 获取文件列表
-const getFileList = async () => {
+const getFile = async () => {
   loading.value = true;
   const params = {
     ...searchForm.value,
@@ -211,7 +211,7 @@ const getFileList = async () => {
 // 搜索
 const search = () => {
   pagination.value.current = 1;
-  getFileList();
+  getFile();
 };
 
 // 重置
@@ -220,7 +220,7 @@ const reset = () => {
     fileName: "",
     fileType: ""
   };
-  getFileList();
+  getFile();
 };
 
 // 选择
@@ -242,11 +242,11 @@ const uploadClose = () => {
   uploadFileList.value = [];
 };
 
-const onFileChange = (fileList: FileItem[]) => {
+const onFileChange = (fileList: []) => {
   uploadFileList.value = fileList;
 };
 
-const onFileRemove = (file: FileItem) => {
+const onFileRemove = (file: File) => {
   const index = uploadFileList.value.indexOf(file);
   if (index > -1) {
     uploadFileList.value.splice(index, 1);
@@ -259,67 +259,56 @@ const handleUpload = async () => {
   }
   
   uploading.value = true;
-  const formData = new FormData();
-  
-  if (uploadFileList.value.length === 1) {
-    formData.append("file", uploadFileList.value[0].originFile);
-    try {
-      await upload(formData);
-      arcoMessage("success", "上传成功");
-      uploadClose();
-      getFileList();
-    } catch (error) {
-      arcoMessage("error", "上传失败");
-    }
-  } else {
-    uploadFileList.value.forEach((item, index) => {
-      formData.append(`files`, item.originFile);
-    });
-    try {
-      await uploadBatch(formData);
-      arcoMessage("success", "上传成功");
-      uploadClose();
-      getFileList();
-    } catch (error) {
-      arcoMessage("error", "上传失败");
-    }
+
+  for (const item of uploadFileList.value) {
+    await upload(item, ''); // 等待当前文件上传完成，再处理下一个
+    arcoMessage('success', item.name+'上传成功')
   }
-  
+  uploadClose();
   uploading.value = false;
 };
 
-const customUpload = (option: RequestOption) => {
-  // 自定义上传逻辑，不在这里调用接口
+const customUpload = async (option: RequestOption) => {
+  // 自定义上传逻辑
+  const {onProgress, onError, onSuccess, fileItem, name} = option;
+  console.log('file',fileItem.file)
+  const response = await upload(fileItem, '');
+  onSuccess(response);
+  arcoMessage('success', fileItem.name+'上传成功')
+
 };
 
 // 预览
-const onPreview = (row: any) => {
+const onPreview = async (row: any) => {
   previewFile.value = row;
   if (row.fileType === "image") {
-    previewUrl.value = downloadFile(row.id);
+    previewUrl.value = await quickPreviewFile('/api/file/preview', { id: row.id });
   } else {
     previewUrl.value = "";
   }
   previewVisible.value = true;
 };
 
-const previewClose = () => {
+const previewClose = async () => {
+  await FilePreviewUtil.releasePreviewBlobUrl(previewUrl.value);
   previewVisible.value = false;
   previewFile.value = null;
   previewUrl.value = "";
 };
 
 // 下载
-const onDownload = (row: any) => {
-  const url = downloadFile(row.id);
-  window.open(url, "_blank");
+const onDownload = async (row: any) => {
+  const params = {
+    id: row.id
+  };
+  await quickDownloadFile('/api/file/download', params, row.fileName);
 };
 
 // 删除
 const onDelete = async (row: any) => {
   await deleteFile(row.id);
   arcoMessage("success", "删除成功");
-  getFileList();
+  getFile();
 };
 
 // 批量删除
@@ -332,7 +321,7 @@ const onDeleteBatch = async () => {
     await deleteFile(id);
   }
   arcoMessage("success", "删除成功");
-  getFileList();
+  getFile();
 };
 
 // 格式化文件大小
@@ -345,11 +334,9 @@ const formatFileSize = (bytes: number) => {
 };
 
 onMounted(() => {
-  getFileList();
+  getFile();
 });
 </script>
 
 <style lang="scss" scoped>
 </style>
-import { getFileList, upload, uploadBatch, deleteFile, download as downloadFile } from "@/api/system/file";
- let res = await getFileList(params);
