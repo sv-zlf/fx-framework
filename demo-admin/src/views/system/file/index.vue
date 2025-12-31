@@ -143,7 +143,7 @@
 
 <script setup lang="ts">
 import { useLayoutModel } from "@/hooks/useLayoutModel";
-import { getFileList, upload, uploadBatch, deleteFile, } from "@/api/system/file";
+import { getFileList, upload, deleteFile, } from "@/api/system/file";
 
 import {quickDownloadFile} from "@/utils/download";
 import {FilePreviewUtil, quickPreviewFile} from "@/utils/preview";
@@ -270,7 +270,7 @@ const handleUpload = async () => {
 
 const customUpload = async (option: RequestOption) => {
   // 自定义上传逻辑
-  const {onProgress, onError, onSuccess, fileItem, name} = option;
+  const { onSuccess, fileItem} = option;
   console.log('file',fileItem.file)
   const response = await upload(fileItem, '');
   onSuccess(response);
