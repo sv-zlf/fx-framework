@@ -1,5 +1,6 @@
 package com.fxly.demo.api.core.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +14,7 @@ import com.fxly.demo.system.global.HttpResultEnum;
 import com.fxly.demo.system.quartz.QuartzUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.Scheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +41,9 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
         
         // 查询条件
         LambdaQueryWrapper<SystemCronTask> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(taskQueryDto.getTaskName() != null, SystemCronTask::getTaskName, taskQueryDto.getTaskName())
-            .eq(taskQueryDto.getTaskGroup() != null, SystemCronTask::getTaskGroup, taskQueryDto.getTaskGroup())
-            .eq(taskQueryDto.getStatus() != null, SystemCronTask::getStatus, taskQueryDto.getStatus())
+        queryWrapper.like(StringUtils.isNotEmpty(taskQueryDto.getTaskName()), SystemCronTask::getTaskName, taskQueryDto.getTaskName())
+            .eq(StringUtils.isNotEmpty(taskQueryDto.getTaskGroup()), SystemCronTask::getTaskGroup, taskQueryDto.getTaskGroup())
+            .eq(ObjectUtil.isNotEmpty(taskQueryDto.getStatus()), SystemCronTask::getStatus, taskQueryDto.getStatus())
             .orderByDesc(SystemCronTask::getCreateTime);
         
         return baseMapper.selectPage(page, queryWrapper);
@@ -54,7 +56,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
         try {
             org.quartz.CronExpression.validateExpression(task.getCronExpression());
         } catch (Exception e) {
-            return HttpResult.error(400, "Cron表达式格式错误");
+            throw new GlobalException(400, "Cron表达式格式错误");
         }
         
         // 检查任务名称是否重复
@@ -64,7 +66,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
             checkWrapper.ne(SystemCronTask::getId, task.getId());
         }
         if (baseMapper.exists(checkWrapper)) {
-            return HttpResult.error(400, "任务名称已存在");
+            throw new GlobalException(400, "任务名称已存在");
         }
         
         try {
@@ -109,7 +111,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
     public HttpResult deleteTask(Long id) {
         SystemCronTask task = getById(id);
         if (task == null) {
-            return HttpResult.error(400, "任务不存在");
+            throw new GlobalException(400, "任务不存在");
         }
         
         try {
@@ -122,7 +124,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
                     : HttpResult.setResult(HttpResultEnum.DELETE_ERROR);
         } catch (Exception e) {
             log.error("删除任务失败", e);
-            return HttpResult.error(500, "删除失败：" + e.getMessage());
+            throw new GlobalException(500, "删除失败：" + e.getMessage());
         }
     }
 
@@ -131,11 +133,11 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
     public HttpResult executeTask(Long id) {
         SystemCronTask task = getById(id);
         if (task == null) {
-            return HttpResult.error(400, "任务不存在");
+            throw new GlobalException(400, "任务不存在");
         }
         
         if (task.getStatus() == 1) {
-            return HttpResult.error(400, "任务已暂停");
+            throw new GlobalException(400, "任务已暂停");
         }
         
         try {
@@ -144,7 +146,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
             return HttpResult.success("执行成功");
         } catch (Exception e) {
             log.error("执行任务失败", e);
-            return HttpResult.error(500, "执行失败：" + e.getMessage());
+            throw new GlobalException(500, "执行失败：" + e.getMessage());
         }
     }
 
@@ -153,7 +155,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
     public HttpResult pauseTask(Long id) {
         SystemCronTask task = getById(id);
         if (task == null) {
-            return HttpResult.error(400, "任务不存在");
+            throw new GlobalException(400, "任务不存在");
         }
         
         try {
@@ -167,7 +169,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
             return HttpResult.success("暂停成功");
         } catch (Exception e) {
             log.error("暂停任务失败", e);
-            return HttpResult.error(500, "暂停失败：" + e.getMessage());
+            throw new GlobalException(500, "暂停失败：" + e.getMessage());
         }
     }
 
@@ -176,7 +178,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
     public HttpResult resumeTask(Long id) {
         SystemCronTask task = getById(id);
         if (task == null) {
-            return HttpResult.error(400, "任务不存在");
+            throw new GlobalException(400, "任务不存在");
         }
         
         try {
@@ -190,7 +192,7 @@ public class SystemCronTaskServiceImpl extends ServiceImpl<SystemCronTaskMapper,
             return HttpResult.success("恢复成功");
         } catch (Exception e) {
             log.error("恢复任务失败", e);
-            return HttpResult.error(500, "恢复失败：" + e.getMessage());
+            throw new GlobalException(500, "恢复失败：" + e.getMessage());
         }
     }
 

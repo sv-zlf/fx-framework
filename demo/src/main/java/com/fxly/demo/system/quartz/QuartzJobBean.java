@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Quartz Job Bean
- * @author admin
  */
 @Slf4j
 @Component
