@@ -48,7 +48,17 @@ export function login(loginForm: ILoginForm) {
  * @param refreshToken 刷新token
  */
 export function refreshToken(refreshToken: string) {
-  return http.post('/system/refreshToken', { refreshToken })
+  return http.post<string>('/system/refreshToken', { refreshToken }).then((res: any) => {
+    // 如果后端返回的是字符串类型的token，转换为对象格式
+    if (typeof res === 'string') {
+      return {
+        token: res,
+        expiresIn: 3600, // 默认1小时过期，可根据实际情况调整
+      } as ISingleTokenRes
+    }
+    // 兼容后端返回对象格式的情况
+    return res as IAuthLoginRes
+  })
 }
 
 /**
