@@ -44,6 +44,13 @@ export function login(loginForm: ILoginForm) {
 }
 
 /**
+ * 注册用户
+ */
+export function register(data: any) {
+  return http.post('/system/register', data)
+}
+
+/**
  * 刷新token
  * @param refreshToken 刷新token
  */
