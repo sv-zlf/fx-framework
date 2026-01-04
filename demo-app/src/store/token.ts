@@ -51,7 +51,7 @@ export const useTokenStore = defineStore(
     const setTokenInfo = (val: IAuthLoginRes) => {
       updateNowTime()
       tokenInfo.value = val
-
+      console.log('设置用户信息', val)
       // 计算并存储过期时间
       const now = Date.now()
       if (isSingleTokenRes(val)) {

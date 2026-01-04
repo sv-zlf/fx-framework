@@ -65,7 +65,7 @@ const settingsList = [
 // 微信小程序登录
 async function handleLogin() {
   // #ifdef MP-WEIXIN
-  await tokenStore.wxLogin()
+  // await tokenStore.login()
   // #endif
   // #ifndef MP-WEIXIN
   uni.navigateTo({
@@ -116,7 +116,7 @@ function handleEditProfile() {
 
 <template>
   <view class="me-container">
-    
+
 
     <!-- 用户信息卡片 -->
     <view class="user-card">
@@ -125,10 +125,10 @@ function handleEditProfile() {
       </view>
       <view class="user-info" @click="handleEditProfile">
         <view class="user-name">
-          {{ tokenStore.hasLogin ? (userInfo.nickname || userInfo.username || "用户") : "未登录" }}
+          {{ tokenStore.hasLogin ? (userInfo.nickName || userInfo.userName || "用户") : "未登录" }}
         </view>
         <view class="user-desc" v-if="tokenStore.hasLogin">
-          {{ userInfo.username || "" }}
+          {{ userInfo.userName || "" }}
         </view>
         <view class="user-desc" v-else>
           登录后体验更多功能
@@ -224,7 +224,7 @@ function handleEditProfile() {
 .me-container {
   min-height: 100vh;
   background: #f5f5f5;
-  
+
   padding-bottom: var(--tab-bar-height);
 }
 

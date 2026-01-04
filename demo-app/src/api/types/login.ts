@@ -24,9 +24,9 @@ export type IAuthLoginRes = ISingleTokenRes | IDoubleTokenRes
  * 用户信息
  */
 export interface IUserInfoRes {
-  userId: number
-  username: string
-  nickname: string
+  id: number
+  userName: string
+  nickName: string
   avatar?: string
   [key: string]: any // 允许其他扩展字段
 }

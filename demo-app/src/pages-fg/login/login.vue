@@ -16,7 +16,7 @@ async function doLogin() {
   try {
     // 调用登录接口
     await tokenStore.login({
-      username: '菲鸽',
+      username: 'admin',
       password: '123456',
     })
     uni.navigateBack()

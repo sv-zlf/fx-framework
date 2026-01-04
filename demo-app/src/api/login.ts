@@ -1,4 +1,12 @@
-import type { IAuthLoginRes, ICaptcha, IDoubleTokenRes, IUpdateInfo, IUpdatePassword, IUserInfoRes } from './types/login'
+import type {
+  IAuthLoginRes,
+  ICaptcha,
+  IDoubleTokenRes,
+  ISingleTokenRes,
+  IUpdateInfo,
+  IUpdatePassword,
+  IUserInfoRes
+} from './types/login'
 import { http } from '@/http/http'
 
 /**
@@ -22,7 +30,17 @@ export function getCode() {
  * @param loginForm 登录表单
  */
 export function login(loginForm: ILoginForm) {
-  return http.post<IAuthLoginRes>('/auth/login', loginForm)
+  return http.post<string>('/system/login', null, loginForm).then((res: any) => {
+    // 后端返回的data字段是字符串类型的token，需要转换为对象格式
+    if (typeof res === 'string') {
+      return {
+        token: res,
+        expiresIn: 3600, // 默认1小时过期，可根据实际情况调整
+      } as ISingleTokenRes
+    }
+    // 兼容后端返回对象格式的情况
+    return res as IAuthLoginRes
+  })
 }
 
 /**
@@ -30,14 +48,14 @@ export function login(loginForm: ILoginForm) {
  * @param refreshToken 刷新token
  */
 export function refreshToken(refreshToken: string) {
-  return http.post<IDoubleTokenRes>('/auth/refreshToken', { refreshToken })
+  return http.post('/system/refreshToken', { refreshToken })
 }
 
 /**
  * 获取用户信息
  */
 export function getUserInfo() {
-  return http.get<IUserInfoRes>('/user/info')
+  return http.get<IUserInfoRes>('/system/currentUser')
 }
 
 /**

@@ -51,7 +51,7 @@ const httpInterceptor = {
     // 3. 添加 token 请求头标识
     const tokenStore = useTokenStore()
     const token = tokenStore.updateNowTime().validToken
-
+    console.log('token', token)
     if (token) {
       options.header.Authorization = `Bearer ${token}`
     }

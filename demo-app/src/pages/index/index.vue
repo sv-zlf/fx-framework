@@ -43,18 +43,18 @@ const quickLinks = [
     color: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)",
   },
   {
+    title: "系统菜单",
+    path: "/pages/menu/index",
+    color: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+  },
+  {
     title: "个人中心",
     path: "/pages/me/me",
-    color: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+    color: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
   },
   {
     title: "关于系统",
     path: "/pages/about/index",
-    color: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-  },
-  {
-    title: "帮助文档",
-    path: "/pages/docs/index",
     color: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)",
   },
 ];
@@ -90,7 +90,7 @@ const handleQuickLink = (item: any) => {
           <text class="text-label">FxAdmin 移动端</text>
           <text class="text-content">
             是 FxAdmin
-            全栈框架的移动端应用，提供文件管理、日程安排、消息通知等核心功能，支持与后端管理系统无缝集成。</text
+            全栈框架的移动端应用，提供文件管理、日程安排、消息通知等核心功能，支持与后端管理系统无缝集成，实现移动办公高效化。</text
           >
         </view>
         <view class="intro-highlights">
@@ -175,7 +175,7 @@ const handleQuickLink = (item: any) => {
             <text class="version-number">v1.0.0</text>
           </view>
           <view class="version-info">
-            <text class="version-desc">文件管理 · 日程 · 消息</text>
+            <text class="version-desc">支持管理后台 · 文件 · 日程</text>
           </view>
         </view>
       </view>
