@@ -269,6 +269,13 @@ onPullDownRefresh(() => {
               class="function-item"
               @click.stop="handleFunctionClick(func)"
             >
+              <view class="function-icon">
+                <image
+                  :src="getIconUrl(module)"
+                  mode="aspectFit"
+                />
+              </view>
+
 <!--              <text :class="getIconClass(func)" class="function-icon"></text>-->
               <text class="function-name">{{ func.title }}</text>
             </view>
@@ -471,8 +478,15 @@ onPullDownRefresh(() => {
 }
 
 .function-icon {
-  font-size: 18px;
-  color: #6c757d;
+  //font-size: 18px;
+  //color: #6c757d;
+  width: 18px;
+  height:18px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //margin-bottom: 8px;
 }
 
 .function-name {
