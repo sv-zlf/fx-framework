@@ -40,7 +40,7 @@ public class SecurityConfig {
 
 
     public static final String[] noAuthUrl = {"/", "/index", "/doc.html","/webjars/**", "/v3/api-docs/**", "/knife4j/**",
-            "/swagger-resources/**", "/swagger-ui/**", "/system/login", "/system/register","/druid/**"
+            "/swagger-resources/**", "/swagger-ui/**", "/system/login",  "/system/logout","/system/register","/druid/**"
     };
 
     @Bean
