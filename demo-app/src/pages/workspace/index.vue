@@ -1,153 +1,290 @@
 ﻿<script lang="ts" setup>
+import { ref, computed } from 'vue'
+import { getRoutersAPI } from '@/api/menu'
+
 definePage({
   style: {
-    // "custom" 表示开启自定义导航栏，默认 "default"
     navigationStyle: "custom",
     navigationBarTitleText: "工作台",
   },
 })
 
-// 快捷功能列表
-const quickActions = [
-  {
-    icon: "icon-file",
-    title: "文件管理",
-    path: "/pages/file/index",
-    color: "#007AFF",
-  },
-  {
-    icon: "icon-camera",
-    title: "拍照上传",
-    path: "/pages/camera/index",
-    color: "#00D26A",
-  },
-  {
-    icon: "icon-scan",
-    title: "扫一扫",
-    path: "/pages/scan/index",
-    color: "#FFB800",
-  },
-  {
-    icon: "icon-calendar",
-    title: "日程安排",
-    path: "/pages/schedule/index",
-    color: "#6F42C1",
-  },
-  {
-    icon: "icon-msg",
-    title: "消息通知",
-    path: "/pages/message/index",
-    color: "#FA2A2D",
-  },
-  {
-    icon: "icon-setting",
-    title: "系统设置",
-    path: "/pages/settings/index",
-    color: "#999999",
-  },
-]
+// 菜单数据
+const loading = ref(false)
+const error = ref<string | null>(null)
+const modules = ref<any[]>([])
+const refreshing = ref(false)
+
+// 扁平化树形结构
+function flattenTree(tree: any[]): any[] {
+  const result: any[] = []
+  const stack = [...tree]
+  while (stack.length) {
+    const node = stack.pop()!
+    // 如果节点的title为"组件示例"，则跳过该节点及其所有子节点
+    if (node.title === '组件示例') {
+      continue
+    }
+    if (node.isExternal) continue
+    if (node.status === 0 || node.isHide) continue
+    result.push(node)
+    if (node.children && node.children.length) {
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i])
+      }
+    }
+  }
+  return result
+}
+
+// 获取菜单数据
+const fetchWorkbenchMenu = async () => {
+  loading.value = true
+  error.value = null
+
+  try {
+    const data = await getRoutersAPI()
+    const flatMenus = flattenTree(data)
+
+    // 筛选 type=2 的目录（作为模块）
+    const directories = flatMenus
+      .filter((item: any) => item.type === 1)
+      .sort((a: any, b: any) => a.sort - b.sort)
+
+    console.log('directories:', directories)
+    // 筛选 type=2 的功能菜单
+    const functions = flatMenus
+      .filter((item: any) => item.type === 2)
+      .sort((a: any, b: any) => a.sort - b.sort)
+
+    // 将功能菜单按所属目录分组
+    const moduleMap = new Map<string, any[]>()
+    functions.forEach((func: any) => {
+      const parent = directories.find((dir: any) => func.parentId === dir.id)
+      if (parent) {
+        if (!moduleMap.has(parent.id)) {
+          moduleMap.set(parent.id, [])
+        }
+        moduleMap.get(parent.id)!.push({
+          id: func.id,
+          name: func.name,
+          title: func.title,
+          path: func.path,
+          icon: func.icon,
+          svgIcon: func.svgIcon,
+          sort: func.sort
+        })
+      }
+    })
+
+    // 构建最终的模块数据
+    modules.value = directories.map((dir: any) => ({
+      id: dir.id,
+      name: dir.name,
+      title: dir.title,
+      icon: dir.icon,
+      svgIcon: dir.svgIcon,
+      sort: dir.sort,
+      functions: (moduleMap.get(dir.id) || []).sort((a, b) => a.sort - b.sort)
+    }))
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : '加载菜单数据失败'
+    console.error('获取工作台菜单失败:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 快捷访问功能
+const quickAccessFunctions = computed(() => {
+  const allFunctions: any[] = []
+  modules.value.forEach(module => {
+    module.functions.forEach((func: any) => {
+      allFunctions.push({ ...func, moduleName: module.title })
+    })
+  })
+  // 随机打乱数组并取前4个
+  const shuffled = [...allFunctions].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, 4)
+})
+
+// 下拉刷新
+const onRefresh = async () => {
+  refreshing.value = true
+  await fetchWorkbenchMenu()
+  setTimeout(() => {
+    refreshing.value = false
+    uni.stopPullDownRefresh()
+  }, 500)
+}
 
 // 点击快捷功能
 const handleQuickAction = (item: any) => {
-  uni.navigateTo({
-    url: item.path,
-    fail: () => {
-      uni.showToast({
-        title: "页面开发中",
-        icon: "none",
-      })
-    }
+  if (item.path) {
+    uni.navigateTo({
+      url: item.path,
+      fail: () => {
+        uni.showToast({
+          title: "页面开发中",
+          icon: "none",
+        })
+      }
+    })
+  } else {
+    uni.showToast({
+      title: "该功能暂未配置路由",
+      icon: "none",
+    })
+  }
+}
+
+// 点击模块
+const handleModuleClick = (module: any) => {
+  uni.showToast({
+    title: module.title + ' (' + module.functions.length + '个功能)',
+    icon: "none",
   })
 }
+
+// 点击功能
+const handleFunctionClick = (func: any) => {
+  if (func.path) {
+    uni.navigateTo({
+      url: func.path,
+      fail: () => {
+        uni.showToast({
+          title: "页面开发中",
+          icon: "none",
+        })
+      }
+    })
+  } else {
+    uni.showToast({
+      title: "该功能暂未配置路由",
+      icon: "none",
+    })
+  }
+}
+
+// 获取图标名称（优先使用 svgIcon）
+const getIconClass = (item: any) => {
+  return 'icon-menu' || item.svgIcon || item.icon
+}
+
+// 获取颜色
+const getColor = (index: number) => {
+  const colors = ["#007AFF", "#00D26A", "#FFB800", "#6F42C1", "#FA2A2D", "#FF6B6B", "#4ECDC4", "#95E1D3"]
+  return colors[index % colors.length]
+}
+
+// 页面加载时获取菜单数据
+onMounted(() => {
+  fetchWorkbenchMenu()
+})
+
+// 监听下拉刷新事件
+onPullDownRefresh(() => {
+  onRefresh()
+})
 </script>
 
 <template>
-  <view class="workspace-container">
-    <!-- 统计卡片 -->
-    <view class="stats-card">
-      <view class="stats-item">
-        <view class="stats-icon" style="background: #007AFF">
-          <text class="icon-file"></text>
-        </view>
-        <view class="stats-info">
-          <text class="stats-value">128</text>
-          <text class="stats-label">文件总数</text>
-        </view>
-      </view>
-      <view class="stats-item">
-        <view class="stats-icon" style="background: #00D26A">
-          <text class="icon-upload"></text>
-        </view>
-        <view class="stats-info">
-          <text class="stats-value">56</text>
-          <text class="stats-label">本周上传</text>
-        </view>
-      </view>
-      <view class="stats-item">
-        <view class="stats-icon" style="background: #FFB800">
-          <text class="icon-download"></text>
-        </view>
-        <view class="stats-info">
-          <text class="stats-value">34</text>
-          <text class="stats-label">本周下载</text>
-        </view>
-      </view>
+  <scroll-view
+    class="workspace-container"
+    scroll-y
+    refresher-enabled
+    :refresher-triggered="refreshing"
+    @refresherrefresh="onRefresh"
+  >
+    <!-- 错误提示 -->
+    <view v-if="error" class="error-banner">
+      <text>{{ error }}</text>
     </view>
 
     <!-- 快捷功能 -->
     <view class="quick-actions">
-      <view class="section-title">快捷功能</view>
-      <view class="action-grid">
-        <view 
-          v-for="(item, index) in quickActions" 
-          :key="index"
+      <view class="section-header">
+        <text class="section-title">快捷功能</text>
+      </view>
+      <view v-if="quickAccessFunctions.length > 0" class="action-grid">
+        <view
+          v-for="(item, index) in quickAccessFunctions"
+          :key="item.id"
           class="action-item"
-          :style="{ borderColor: item.color }"
           @click="handleQuickAction(item)"
         >
-          <view class="action-icon" :style="{ background: item.color }">
-            <text :class="item.icon"></text>
+          <view class="action-icon" :style="{ background: getColor(index) }">
+            <uni-icons :type="getIconClass(item)" size="28" color="#ffffff"></uni-icons>
           </view>
           <text class="action-title">{{ item.title }}</text>
         </view>
       </view>
-    </view>
-
-
-    <!-- 最近文件 -->
-    <view class="recent-files">
-      <view class="section-title">最近文件</view>
-      <view class="file-list">
-        <view class="file-item">
-          <view class="file-icon icon-file-image"></view>
-          <view class="file-info">
-            <text class="file-name">产品文档.pdf</text>
-            <text class="file-time">2024-01-15 14:30</text>
-          </view>
-          <view class="file-size">2.3MB</view>
-        </view>
-        <view class="file-item">
-          <view class="file-icon icon-file-document"></view>
-          <view class="file-info">
-            <text class="file-name">会议记录.docx</text>
-            <text class="file-time">2024-01-14 10:20</text>
-          </view>
-          <view class="file-size">1.5MB</view>
-        </view>
-        <view class="file-item">
-          <view class="file-icon icon-file-video"></view>
-          <view class="file-info">
-            <text class="file-name">演示视频.mp4</text>
-            <text class="file-time">2024-01-13 16:45</text>
-          </view>
-          <view class="file-size">45.8MB</view>
-        </view>
-      </view>
-      <view class="more-btn">
-        <text>查看更多</text>
+      <view v-else class="empty-state">
+        <text class="empty-icon">📋</text>
+        <text class="empty-text">暂无快捷功能</text>
       </view>
     </view>
-  </view>
+
+    <!-- 工作台模块 -->
+    <view v-if="!loading" class="modules-section">
+      <view class="section-header">
+        <text class="section-title">我的工作台</text>
+      </view>
+      <view v-if="modules.length > 0" class="modules-list">
+        <view
+          v-for="module in modules"
+          :key="module.id"
+          class="module-card"
+          @click="handleModuleClick(module)"
+        >
+          <view class="module-header">
+            <view class="module-title">
+              <text :class="getIconClass(module)" class="module-icon"></text>
+              <text>{{ module.title }}</text>
+            </view>
+            <view class="module-count">
+              <text>{{ module.functions.length }}</text>
+            </view>
+          </view>
+          <view v-if="module.functions.length > 0" class="module-functions">
+            <view
+              v-for="func in module.functions.slice(0, 4)"
+              :key="func.id"
+              class="function-item"
+              @click.stop="handleFunctionClick(func)"
+            >
+              <text :class="getIconClass(func)" class="function-icon"></text>
+              <text class="function-name">{{ func.title }}</text>
+            </view>
+            <view
+              v-if="module.functions.length > 4"
+              class="function-more"
+              @click.stop="handleModuleClick(module)"
+            >
+              <text>+{{ module.functions.length - 4 }} 更多</text>
+            </view>
+          </view>
+          <view v-else class="module-empty">
+            <text class="empty-icon">📭</text>
+            <text class="empty-text">暂无功能</text>
+          </view>
+        </view>
+      </view>
+      <view v-else class="empty-state">
+        <text class="empty-icon">🏢</text>
+        <text class="empty-text">暂无可用模块</text>
+        <view class="empty-action">
+          <text @click="fetchWorkbenchMenu">重新加载</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view v-if="loading" class="loading-state">
+      <text class="loading-icon">⏳</text>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </scroll-view>
 </template>
 
 <style lang="scss" scoped>
@@ -155,73 +292,15 @@ const handleQuickAction = (item: any) => {
   min-height: 100vh;
   background: #f5f5f5;
   padding-top: calc(var(--status-bar-height) + 12px);
-  padding-bottom: var(--tab-bar-height);
+  padding-bottom: calc(var(--tab-bar-height) + 20px);
 }
 
-.custom-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--status-bar-height) + 44px);
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid #e5e5e5;
-  z-index: 100;
-}
-
-.navbar-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333333;
-}
-
-.stats-card {
-  display: flex;
-  justify-content: space-between;
-  background: #ffffff;
-  margin: 12px;
-  padding: 20px 16px;
-  border-radius: 12px;
-}
-
-.stats-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.stats-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stats-icon text {
-  font-size: 24px;
-  color: #ffffff;
-}
-
-.stats-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stats-value {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333333;
-}
-
-.stats-label {
-  font-size: 12px;
-  color: #999999;
+.error-banner {
+  background: #ffe6e6;
+  color: #d32f2f;
+  padding: 12px 20px;
+  font-size: 14px;
+  text-align: center;
 }
 
 .quick-actions {
@@ -231,17 +310,29 @@ const handleQuickAction = (item: any) => {
   border-radius: 12px;
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
 .section-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #333333;
-  margin-bottom: 16px;
 }
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 375px) {
+  .action-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .action-item {
@@ -250,22 +341,23 @@ const handleQuickAction = (item: any) => {
   align-items: center;
   padding: 16px 12px;
   border-radius: 12px;
-  border: 2px solid #e5e5e5;
   transition: all 0.3s;
 }
 
 .action-item:active {
-  background: #f0f0f0;
+  opacity: 0.7;
+  transform: scale(0.95);
 }
 
 .action-icon {
   width: 56px;
   height: 56px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .action-icon text {
@@ -274,65 +366,172 @@ const handleQuickAction = (item: any) => {
 }
 
 .action-title {
-  font-size: 14px;
+  font-size: 13px;
   color: #333333;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
 }
 
-.recent-files {
-  background: #ffffff;
-  margin: 12px;
-  padding: 20px;
-  border-radius: 12px;
+.modules-section {
+  padding: 0 12px;
 }
 
-.file-list {
+.modules-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.file-item {
+.module-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+}
+
+.module-card:active {
+  transform: scale(0.98);
+}
+
+.module-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.module-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.module-icon {
+  font-size: 20px;
+  color: #007AFF;
+}
+
+.module-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  background: #f0f0f0;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #666666;
+}
+
+.module-functions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.function-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px;
-  background: #f8f8f8;
+  background: #f8f9fa;
   border-radius: 8px;
+  transition: all 0.2s;
 }
 
-.file-icon {
-  font-size: 40px;
-  margin-right: 12px;
+.function-item:active {
+  background: #e9ecef;
+  transform: translateX(4px);
 }
 
-.file-info {
+.function-icon {
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.function-name {
   flex: 1;
+  font-size: 14px;
+  color: #495057;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.function-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #007AFF;
+  font-size: 13px;
+}
+
+.module-empty, .empty-state {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 12px;
 }
 
-.file-name {
+.empty-icon {
+  font-size: 48px;
+}
+
+.empty-text {
   font-size: 14px;
-  color: #333333;
-  font-weight: 500;
-}
-
-.file-time {
-  font-size: 12px;
   color: #999999;
 }
 
-.file-size {
-  font-size: 12px;
-  color: #666666;
-  margin-left: auto;
+.empty-action {
+  margin-top: 8px;
 }
 
-.more-btn {
-  margin-top: 16px;
-  padding: 12px;
-  text-align: center;
-  color: #007AFF;
+.empty-action text {
+  padding: 8px 24px;
+  background: #007AFF;
+  color: #ffffff;
+  border-radius: 20px;
   font-size: 14px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+}
+
+.loading-icon {
+  font-size: 48px;
+  animation: rotate 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #999999;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 </style>

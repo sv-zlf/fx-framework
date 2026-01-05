@@ -1,6 +1,4 @@
-import { http } from '@/http/http'
-import {IAuthLoginRes} from "@/api/types/login";
-import {ILoginForm} from "@/api/login";
+import { http } from '@/http/http';
 
 /**
  * 获取菜单数据
