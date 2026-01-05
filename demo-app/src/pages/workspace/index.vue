@@ -167,8 +167,20 @@ const handleFunctionClick = (func: any) => {
 }
 
 // 获取图标名称（优先使用 svgIcon）
-const getIconClass = (item: any) => {
-  return 'icon-menu' || item.svgIcon || item.icon
+const getIconUrl = (item: any) => {
+  if (item.svgIcon) {
+    // svg 图标路径
+    return `/static/my-icons/${item.svgIcon}.svg`
+  }
+  if (item.icon) {
+    if (item.icon =='IconAlignCenter'){
+      return '/static/my-icons/set.svg'
+    }
+    // 普通 icon 路径
+    return `/static/my-icons/${item.icon}.png`
+  }
+  // 默认图标
+  return '/static/my-icons/copyright.svg'
 }
 
 // 获取颜色
@@ -213,8 +225,12 @@ onPullDownRefresh(() => {
           class="action-item"
           @click="handleQuickAction(item)"
         >
-          <view class="action-icon" :style="{ background: getColor(index) }">
-            <uni-icons :type="getIconClass(item)" size="28" color="#ffffff"></uni-icons>
+          <view class="action-icon" >
+            <image
+              :src="getIconUrl(item)"
+              class="icon-image"
+              mode="aspectFit"
+            />
           </view>
           <text class="action-title">{{ item.title }}</text>
         </view>
@@ -239,7 +255,7 @@ onPullDownRefresh(() => {
         >
           <view class="module-header">
             <view class="module-title">
-              <text :class="getIconClass(module)" class="module-icon"></text>
+<!--              <text :class="getIconClass(module)" class="module-icon"></text>-->
               <text>{{ module.title }}</text>
             </view>
             <view class="module-count">
@@ -253,7 +269,7 @@ onPullDownRefresh(() => {
               class="function-item"
               @click.stop="handleFunctionClick(func)"
             >
-              <text :class="getIconClass(func)" class="function-icon"></text>
+<!--              <text :class="getIconClass(func)" class="function-icon"></text>-->
               <text class="function-name">{{ func.title }}</text>
             </view>
             <view
@@ -357,7 +373,7 @@ onPullDownRefresh(() => {
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  //box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .action-icon text {
