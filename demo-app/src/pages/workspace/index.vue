@@ -73,6 +73,7 @@ const fetchWorkbenchMenu = async () => {
           name: func.name,
           title: func.title,
           path: func.path,
+          component: func.component,
           icon: func.icon,
           svgIcon: func.svgIcon,
           sort: func.sort
@@ -157,9 +158,10 @@ const isModuleExpanded = (moduleId: string) => {
 
 // 点击功能
 const handleFunctionClick = (func: any) => {
-  if (func.path) {
+  console.log(func)
+  if (func.component) {
     uni.navigateTo({
-      url: func.path,
+      url: '/pages/'+func.component,
       fail: () => {
         uni.showToast({
           title: "页面开发中",
