@@ -15,6 +15,9 @@ const error = ref<string | null>(null)
 const modules = ref<any[]>([])
 const refreshing = ref(false)
 
+// 模块展开状态
+const expandedModules = ref<Set<string>>(new Set())
+
 // 扁平化树形结构
 function flattenTree(tree: any[]): any[] {
   const result: any[] = []
@@ -138,12 +141,18 @@ const handleQuickAction = (item: any) => {
   }
 }
 
-// 点击模块
+// 切换模块展开状态
 const handleModuleClick = (module: any) => {
-  uni.showToast({
-    title: module.title + ' (' + module.functions.length + '个功能)',
-    icon: "none",
-  })
+  if (expandedModules.value.has(module.id)) {
+    expandedModules.value.delete(module.id)
+  } else {
+    expandedModules.value.add(module.id)
+  }
+}
+
+// 判断模块是否展开
+const isModuleExpanded = (moduleId: string) => {
+  return expandedModules.value.has(moduleId)
 }
 
 // 点击功能
@@ -264,14 +273,14 @@ onPullDownRefresh(() => {
           </view>
           <view v-if="module.functions.length > 0" class="module-functions">
             <view
-              v-for="func in module.functions.slice(0, 4)"
+              v-for="func in (isModuleExpanded(module.id) ? module.functions : module.functions.slice(0, 4))"
               :key="func.id"
               class="function-item"
               @click.stop="handleFunctionClick(func)"
             >
               <view class="function-icon">
                 <image
-                  :src="getIconUrl(module)"
+                  :src="getIconUrl(func)"
                   mode="aspectFit"
                 />
               </view>
@@ -284,7 +293,8 @@ onPullDownRefresh(() => {
               class="function-more"
               @click.stop="handleModuleClick(module)"
             >
-              <text>+{{ module.functions.length - 4 }} 更多</text>
+              <text v-if="!isModuleExpanded(module.id)">+{{ module.functions.length - 4 }} 更多</text>
+              <text v-else>收起</text>
             </view>
           </view>
           <view v-else class="module-empty">
@@ -300,10 +310,7 @@ onPullDownRefresh(() => {
           <text @click="fetchWorkbenchMenu">重新加载</text>
         </view>
       </view>
-    </view>
-
-    <!-- 加载状态 -->
-    <view v-if="loading" class="loading-state">
+    </view><view v-if="loading" class="loading-state">
       <text class="loading-icon">⏳</text>
       <text class="loading-text">加载中...</text>
     </view>
@@ -564,4 +571,9 @@ onPullDownRefresh(() => {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+
+
+
+
 </style>
