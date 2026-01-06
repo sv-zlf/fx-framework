@@ -49,5 +49,8 @@ export function getSessionList(params: SessionListParams) {
  * 强制用户退出
  */
 export function forceLogout(sessionId: string) {
-  return http.post('/system/user/session/forceLogout', { sessionId })
+  return http.post('/system/user/session/forceLogout', null, {
+    sessionId
+  })
 }
+

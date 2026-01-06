@@ -26,17 +26,10 @@
         <text v-if="loginName" class="clear-icon" @click="clearSearch">✕</text>
       </view>
     </view>
-    <!-- 用户统计 -->
-<!--    <view class="stats-bar">-->
-<!--      <view class="stat-item">-->
-<!--        <text class="stat-value online">{{ onlineCount }}</text>-->
-<!--        <text class="stat-label">在线用户</text>-->
-<!--      </view>-->
-<!--    </view>-->
     <!-- 用户列表 -->
     <view v-if="!loading || filteredUsers.length > 0" class="users-list">
       <view
-        v-for="(user, index) in filteredUsers"
+        v-for="(user, index) in users"
         :key="user.sessionId"
         v-memo="[user.sessionId, user.sessionStatus]"
         class="user-card"
@@ -45,18 +38,20 @@
       >
         <view class="user-avatar-wrapper">
           <view
-            class="user-avatar-placeholder online">
+            :class="['user-avatar-placeholder', { online: user.sessionStatus === 1, offline: user.sessionStatus !== 1 }]">
             <text class="avatar-text">{{ user.loginName.charAt(0).toUpperCase() }}</text>
           </view>
           <view
-            class="status-indicator online">
-            <view class="pulse-ring"></view>
+            :class="['status-indicator', { online: user.sessionStatus === 1, offline: user.sessionStatus !== 1 }]">
+            <view v-if="user.sessionStatus === 1" class="pulse-ring"></view>
           </view>
         </view>
         <view class="user-info">
           <view class="user-name-row">
             <text class="user-name">{{ user.loginName }}</text>
-            <text class="online-badge">在线</text>
+            <text :class="['status-badge', { 'online-badge': user.sessionStatus === 1, 'offline-badge': user.sessionStatus !== 1 }]">
+              {{ user.sessionStatus === 1 ? '在线' : '离线' }}
+            </text>
           </view>
           <text class="user-email">{{ user.host }} - {{ user.loginLocation }}</text>
           <view class="user-meta">
@@ -65,7 +60,7 @@
           </view>
           <text class="last-active">最后访问: {{ user.lastAccessTime }}</text>
         </view>
-        <view class="user-arrow">
+        <view class="user-arrow" @click.stop="onForceLogout(user)">
           <text class="arrow-icon">›</text>
         </view>
       </view>
@@ -91,9 +86,17 @@
     </view>
   </scroll-view>
   <!-- 详情弹窗 -->
-  <u-modal  v-model="showDetailModal" :title="'会话详情'" :confirmText="selectedUser && selectedUser.sessionStatus === 1 ? '强制退出' : ''" :showCancelButton="true" :cancelText="'关闭'" :confirmColor="'#FF3B30'" :closeOnClickOverlay="true" @confirm="onForceLogout" @cancel="closeDetailModal" @close="closeDetailModal">
+  <u-popup
+    v-model="showDetailModal"
+    mode="center"
+    :round="50"
+    :title="'会话详情'"
+    :closeOnClickOverlay="true"
+    @close="closeDetailModal"
+    width="85%"
+    :safe-area-inset-bottom="true"
+  >
     <view class="u-modal-content">
-<!--      <view v-if="selectedUser" class="detail-info">-->
 <!--        <view class="detail-avatar-wrapper">-->
 <!--          <view :class="['detail-avatar', { online: selectedUser.sessionStatus === 1, offline: selectedUser.sessionStatus !== 1 }]">-->
 <!--            <text class="detail-avatar-text">{{ selectedUser.loginName.charAt(0).toUpperCase() }}</text>-->
@@ -136,7 +139,8 @@
           <text class="detail-value">{{ selectedUser.lastAccessTime }}</text>
         </view>
       </view>
-    </view></u-modal>
+    </view>
+  </u-popup>
 </template>
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
@@ -165,12 +169,10 @@ const pageSize = 20
 const hasMore = ref(true)
 const totalRecords = ref(0)
 
-// 统计在线用户数量
-const onlineCount = computed(() => users.value.filter(u => u.sessionStatus === 1).length)
 
 // 过滤后的用户列表（只显示在线用户）
 const filteredUsers = computed(() => {
-  return users.value.filter(u => u.sessionStatus === 1)
+  return users.value;
 })
 // 监听users变化，调试用
 watch(users, (newVal) => {
@@ -230,9 +232,7 @@ const clearSearch = () => {
   loginName.value = ''
   fetchUsers()
 }
-//     fetchUsers()
-//   }
-// }
+
 // 打开详情弹窗
 const openDetailModal = (user: SessionInfo) => {
   selectedUser.value = user
@@ -244,28 +244,23 @@ const closeDetailModal = () => {
   selectedUser.value = null
 }
 // 在弹窗中强制退出
-const onForceLogout = async () => {
-  if (!selectedUser.value) return
+const onForceLogout = async (user:SessionInfo) => {
+  console.log('onForceLogout', user)
+  if (!user) return
   uni.showModal({
     title: '确认操作',
-    content: `确定强制退出用户 ${selectedUser.value.loginName} 吗？`,
+    content: `确定强制退出用户 ${user.loginName} 吗？`,
     success: async (res: any) => {
       if (res.confirm) {
         forcingLogout.value = true
         try {
-          await forceLogout(selectedUser.value.sessionId)
+          await forceLogout(user.sessionId)
           uni.showToast({
             title: '强制退出成功',
             icon: 'success',
           })
-
           fetchUsers()
-        } catch (err) {
-          uni.showToast({
-            title: '操作失败',
-            icon: 'none',
-          })
-        } finally {
+        }  finally {
           forcingLogout.value = false
         }
       }
@@ -277,21 +272,7 @@ const handleUserClick = (user: SessionInfo) => {
   console.log('clicked user:', user)
   openDetailModal(user)
 }
-// 格式化最后活跃时间
-const formatLastActive = (dateStr: string) => {
-  if (!dateStr) return '未知'
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 7) return `${days}天前`
-  return date.toLocaleDateString()
-}
+
 // 页面加载
 onMounted(() => {
   fetchUsers()
@@ -455,6 +436,14 @@ onPullDownRefresh(() => {
 .online-badge {
   padding: 2px 8px;
   background: #22C55E;
+  color: #ffffff;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.offline-badge {
+  padding: 2px 8px;
+  background: #94A3B8;
   color: #ffffff;
   font-size: 12px;
   border-radius: 8px;
