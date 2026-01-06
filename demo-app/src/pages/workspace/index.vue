@@ -124,9 +124,9 @@ const onRefresh = async () => {
 
 // 点击快捷功能
 const handleQuickAction = (item: any) => {
-  if (item.path) {
+  if (item.component) {
     uni.navigateTo({
-      url: item.path,
+      url: '/pages/'+item.component,
       fail: () => {
         uni.showToast({
           title: "页面开发中",
