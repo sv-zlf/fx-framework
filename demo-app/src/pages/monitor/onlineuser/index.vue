@@ -17,40 +17,22 @@
       <view class="search-input-wrapper">
         <text class="search-icon">🔍</text>
         <input
-          v-model="searchQuery"
+          v-model="loginName"
           class="search-input"
           placeholder="搜索账户名"
           placeholder-class="search-placeholder"
+          @input="fetchUsers()"
         />
-        <text v-if="searchQuery" class="clear-icon" @click="clearSearch">✕</text>
-      </view>
-      <view class="filter-tabs">
-        <view
-          v-for="tab in tabs"
-          :key="tab.value"
-          :class="['filter-tab', { active: activeTab === tab.value }]"
-          @click="setActiveTab(tab.value)"
-        >
-          <text>{{ tab.label }}</text>
-          <text v-if="tab.count !== undefined" class="tab-count">{{ tab.count }}</text>
-        </view>
+        <text v-if="loginName" class="clear-icon" @click="clearSearch">✕</text>
       </view>
     </view>
     <!-- 用户统计 -->
-    <view class="stats-bar">
-      <view class="stat-item">
-        <text class="stat-value online">{{ onlineCount }}</text>
-        <text class="stat-label">在线</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-value offline">{{ offlineCount }}</text>
-        <text class="stat-label">离线</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-value">{{ totalUsers }}</text>
-        <text class="stat-label">总计</text>
-      </view>
-    </view>
+<!--    <view class="stats-bar">-->
+<!--      <view class="stat-item">-->
+<!--        <text class="stat-value online">{{ onlineCount }}</text>-->
+<!--        <text class="stat-label">在线用户</text>-->
+<!--      </view>-->
+<!--    </view>-->
     <!-- 用户列表 -->
     <view v-if="!loading || filteredUsers.length > 0" class="users-list">
       <view
@@ -58,23 +40,23 @@
         :key="user.sessionId"
         v-memo="[user.sessionId, user.sessionStatus]"
         class="user-card"
-        :class="{ 'user-card-offline': user.sessionStatus !== 1 }"
+
         @click="handleUserClick(user)"
       >
         <view class="user-avatar-wrapper">
           <view
-            :class="['user-avatar-placeholder', { online: user.sessionStatus === 1, offline: user.sessionStatus !== 1 }]">
+            class="user-avatar-placeholder online">
             <text class="avatar-text">{{ user.loginName.charAt(0).toUpperCase() }}</text>
           </view>
           <view
-            :class="['status-indicator', { online: user.sessionStatus === 1, offline: user.sessionStatus !== 1 }]">
-            <view v-if="user.sessionStatus === 1" class="pulse-ring"></view>
+            class="status-indicator online">
+            <view class="pulse-ring"></view>
           </view>
         </view>
         <view class="user-info">
           <view class="user-name-row">
             <text class="user-name">{{ user.loginName }}</text>
-            <text v-if="user.sessionStatus === 1" class="online-badge">在线</text>
+            <text class="online-badge">在线</text>
           </view>
           <text class="user-email">{{ user.host }} - {{ user.loginLocation }}</text>
           <view class="user-meta">
@@ -91,8 +73,8 @@
     <!-- 空状态 -->
     <view v-if="!loading && !loadingMore && filteredUsers.length === 0" class="empty-state">
       <text class="empty-icon">👥</text>
-      <text class="empty-title">{{ activeTab === 'all' ? '暂无用户' : '该状态暂无用户' }}</text>
-      <text class="empty-desc">{{ activeTab === 'all' ? '下拉刷新获取最新数据' : '切换到全部标签查看' }}</text>
+      <text class="empty-title">暂无在线用户</text>
+      <text class="empty-desc">下拉刷新获取最新数据</text>
     </view>
     <!-- 加载状态 -->
     <view v-if="loading && filteredUsers.length === 0" class="loading-state">
@@ -100,11 +82,11 @@
       <text class="loading-text">加载中...</text>
     </view>
     <!-- 加载更多 -->
-    <view v-if="loadingMore && activeTab === 'all'" class="loading-more">
+    <view v-if="loadingMore" class="loading-more">
       <text class="loading-more-text">加载更多...</text>
     </view>
     <!-- 没有更多 -->
-    <view v-if="!hasMore && filteredUsers.length > 0 && activeTab === 'all'" class="no-more">
+    <view v-if="!hasMore && filteredUsers.length > 0" class="no-more">
       <text class="no-more-text">没有更多了</text>
     </view>
   </scroll-view>
@@ -177,48 +159,24 @@ const loadingMore = ref(false)
 const refreshing = ref(false)
 const error = ref<string | null>(null)
 const users = ref<SessionInfo[]>([])
-const searchQuery = ref('')
-const activeTab = ref('all')
+const loginName = ref('')
 const page = ref(1)
 const pageSize = 20
 const hasMore = ref(true)
-const searchParams = ref({
-  loginLocation: '',
-  loginName: '',
-  startLoginTime: null as string | null,
-  endLoginTime: null as string | null
-})
 const totalRecords = ref(0)
-// 标签页配置
-const tabs = computed(() => [
-  { label: '全部', value: 'all', count: totalUsers.value },
-  { label: '在线', value: 'online', count: onlineCount.value },
-  { label: '离线', value: 'offline', count: offlineCount.value },
-])
-// 统计数据
+
+// 统计在线用户数量
 const onlineCount = computed(() => users.value.filter(u => u.sessionStatus === 1).length)
-const offlineCount = computed(() => users.value.filter(u => u.sessionStatus !== 1).length)
-const totalUsers = computed(() => totalRecords.value)
-// 过滤后的用户列表
+
+// 过滤后的用户列表（只显示在线用户）
 const filteredUsers = computed(() => {
-  let filtered = [...users.value]
-  // 状态过滤（搜索由API处理）
-  if (activeTab.value !== 'all') {
-    filtered = filtered.filter(u =>
-      activeTab.value === 'online' ? u.sessionStatus === 1 : u.sessionStatus !== 1
-    )
-  }
-  return filtered
+  return users.value.filter(u => u.sessionStatus === 1)
 })
 // 监听users变化，调试用
 watch(users, (newVal) => {
   console.log('users changed, length:', newVal.length, 'page:', page.value)
   console.log('hasMore:', hasMore.value, 'loadingMore:', loadingMore.value)
 }, { deep: true })
-// 监听activeTab变化
-watch(activeTab, (newVal) => {
-  console.log('activeTab changed:', newVal)
-})
 // 获取用户列表
 const fetchUsers = async (loadMore = false) => {
   if (loadMore) {
@@ -233,9 +191,7 @@ const fetchUsers = async (loadMore = false) => {
     const params = {
       pageIndex: page.value,
       pageSize: pageSize,
-      ...searchParams.value,
-      startLoginTime: searchParams.value.startLoginTime || undefined,
-      endLoginTime: searchParams.value.endLoginTime || undefined
+      loginName:loginName.value,
     }
     const res = await getSessionList(params)
     if (loadMore) {
@@ -255,8 +211,6 @@ const fetchUsers = async (loadMore = false) => {
 // 下拉刷新
 const onRefresh = async () => {
   refreshing.value = true
-  // 切换到全部标签并刷新
-  activeTab.value = 'all'
   await fetchUsers()
   setTimeout(() => {
     refreshing.value = false
@@ -265,41 +219,20 @@ const onRefresh = async () => {
 }
 // 上拉加载更多
 const loadMore = async () => {
-  console.log('[loadMore] triggered')
-  console.log('[loadMore] activeTab:', activeTab.value)
-  console.log('[loadMore] hasMore:', hasMore.value)
-  console.log('[loadMore] loadingMore:', loadingMore.value)
-  console.log('[loadMore] current page:', page.value)
-  // 只在全部标签下加载更多
-  if (activeTab.value !== 'all') {
-    console.log('[loadMore] not in all tab, skip')
-    return
-  }
   if (!hasMore.value || loadingMore.value) {
-    console.log('[loadMore] no more data or already loading, skip')
     return
   }
-  console.log('[loadMore] loading page', page.value + 1)
   page.value++
   await fetchUsers(true)
 }
 // 清除搜索
 const clearSearch = () => {
-  searchQuery.value = ''
-  searchParams.value.loginName = ''
-  searchParams.value.loginLocation = ''
+  loginName.value = ''
   fetchUsers()
 }
-// 切换标签页
-const setActiveTab = (tab: string) => {
-  if (activeTab.value === tab) return
-  activeTab.value = tab
-  // 切换标签时重新加载（除了在已加载数据间切换）
-  if (tab === 'all') {
-    page.value = 1
-    fetchUsers()
-  }
-}
+//     fetchUsers()
+//   }
+// }
 // 打开详情弹窗
 const openDetailModal = (user: SessionInfo) => {
   selectedUser.value = user
@@ -413,62 +346,11 @@ onPullDownRefresh(() => {
   margin-left: 8px;
   padding: 4px;
 }
-.filter-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-}
-.filter-tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 16px;
-  background: #f5f5f5;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #666666;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-.filter-tab.active {
-  background: #007AFF;
-  color: #ffffff;
-}
-.tab-count {
-  font-size: 12px;
-  opacity: 0.9;
-}
-.stats-bar {
-  display: flex;
-  justify-content: space-around;
-  background: #ffffff;
-  padding: 16px;
-  margin: 12px 16px;
-  border-radius: 12px;
-}
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.stat-value {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333333;
-}
-.stat-value.online {
-  color: #22C55E;
-}
-.stat-value.offline {
-  color: #94A3B8;
-}
-.stat-label {
-  font-size: 12px;
-  color: #999999;
-}
+
+
 .users-list {
   padding: 0 16px;
+  margin: 12px 0;
 }
 .user-card {
   display: flex;
